@@ -8,7 +8,7 @@ implements [TreeLSTMs](https://arxiv.org/abs/1503.00075) for sentiment analysis
 on parse trees of arbitrary shape/size/depth.
 
 Fold implements [*dynamic batching*](https://openreview.net/pdf?id=ryrGawqex).
-Batches of arbitrarily shaped computations graphs are transformed to produce a
+Batches of arbitrarily shaped computation graphs are transformed to produce a
 static computation graph. This graph has the same structure regardless of what
 input it receives, and can be executed efficiently by TensorFlow.
 
