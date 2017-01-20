@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package tensorflow_fold.loom.calculator_example;
+
+message CalculatorExpression {
+  optional int64 number = 1;
+  enum OpCode {
+    PLUS = 0;
+    MINUS = 1;
+    TIMES = 2;
+    DIV = 3;
+  }
+  optional OpCode op = 2;
+  optional CalculatorExpression left = 3;
+  optional CalculatorExpression right = 4;
+
+  optional int64 result = 5;
+}

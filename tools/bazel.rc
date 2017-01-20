@@ -1,0 +1,3 @@
+import %workspace%/tensorflow/tools/bazel.rc
+build --package_path=%workspace%:%workspace%/tensorflow/
+

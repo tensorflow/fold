@@ -1,0 +1,101 @@
+// This file contains protocol buffers that are generically useful for tests.
+syntax = "proto2";
+
+package tensorflow.fold;
+
+message SomeEnumScope {
+  enum SomeEnum {
+    THIS = 0;
+    THAT = 1;
+    THE_OTHER = 2;
+  }
+}
+
+message EveryTypeList {
+  repeated EveryType item = 1;
+}
+
+message EveryType {
+  optional int32 some_int32 = 1;
+  optional int64 some_int64 = 2;
+  optional uint32 some_uint32 = 3;
+  optional uint64 some_uint64 = 4;
+  optional double some_double = 5;
+  optional float some_float = 6;
+  optional bool some_bool = 7;
+
+  repeated int32 many_int32 = 11;
+  repeated int64 many_int64 = 12;
+  repeated uint32 many_uint32 = 13;
+  repeated uint64 many_uint64 = 14;
+  repeated double many_double = 15;
+  repeated float many_float = 16;
+  repeated bool many_bool = 17;
+
+  optional SomeEnumScope.SomeEnum some_enum = 20;
+  repeated SomeEnumScope.SomeEnum many_enum = 21;
+
+  optional string some_string = 30;
+  repeated string many_string = 31;
+
+  optional EveryAtom some_nest = 40;
+  repeated EveryAtom many_nest = 41;
+}
+
+message EveryAtom {
+  optional int32 some_int32 = 1;
+  optional int64 some_int64 = 2;
+  optional uint32 some_uint32 = 3;
+  optional uint64 some_uint64 = 4;
+  optional double some_double = 5;
+  optional float some_float = 6;
+  optional bool some_bool = 7;
+  optional SomeEnumScope.SomeEnum some_enum = 8;
+  optional string some_string = 9;
+}
+
+message OneAtom {
+  oneof atom_type {
+    int32 some_int32 = 1;
+    int64 some_int64 = 2;
+    uint32 some_uint32 = 3;
+    uint64 some_uint64 = 4;
+    double some_double = 5;
+    float some_float = 6;
+    bool some_bool = 7;
+    SomeEnumScope.SomeEnum some_enum = 8;
+    string some_string = 9;
+  }
+}
+
+message CyclicType {
+  optional int32 some_int32 = 1;
+  optional bool some_bool = 7;
+  repeated int32 many_int32 = 11;
+  repeated bool many_bool = 17;
+  optional SomeEnumScope.SomeEnum some_enum = 20;
+  optional CyclicType some_same = 40;
+  repeated CyclicType many_same = 41;
+}
+
+message Nested1 {
+  optional string baz = 1;
+}
+
+message Nested2 {
+  optional string bar = 1;
+  optional Nested1 nested1 = 2;
+}
+
+message Nested3 {
+  optional string foo = 1;
+  optional Nested2 nested2 = 2;
+}
+
+message NonConsecutiveEnumMessage {
+  enum NonConsecutiveEnum {
+    SEVEN = 7;
+    THREE = 3;
+  }
+  optional NonConsecutiveEnum the_enum = 1;
+}

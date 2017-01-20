@@ -1,0 +1,89 @@
+syntax = "proto2";
+
+import "tensorflow/core/framework/types.proto";
+import "tensorflow/core/framework/tensor.proto";
+
+package tensorflow.fold;
+
+message LoomMetadata {
+  // max_depth: maximum depth to nest loom operations (or -1 if the graph is
+  // being constructed with a while loop).
+  optional int32 max_depth = 1;
+
+  message TypeShapeMetadata {
+    // The type of the TypeShape.
+    optional tensorflow.DataType dtype = 1;
+
+    // The shape of the TypeShape (size of each dimension, in order).
+    repeated int64 shape = 2 [packed=true];
+
+    // A TypeShape's `tag` field is used to ensure the distinctness of
+    // TypeShapes that might otherwise collide in some cases.  (This is
+    // important because Loom's output tensors are indexed by TypeShape).
+    optional string tag = 3;
+
+    // `name` is used to refer to the TypeShape when printing debug messages.
+    optional string name = 4;
+
+    // The names of particular tensors of this TypeShape given as inputs to the
+    // loom (via `named_tensors`).
+    repeated string tensor_names = 5;
+
+    // If true then the Weaver does not track constants of this type-shape,
+    // either because they are being supplied by a mechanism external to the
+    // scheduler (direct_feed_dict mode) or because they are being fed in as a
+    // single batch tensor of unspecified length.
+    optional bool is_batch_input = 6;
+  }
+  repeated TypeShapeMetadata type_shape_metadata = 2;
+
+  message OpMetadata {
+    // The name of this operation.
+    optional string name = 1;
+
+    // The types of the inputs to this operation.  (Values are indices into
+    // TypeShapeMetadata).
+    repeated int32 input_ts_idx = 2;
+
+    // The types of the outputs of this operation.  (Values are indices into
+    // TypeShapeMetadata).
+    repeated int32 output_ts_idx = 3;
+  }
+  repeated OpMetadata op_metadata = 3;
+}
+
+// WeaverMessage contains the wiring diagram (or schedule) which drives the
+// TensorFlow network created in Loom._setup_network in loom.py.
+message WeaverMessage {
+  // This block of fields should mirror the contents of LoomResult (see
+  // weaver.h) and all of them should have the same length.
+  // Those LoomResults are in turn populated by calls to _Weaver's methods.
+  repeated int32 depth = 1 [packed=true];
+  repeated int32 ts_idx = 2 [packed=true];
+  repeated int32 op_idx = 3 [packed=true];
+  repeated int32 op_output_idx = 4 [packed=true];
+  repeated int32 pos_idx = 5 [packed=true];
+  repeated int32 cached_passthrough = 6 [packed=true];
+
+  repeated int32 num_constants_by_type_shape = 7 [packed=true];
+
+  // The constants of each type-shape are stacked along their 0'th dimensions
+  // and then converted to TensorProto to serialize.
+  repeated tensorflow.TensorProto constant_values_by_type_shape = 10;
+
+
+  message WiringMessage {
+    // The values of the `wiring_results_` field from Weaver
+    repeated int32 result_id = 1 [packed=true];
+
+    // The keys of the `wiring_results_` field from Weaver:
+    optional int32 depth = 2;
+    optional int32 op_idx = 3;
+    optional int32 arg_idx = 4;
+  }
+
+  repeated WiringMessage wiring = 8;
+
+  // The result IDs marked as outputs using `Weaver::AddOutput`.
+  repeated int32 output_result_id = 9 [packed=true];
+}

@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package tensorflow.fold;
+
+message SomeEnum3Scope {
+  enum SomeEnum3 {
+    THIS = 0;
+    THAT = 1;
+    THE_OTHER = 3;
+  }
+}
+
+message EveryType3 {
+  int32 some_int32 = 1;
+  int64 some_int64 = 2;
+  uint32 some_uint32 = 3;
+  uint64 some_uint64 = 4;
+  double some_double = 5;
+  float some_float = 6;
+  bool some_bool = 7;
+
+  repeated int32 many_int32 = 11;
+  repeated int64 many_int64 = 12;
+  repeated uint32 many_uint32 = 13;
+  repeated uint64 many_uint64 = 14;
+  repeated double many_double = 15;
+  repeated float many_float = 16;
+  repeated bool many_bool = 17;
+
+  SomeEnum3Scope.SomeEnum3 some_enum = 20;
+  repeated SomeEnum3Scope.SomeEnum3 many_enum = 21;
+
+  string some_string = 30;
+  repeated string many_string = 31;
+
+  EveryAtom3 some_nest = 40;
+  repeated EveryAtom3 many_nest = 41;
+}
+
+message CyclicType3 {
+  int32 some_int32 = 1;
+  bool some_bool = 7;
+  repeated int32 many_int32 = 11;
+  repeated bool many_bool = 17;
+  SomeEnum3Scope.SomeEnum3 some_enum = 20;
+  CyclicType3 some_same = 40;
+  repeated CyclicType3 many_same = 41;
+}
+
+message EveryAtom3 {
+  int32 some_int32 = 1;
+  int64 some_int64 = 2;
+  uint32 some_uint32 = 3;
+  uint64 some_uint64 = 4;
+  double some_double = 5;
+  float some_float = 6;
+  bool some_bool = 7;
+  SomeEnum3Scope.SomeEnum3 some_enum = 8;
+  string some_string = 9;
+}
