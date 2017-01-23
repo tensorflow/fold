@@ -96,14 +96,14 @@ This is the high-level API for [TensorFlow Fold](../index.md).
 
 - - -
 
+<a name="td.Compiler"></a>
 ### `class td.Compiler`
-(#td.Compiler)
 
 A compiler for TensorFlow Fold blocks.
 - - -
 
+<a name="td.Compiler.__init__"></a>
 #### `td.Compiler.__init__()`
-(#td.Compiler.__init__)
 
 Creates a Compiler.
 
@@ -124,8 +124,8 @@ compiler.init_loom()
 
 - - -
 
+<a name="td.Compiler.build_feed_dict"></a>
 #### `td.Compiler.build_feed_dict(examples, batch_size=None, metric_labels=False, ordered=False)`
-(#td.Compiler.build_feed_dict)
 
 Turns a batch of examples into a dictionary for feed_dict.
 
@@ -170,8 +170,8 @@ across chunks of work.
 
 - - -
 
+<a name="td.Compiler.build_loom_input_batched"></a>
 #### `td.Compiler.build_loom_input_batched(examples, batch_size=None, metric_labels=False, ordered=False)`
-(#td.Compiler.build_loom_input_batched)
 
 Turns examples into a feed value for `self.loom_input_tensor`.
 
@@ -206,8 +206,8 @@ e.g. `next()` or `list()` on it.
 
 - - -
 
+<a name="td.Compiler.build_loom_inputs"></a>
 #### `td.Compiler.build_loom_inputs(examples, metric_labels=False, chunk_size=100, ordered=False)`
-(#td.Compiler.build_loom_inputs)
 
 Turns examples into feed values for `self.loom_input_tensor`.
 
@@ -240,8 +240,8 @@ e.g. `next()` or `list()` on it.
 
 - - -
 
+<a name="td.Compiler.compile"></a>
 #### `td.Compiler.compile(root_block_like)`
-(#td.Compiler.compile)
 
 Compiles a block, and sets it to the root.
 
@@ -269,8 +269,8 @@ Compiles a block, and sets it to the root.
 
 - - -
 
+<a name="td.Compiler.create"></a>
 #### `td.Compiler.create(cls, root_block_like, max_depth=None, loom_input_tensor=None, input_tensor=None, parallel_iterations=None, back_prop=None, swap_memory=None)`
-(#td.Compiler.create)
 
 Creates a Compiler, compiles a block, and initializes loom.
 
@@ -318,8 +318,8 @@ Creates a Compiler, compiles a block, and initializes loom.
 
 - - -
 
+<a name="td.Compiler.init_loom"></a>
 #### `td.Compiler.init_loom(max_depth=None, loom_input_tensor=None, input_tensor=None, parallel_iterations=None, back_prop=None, swap_memory=None)`
-(#td.Compiler.init_loom)
 
 Intializes the loom object, which is used to run on tensorflow.
 
@@ -357,24 +357,24 @@ Intializes the loom object, which is used to run on tensorflow.
 
 - - -
 
+<a name="td.Compiler.input_tensor"></a>
 #### `td.Compiler.input_tensor`
-(#td.Compiler.input_tensor)
 
 Returns input tensor that can feed data to this compiler.
 
 
 - - -
 
+<a name="td.Compiler.is_loom_initialized"></a>
 #### `td.Compiler.is_loom_initialized`
-(#td.Compiler.is_loom_initialized)
 
 
 
 
 - - -
 
+<a name="td.Compiler.loom_input_tensor"></a>
 #### `td.Compiler.loom_input_tensor`
-(#td.Compiler.loom_input_tensor)
 
 Returns the loom input tensor, used for building feed dictionaries.
 
@@ -393,24 +393,24 @@ May be fed a single result or a sequence of results from
 
 - - -
 
+<a name="td.Compiler.max_depth"></a>
 #### `td.Compiler.max_depth(inp)`
-(#td.Compiler.max_depth)
 
 Returns the loom `max_depth` needed to evaluate `inp`.
 
 
 - - -
 
+<a name="td.Compiler.metric_tensors"></a>
 #### `td.Compiler.metric_tensors`
-(#td.Compiler.metric_tensors)
 
 Returns a ordered dictionary of tensors for output metrics.
 
 
 - - -
 
+<a name="td.Compiler.multiprocessing_pool"></a>
 #### `td.Compiler.multiprocessing_pool(processes=None)`
-(#td.Compiler.multiprocessing_pool)
 
 Creates a context for use with the Python `with` statement.
 
@@ -437,24 +437,24 @@ the pool is closed, blocking until all work is completed.
 
 - - -
 
+<a name="td.Compiler.output_tensors"></a>
 #### `td.Compiler.output_tensors`
-(#td.Compiler.output_tensors)
 
 Returns a flattened list of all output tensors.
 
 
 - - -
 
+<a name="td.Compiler.pool"></a>
 #### `td.Compiler.pool`
-(#td.Compiler.pool)
 
 Returns the current multiprocessing pool if it exists, else None.
 
 
 - - -
 
+<a name="td.Compiler.root"></a>
 #### `td.Compiler.root`
-(#td.Compiler.root)
 
 Returns the root block, or None if `compile()` has not been called.
 
@@ -465,14 +465,14 @@ Returns the root block, or None if `compile()` has not been called.
 
 - - -
 
+<a name="td.Tensor"></a>
 ### `class td.Tensor`
-(#td.Tensor)
 
 A block that converts its input from a python object to a tensor.
 - - -
 
+<a name="td.Tensor.__init__"></a>
 #### `td.Tensor.__init__(shape, dtype='float32', name=None)`
-(#td.Tensor.__init__)
 
 
 
@@ -480,38 +480,38 @@ A block that converts its input from a python object to a tensor.
 
 - - -
 
+<a name="td.Scalar"></a>
 ### `td.Scalar(dtype='float32', name=None)`
-(#td.Scalar)
 
 A block that converts its input to a scalar.
 
 
 - - -
 
+<a name="td.Vector"></a>
 ### `td.Vector(size, dtype='float32', name=None)`
-(#td.Vector)
 
 A block that converts its input to a vector.
 
 
 - - -
 
+<a name="td.InputTransform"></a>
 ### `class td.InputTransform`
-(#td.InputTransform)
 
 A Python function, lifted to a block.
 - - -
 
+<a name="td.InputTransform.__init__"></a>
 #### `td.InputTransform.__init__(py_fn, name=None)`
-(#td.InputTransform.__init__)
 
 
 
 
 - - -
 
+<a name="td.InputTransform.py_fn"></a>
 #### `td.InputTransform.py_fn`
-(#td.InputTransform.py_fn)
 
 
 
@@ -519,8 +519,8 @@ A Python function, lifted to a block.
 
 - - -
 
+<a name="td.SerializedMessageToTree"></a>
 ### `td.SerializedMessageToTree(message_type_name)`
-(#td.SerializedMessageToTree)
 
 A block that turns serialized protobufs into nested Python dicts and lists.
 
@@ -547,16 +547,16 @@ The block's input and output types are both `PyObjectType`.
 
 - - -
 
+<a name="td.OneHot"></a>
 ### `class td.OneHot`
-(#td.OneHot)
 
 A block that converts PyObject input to a one-hot encoding.
 
 Will raise an `KeyError` if the block is applied to an out-of-range input.
 - - -
 
+<a name="td.OneHot.__init__"></a>
 #### `td.OneHot.__init__(start, stop=None, dtype='float32', name=None)`
-(#td.OneHot.__init__)
 
 Initializes the block.
 
@@ -578,8 +578,8 @@ Initializes the block.
 
 - - -
 
+<a name="td.OneHotFromList"></a>
 ### `td.OneHotFromList(elements, dtype='float32', strict=True, name=None)`
-(#td.OneHotFromList)
 
 A block that converts PyObject input to a one-hot encoding.
 
@@ -611,8 +611,8 @@ one-hot encoding rather than assuming they are consecutive integers.
 
 - - -
 
+<a name="td.Optional"></a>
 ### `class td.Optional`
-(#td.Optional)
 
 Dispatches its input based on whether the input exists, or is None.
 
@@ -620,8 +620,8 @@ Similar to `OneOf(lambda x: x is None, {True: none_block, False: some_block})`
 except that `none_block` has `input_type` `VoidType`.
 - - -
 
+<a name="td.Optional.__init__"></a>
 #### `td.Optional.__init__(some_case, none_case=None, name=None)`
-(#td.Optional.__init__)
 
 Creates an Optional block.
 
@@ -640,22 +640,22 @@ Creates an Optional block.
 
 - - -
 
+<a name="td.Composition"></a>
 ### `class td.Composition`
-(#td.Composition)
 
 A composition of blocks, which are connected in a DAG.
 - - -
 
+<a name="td.Composition.__init__"></a>
 #### `td.Composition.__init__(children=None, name=None)`
-(#td.Composition.__init__)
 
 
 
 
 - - -
 
+<a name="td.Composition.connect"></a>
 #### `td.Composition.connect(a, b)`
-(#td.Composition.connect)
 
 Connect `a` to the input of `b`.
 
@@ -683,24 +683,24 @@ The argument `a` can be either:
 
 - - -
 
+<a name="td.Composition.input"></a>
 #### `td.Composition.input`
-(#td.Composition.input)
 
 Return a placeholder whose output is the input to the composition.
 
 
 - - -
 
+<a name="td.Composition.output"></a>
 #### `td.Composition.output`
-(#td.Composition.output)
 
 Return a placeholder whose input is the output of the composition.
 
 
 - - -
 
+<a name="td.Composition.scope"></a>
 #### `td.Composition.scope()`
-(#td.Composition.scope)
 
 Creates a context for use with the python `with` statement.
 
@@ -725,8 +725,8 @@ with c.scope():
 
 - - -
 
+<a name="td.Pipe"></a>
 ### `td.Pipe(*blocks, **kwargs)`
-(#td.Pipe)
 
 Creates a composition which pipes each block into the next one.
 
@@ -743,8 +743,8 @@ Creates a composition which pipes each block into the next one.
 
 - - -
 
+<a name="td.Record"></a>
 ### `class td.Record`
-(#td.Record)
 
 Dispatch each element of a dict, list, or tuple to child blocks.
 
@@ -768,8 +768,8 @@ Record((a_block, b_block)).eval(inp) =>
 ```
 - - -
 
+<a name="td.Record.__init__"></a>
 #### `td.Record.__init__(named_children, name=None)`
-(#td.Record.__init__)
 
 Create a Record Block.
 
@@ -788,8 +788,8 @@ the output tuple will be ordered by key.
 
 - - -
 
+<a name="td.AllOf"></a>
 ### `td.AllOf(*blocks, **kwargs)`
-(#td.AllOf)
 
 A block that runs all of its children (conceptually) in parallel.
 
@@ -815,14 +815,14 @@ AllOf(a, b, c).eval(inp) => (a.eval(inp), b.eval(inp), c.eval(inp))
 
 - - -
 
+<a name="td.FromTensor"></a>
 ### `class td.FromTensor`
-(#td.FromTensor)
 
 A block that returns a particular TF tensor or NumPy array.
 - - -
 
+<a name="td.FromTensor.__init__"></a>
 #### `td.FromTensor.__init__(tensor, name=None)`
-(#td.FromTensor.__init__)
 
 Creates the block.
 
@@ -841,8 +841,8 @@ Creates the block.
 
 - - -
 
+<a name="td.FromTensor.tensor"></a>
 #### `td.FromTensor.tensor`
-(#td.FromTensor.tensor)
 
 
 
@@ -850,8 +850,8 @@ Creates the block.
 
 - - -
 
+<a name="td.Function"></a>
 ### `class td.Function`
-(#td.Function)
 
 A TensorFlow function, wrapped in a block.
 
@@ -864,8 +864,8 @@ calls to the same function can be batched together naturally and take
 advantage of TensorFlow's parallelism.
 - - -
 
+<a name="td.Function.__init__"></a>
 #### `td.Function.__init__(tf_fn, name=None)`
-(#td.Function.__init__)
 
 Creates a `Function` block.
 
@@ -879,8 +879,8 @@ Creates a `Function` block.
 
 - - -
 
+<a name="td.Function.tf_fn"></a>
 #### `td.Function.tf_fn`
-(#td.Function.tf_fn)
 
 
 
@@ -888,14 +888,14 @@ Creates a `Function` block.
 
 - - -
 
+<a name="td.Concat"></a>
 ### `class td.Concat`
-(#td.Concat)
 
 Concatenates a non-empty tuple of tensors into a single tensor.
 - - -
 
+<a name="td.Concat.__init__"></a>
 #### `td.Concat.__init__(concat_dim=0, flatten=False, name=None)`
-(#td.Concat.__init__)
 
 Create a Concat block.
 
@@ -913,8 +913,8 @@ Create a Concat block.
 
 - - -
 
+<a name="td.Zeros"></a>
 ### `td.Zeros(output_type, name=None)`
-(#td.Zeros)
 
 A block of zeros, voids, and empty sequences of `output_type`.
 
@@ -944,22 +944,22 @@ is a sequence type, the output is an empty sequence of this type.
 
 - - -
 
+<a name="td.Map"></a>
 ### `class td.Map`
-(#td.Map)
 
 Map a block over a sequence or tuple.
 - - -
 
+<a name="td.Map.__init__"></a>
 #### `td.Map.__init__(elem_block, name=None)`
-(#td.Map.__init__)
 
 
 
 
 - - -
 
+<a name="td.Map.element_block"></a>
 #### `td.Map.element_block`
-(#td.Map.element_block)
 
 
 
@@ -967,30 +967,30 @@ Map a block over a sequence or tuple.
 
 - - -
 
+<a name="td.Fold"></a>
 ### `class td.Fold`
-(#td.Fold)
 
 Left-fold a two-argument block over a sequence or tuple.
 - - -
 
+<a name="td.Fold.__init__"></a>
 #### `td.Fold.__init__(combine_block, start_block, name=None)`
-(#td.Fold.__init__)
 
 
 
 
 - - -
 
+<a name="td.Fold.combine_block"></a>
 #### `td.Fold.combine_block`
-(#td.Fold.combine_block)
 
 
 
 
 - - -
 
+<a name="td.Fold.start_block"></a>
 #### `td.Fold.start_block`
-(#td.Fold.start_block)
 
 
 
@@ -998,8 +998,8 @@ Left-fold a two-argument block over a sequence or tuple.
 
 - - -
 
+<a name="td.RNN"></a>
 ### `td.RNN(cell, initial_state=None, initial_state_from_input=False, name=None)`
-(#td.RNN)
 
 Create an RNN block.
 
@@ -1042,30 +1042,30 @@ model = td.Map(td.Vector(8)) >> td.RNN(gru_cell)
 
 - - -
 
+<a name="td.Reduce"></a>
 ### `class td.Reduce`
-(#td.Reduce)
 
 Reduce a two-argument block over a sequence or tuple.
 - - -
 
+<a name="td.Reduce.__init__"></a>
 #### `td.Reduce.__init__(combine_block, default_block=None, name=None)`
-(#td.Reduce.__init__)
 
 
 
 
 - - -
 
+<a name="td.Reduce.combine_block"></a>
 #### `td.Reduce.combine_block`
-(#td.Reduce.combine_block)
 
 
 
 
 - - -
 
+<a name="td.Reduce.default_block"></a>
 #### `td.Reduce.default_block`
-(#td.Reduce.default_block)
 
 
 
@@ -1073,40 +1073,40 @@ Reduce a two-argument block over a sequence or tuple.
 
 - - -
 
+<a name="td.Sum"></a>
 ### `td.Sum(name=None)`
-(#td.Sum)
 
 Sums its inputs.
 
 
 - - -
 
+<a name="td.Min"></a>
 ### `td.Min(name=None)`
-(#td.Min)
 
 Takes the minimum of its inputs.  Zero on no inputs.
 
 
 - - -
 
+<a name="td.Max"></a>
 ### `td.Max(name=None)`
-(#td.Max)
 
 Takes the maximum of its inputs.  Zero on no inputs.
 
 
 - - -
 
+<a name="td.Mean"></a>
 ### `td.Mean(name=None)`
-(#td.Mean)
 
 Takes the average of its inputs.  Zero on no inputs.
 
 
 - - -
 
+<a name="td.Broadcast"></a>
 ### `class td.Broadcast`
-(#td.Broadcast)
 
 Block that creates an infinite sequence of the same element.
 
@@ -1119,8 +1119,8 @@ def center_seq(seq_block):
 ```
 - - -
 
+<a name="td.Broadcast.__init__"></a>
 #### `td.Broadcast.__init__(name=None)`
-(#td.Broadcast.__init__)
 
 
 
@@ -1128,8 +1128,8 @@ def center_seq(seq_block):
 
 - - -
 
+<a name="td.Zip"></a>
 ### `class td.Zip`
-(#td.Zip)
 
 Converts a tuple of sequences to a sequence of tuples.
 
@@ -1137,8 +1137,8 @@ The output sequence is truncated in length to the length of the
 shortest input sequence.
 - - -
 
+<a name="td.Zip.__init__"></a>
 #### `td.Zip.__init__(name=None)`
-(#td.Zip.__init__)
 
 
 
@@ -1146,8 +1146,8 @@ shortest input sequence.
 
 - - -
 
+<a name="td.ZipWith"></a>
 ### `td.ZipWith(elem_block, name=None)`
-(#td.ZipWith)
 
 A Zip followed by a Map.
 
@@ -1168,8 +1168,8 @@ ZipWith(elem_block) => Zip() >> Map(elem_block)
 
 - - -
 
+<a name="td.NGrams"></a>
 ### `class td.NGrams`
-(#td.NGrams)
 
 Computes tuples of n-grams over a sequence.
 
@@ -1178,16 +1178,16 @@ Computes tuples of n-grams over a sequence.
 ```
 - - -
 
+<a name="td.NGrams.__init__"></a>
 #### `td.NGrams.__init__(n, name=None)`
-(#td.NGrams.__init__)
 
 
 
 
 - - -
 
+<a name="td.NGrams.n"></a>
 #### `td.NGrams.n`
-(#td.NGrams.n)
 
 
 
@@ -1195,8 +1195,8 @@ Computes tuples of n-grams over a sequence.
 
 - - -
 
+<a name="td.Nth"></a>
 ### `class td.Nth`
-(#td.Nth)
 
 Extracts the Nth element of a sequence, where N is a PyObject.
 
@@ -1206,8 +1206,8 @@ block.eval((list, n)) => list[n]
 ```
 - - -
 
+<a name="td.Nth.__init__"></a>
 #### `td.Nth.__init__(name=None)`
-(#td.Nth.__init__)
 
 
 
@@ -1215,8 +1215,8 @@ block.eval((list, n)) => list[n]
 
 - - -
 
+<a name="td.GetItem"></a>
 ### `class td.GetItem`
-(#td.GetItem)
 
 A block that calls Pythons getitem operator (i.e. [] syntax) on its input.
 
@@ -1229,16 +1229,16 @@ The input type may be a PyObject, a Tuple, or a finite Sequence.
 Will raise a `KeyError` if applied to an input where the key cannot be found.
 - - -
 
+<a name="td.GetItem.__init__"></a>
 #### `td.GetItem.__init__(key, name=None)`
-(#td.GetItem.__init__)
 
 
 
 
 - - -
 
+<a name="td.GetItem.key"></a>
 #### `td.GetItem.key`
-(#td.GetItem.key)
 
 
 
@@ -1246,14 +1246,14 @@ Will raise a `KeyError` if applied to an input where the key cannot be found.
 
 - - -
 
+<a name="td.Length"></a>
 ### `class td.Length`
-(#td.Length)
 
 A block that returns the length of its input.
 - - -
 
+<a name="td.Length.__init__"></a>
 #### `td.Length.__init__(dtype='float32', name=None)`
-(#td.Length.__init__)
 
 
 
@@ -1261,8 +1261,8 @@ A block that returns the length of its input.
 
 - - -
 
+<a name="td.Slice"></a>
 ### `td.Slice(*args, **kwargs)`
-(#td.Slice)
 
 A block which applies Python slicing to a PyObject, Tuple, or Sequence.
 
@@ -1290,8 +1290,8 @@ of slice(start=N) vs. slice(stop=N).
 
 - - -
 
+<a name="td.ForwardDeclaration"></a>
 ### `class td.ForwardDeclaration`
-(#td.ForwardDeclaration)
 
 A ForwardDeclaration is used to define Blocks recursively.
 
@@ -1304,16 +1304,16 @@ fwd.resolve_to(block)                        # resolve forward declaration
 ```
 - - -
 
+<a name="td.ForwardDeclaration.__init__"></a>
 #### `td.ForwardDeclaration.__init__(input_type=None, output_type=None, name=None)`
-(#td.ForwardDeclaration.__init__)
 
 
 
 
 - - -
 
+<a name="td.ForwardDeclaration.resolve_to"></a>
 #### `td.ForwardDeclaration.resolve_to(target_block)`
-(#td.ForwardDeclaration.resolve_to)
 
 Resolve the forward declaration by setting it to the given block.
 
@@ -1321,8 +1321,8 @@ Resolve the forward declaration by setting it to the given block.
 
 - - -
 
+<a name="td.OneOf"></a>
 ### `class td.OneOf`
-(#td.OneOf)
 
 A block that dispatches its input to one of its children.
 
@@ -1350,8 +1350,8 @@ block.eval(inp2) => block2.eval(inp2)
 ```
 - - -
 
+<a name="td.OneOf.__init__"></a>
 #### `td.OneOf.__init__(key_fn, case_blocks, pre_block=None, name=None)`
-(#td.OneOf.__init__)
 
 Creates the OneOf block.
 
@@ -1378,8 +1378,8 @@ Creates the OneOf block.
 
 - - -
 
+<a name="td.Metric"></a>
 ### `class td.Metric`
-(#td.Metric)
 
 A block that computes a metric.
 
@@ -1403,8 +1403,8 @@ the tuple becomes a label for the tensor value, which can be used to identify
 where the value came from in a nested data structure and/or batch of inputs.
 - - -
 
+<a name="td.Metric.__init__"></a>
 #### `td.Metric.__init__(metric_name)`
-(#td.Metric.__init__)
 
 
 
@@ -1412,14 +1412,14 @@ where the value came from in a nested data structure and/or batch of inputs.
 
 - - -
 
+<a name="td.Identity"></a>
 ### `class td.Identity`
-(#td.Identity)
 
 A block that merely returns its input.
 - - -
 
+<a name="td.Identity.__init__"></a>
 #### `td.Identity.__init__(name=None)`
-(#td.Identity.__init__)
 
 
 
@@ -1427,8 +1427,8 @@ A block that merely returns its input.
 
 - - -
 
+<a name="td.Void"></a>
 ### `td.Void(name=None)`
-(#td.Void)
 
 A block with void output type that accepts any input type.
 
@@ -1438,8 +1438,8 @@ A block with void output type that accepts any input type.
 
 - - -
 
+<a name="td.FC"></a>
 ### `class td.FC`
-(#td.FC)
 
 A fully connected network layer.
 
@@ -1456,8 +1456,8 @@ out = hidden >> Call(FC(10, activation=None))
 ```
 - - -
 
+<a name="td.FC.__init__"></a>
 #### `td.FC.__init__(num_units_out, activation=relu, initializer=None, input_keep_prob=None, output_keep_prob=None, name=None)`
-(#td.FC.__init__)
 
 Initializes the layer.
 
@@ -1481,8 +1481,8 @@ Initializes the layer.
 
 - - -
 
+<a name="td.FC.output_size"></a>
 #### `td.FC.output_size`
-(#td.FC.output_size)
 
 
 
@@ -1490,8 +1490,8 @@ Initializes the layer.
 
 - - -
 
+<a name="td.Embedding"></a>
 ### `class td.Embedding`
-(#td.Embedding)
 
 An embedding for integers.
 
@@ -1507,8 +1507,8 @@ cast to `tf.int32`. Since all currently defined TF dtypes other than
 support all current integer dtypes.
 - - -
 
+<a name="td.Embedding.__init__"></a>
 #### `td.Embedding.__init__(num_buckets, num_units_out, initializer=None, name=None, trainable=True, mod_inputs=True)`
-(#td.Embedding.__init__)
 
 Initializes the layer.
 
@@ -1537,24 +1537,24 @@ Initializes the layer.
 
 - - -
 
+<a name="td.Embedding.num_buckets"></a>
 #### `td.Embedding.num_buckets`
-(#td.Embedding.num_buckets)
 
 
 
 
 - - -
 
+<a name="td.Embedding.num_units_out"></a>
 #### `td.Embedding.num_units_out`
-(#td.Embedding.num_units_out)
 
 
 
 
 - - -
 
+<a name="td.Embedding.weights"></a>
 #### `td.Embedding.weights`
-(#td.Embedding.weights)
 
 
 
@@ -1562,16 +1562,16 @@ Initializes the layer.
 
 - - -
 
+<a name="td.FractalNet"></a>
 ### `class td.FractalNet`
-(#td.FractalNet)
 
 An implementation of FractalNet.
 
 See https://arxiv.org/abs/1605.07648 for details.
 - - -
 
+<a name="td.FractalNet.__init__"></a>
 #### `td.FractalNet.__init__(num_fractal_blocks, fractal_block_depth, base_layer_builder, mixer=None, drop_path=False, p_local_drop_path=0.5, p_drop_base_case=0.25, p_drop_recursive_case=0.25, name=None)`
-(#td.FractalNet.__init__)
 
 Initializes the FractalNet.
 
@@ -1606,8 +1606,8 @@ Initializes the FractalNet.
 
 - - -
 
+<a name="td.FractalNet.drop_path"></a>
 #### `td.FractalNet.drop_path`
-(#td.FractalNet.drop_path)
 
 
 
@@ -1615,8 +1615,8 @@ Initializes the FractalNet.
 
 - - -
 
+<a name="td.ScopedLayer"></a>
 ### `class td.ScopedLayer`
-(#td.ScopedLayer)
 
 Create a Fold Layer that wraps a TensorFlow layer or RNN cell.
 
@@ -1632,8 +1632,8 @@ gru_cell1 = td.ScopedLayer(tf.contrib.rnn.GRUCell(num_units=16), 'gru1')
 ```
 - - -
 
+<a name="td.ScopedLayer.__init__"></a>
 #### `td.ScopedLayer.__init__(layer_fn, name_or_scope=None)`
-(#td.ScopedLayer.__init__)
 
 Wrap a TensorFlow layer.
 
@@ -1649,16 +1649,16 @@ Wrap a TensorFlow layer.
 
 - - -
 
+<a name="td.ScopedLayer.output_size"></a>
 #### `td.ScopedLayer.output_size`
-(#td.ScopedLayer.output_size)
 
 
 
 
 - - -
 
+<a name="td.ScopedLayer.state_size"></a>
 #### `td.ScopedLayer.state_size`
-(#td.ScopedLayer.state_size)
 
 
 
@@ -1669,8 +1669,8 @@ Wrap a TensorFlow layer.
 
 - - -
 
+<a name="td.TensorType"></a>
 ### `class td.TensorType`
-(#td.TensorType)
 
 Tensors (which may be numpy or tensorflow) of a particular shape.
 
@@ -1679,16 +1679,16 @@ e.g.  `np.ones_like(tensor_type)` will do what you expect it
 to. Calling `np.array(tensor_type)` returns a zeroed array.
 - - -
 
+<a name="td.TensorType.__array__"></a>
 #### `td.TensorType.__array__()`
-(#td.TensorType.__array__)
 
 Returns a zeroed numpy array of this type.
 
 
 - - -
 
+<a name="td.TensorType.__init__"></a>
 #### `td.TensorType.__init__(shape, dtype='float32')`
-(#td.TensorType.__init__)
 
 Creates a tensor type.
 
@@ -1707,24 +1707,24 @@ Creates a tensor type.
 
 - - -
 
+<a name="td.TensorType.dtype"></a>
 #### `td.TensorType.dtype`
-(#td.TensorType.dtype)
 
 
 
 
 - - -
 
+<a name="td.TensorType.ndim"></a>
 #### `td.TensorType.ndim`
-(#td.TensorType.ndim)
 
 
 
 
 - - -
 
+<a name="td.TensorType.shape"></a>
 #### `td.TensorType.shape`
-(#td.TensorType.shape)
 
 
 
@@ -1732,22 +1732,22 @@ Creates a tensor type.
 
 - - -
 
+<a name="td.VoidType"></a>
 ### `class td.VoidType`
-(#td.VoidType)
 
 A type used for blocks that don't return inputs or outputs.
 
 - - -
 
+<a name="td.PyObjectType"></a>
 ### `class td.PyObjectType`
-(#td.PyObjectType)
 
 The type of an arbitrary python object (usually used as an input type).
 
 - - -
 
+<a name="td.TupleType"></a>
 ### `class td.TupleType`
-(#td.TupleType)
 
 Type for fixed-length tuples of items, each of a particular type.
 
@@ -1757,8 +1757,8 @@ expected item types, and `len(foo)` is the number of item types in
 the tuple.
 - - -
 
+<a name="td.TupleType.__init__"></a>
 #### `td.TupleType.__init__(*item_types)`
-(#td.TupleType.__init__)
 
 Creates a tuple type.
 
@@ -1776,14 +1776,14 @@ Creates a tuple type.
 
 - - -
 
+<a name="td.SequenceType"></a>
 ### `class td.SequenceType`
-(#td.SequenceType)
 
 Type for variable-length sequences of elements all having the same type.
 - - -
 
+<a name="td.SequenceType.__init__"></a>
 #### `td.SequenceType.__init__(elem_type)`
-(#td.SequenceType.__init__)
 
 Creates a sequence type.
 
@@ -1800,8 +1800,8 @@ Creates a sequence type.
 
 - - -
 
+<a name="td.SequenceType.element_type"></a>
 #### `td.SequenceType.element_type`
-(#td.SequenceType.element_type)
 
 
 
@@ -1809,14 +1809,14 @@ Creates a sequence type.
 
 - - -
 
+<a name="td.BroadcastSequenceType"></a>
 ### `class td.BroadcastSequenceType`
-(#td.BroadcastSequenceType)
 
 Type for infinite sequences of same element repeated.
 - - -
 
+<a name="td.BroadcastSequenceType.__init__"></a>
 #### `td.BroadcastSequenceType.__init__(elem_type)`
-(#td.BroadcastSequenceType.__init__)
 
 Creates a sequence type.
 
@@ -1837,8 +1837,8 @@ Creates a sequence type.
 
 - - -
 
+<a name="td.Plan"></a>
 ### `class td.Plan`
-(#td.Plan)
 
 Base class for training, evaluation, and inference plans.
 
@@ -1875,24 +1875,24 @@ Base class for training, evaluation, and inference plans.
 
 - - -
 
+<a name="td.Plan.__init__"></a>
 #### `td.Plan.__init__(mode)`
-(#td.Plan.__init__)
 
 
 
 
 - - -
 
+<a name="td.Plan.assert_runnable"></a>
 #### `td.Plan.assert_runnable()`
-(#td.Plan.assert_runnable)
 
 Raises an exception if the plan cannot be run.
 
 
 - - -
 
+<a name="td.Plan.batch_size_placeholder"></a>
 #### `td.Plan.batch_size_placeholder`
-(#td.Plan.batch_size_placeholder)
 
 A placeholder for normalizing loss summaries.
 
@@ -1904,16 +1904,16 @@ A placeholder for normalizing loss summaries.
 
 - - -
 
+<a name="td.Plan.compute_summaries"></a>
 #### `td.Plan.compute_summaries`
-(#td.Plan.compute_summaries)
 
 A bool; whether or not summaries are being computed.
 
 
 - - -
 
+<a name="td.Plan.create"></a>
 #### `td.Plan.create(cls, mode)`
-(#td.Plan.create)
 
 Creates a plan.
 
@@ -1934,8 +1934,8 @@ Creates a plan.
 
 - - -
 
+<a name="td.Plan.create_from_flags"></a>
 #### `td.Plan.create_from_flags(cls, setup_plan_fn)`
-(#td.Plan.create_from_flags)
 
 Creates a plan from flags.
 
@@ -1962,8 +1962,8 @@ Creates a plan from flags.
 
 - - -
 
+<a name="td.Plan.create_from_params"></a>
 #### `td.Plan.create_from_params(cls, setup_plan_fn, params)`
-(#td.Plan.create_from_params)
 
 Creates a plan from a dictionary.
 
@@ -1991,40 +1991,40 @@ Creates a plan from a dictionary.
 
 - - -
 
+<a name="td.Plan.create_supervisor"></a>
 #### `td.Plan.create_supervisor()`
-(#td.Plan.create_supervisor)
 
 Creates a TF supervisor for running the plan.
 
 
 - - -
 
+<a name="td.Plan.finalize_stats"></a>
 #### `td.Plan.finalize_stats()`
-(#td.Plan.finalize_stats)
 
 Finalizes metrics and losses. Gets/creates global_step if unset.
 
 
 - - -
 
+<a name="td.Plan.global_step"></a>
 #### `td.Plan.global_step`
-(#td.Plan.global_step)
 
 The global step tensor.
 
 
 - - -
 
+<a name="td.Plan.has_finalized_stats"></a>
 #### `td.Plan.has_finalized_stats`
-(#td.Plan.has_finalized_stats)
 
 
 
 
 - - -
 
+<a name="td.Plan.init_loom"></a>
 #### `td.Plan.init_loom(**loom_kwargs)`
-(#td.Plan.init_loom)
 
 Initializes compilers's loom.
 
@@ -2062,16 +2062,16 @@ queue that some other training worker(s) are enqueuing to.
 
 - - -
 
+<a name="td.Plan.log_and_print"></a>
 #### `td.Plan.log_and_print(msg)`
-(#td.Plan.log_and_print)
 
 
 
 
 - - -
 
+<a name="td.Plan.loss_total"></a>
 #### `td.Plan.loss_total`
-(#td.Plan.loss_total)
 
 A scalar tensor, or None.
 
@@ -2083,8 +2083,8 @@ A scalar tensor, or None.
 
 - - -
 
+<a name="td.Plan.run"></a>
 #### `td.Plan.run(supervisor=None, session=None)`
-(#td.Plan.run)
 
 Runs the plan with `supervisor` and `session`.
 
@@ -2107,8 +2107,8 @@ Runs the plan with `supervisor` and `session`.
 
 - - -
 
+<a name="td.Plan.summaries"></a>
 #### `td.Plan.summaries`
-(#td.Plan.summaries)
 
 A scalar string tensor, or None.
 
@@ -2121,8 +2121,8 @@ A scalar string tensor, or None.
 
 - - -
 
+<a name="td.TrainPlan"></a>
 ### `class td.TrainPlan`
-(#td.TrainPlan)
 
 Plan class for training.
 
@@ -2166,16 +2166,16 @@ the latter case, each batch must have exactly batch_size elements.
 
 - - -
 
+<a name="td.TrainPlan.__init__"></a>
 #### `td.TrainPlan.__init__()`
-(#td.TrainPlan.__init__)
 
 
 
 
 - - -
 
+<a name="td.TrainPlan.build_optimizer"></a>
 #### `td.TrainPlan.build_optimizer()`
-(#td.TrainPlan.build_optimizer)
 
 
 
@@ -2183,8 +2183,8 @@ the latter case, each batch must have exactly batch_size elements.
 
 - - -
 
+<a name="td.EvalPlan"></a>
 ### `class td.EvalPlan`
-(#td.EvalPlan)
 
 Plan class for evaluation.
 
@@ -2206,8 +2206,8 @@ Plan class for evaluation.
 
 - - -
 
+<a name="td.EvalPlan.__init__"></a>
 #### `td.EvalPlan.__init__()`
-(#td.EvalPlan.__init__)
 
 
 
@@ -2215,8 +2215,8 @@ Plan class for evaluation.
 
 - - -
 
+<a name="td.InferPlan"></a>
 ### `class td.InferPlan`
-(#td.InferPlan)
 
 Plan class for inference.
 
@@ -2237,8 +2237,8 @@ Plan class for inference.
 
 - - -
 
+<a name="td.InferPlan.__init__"></a>
 #### `td.InferPlan.__init__()`
-(#td.InferPlan.__init__)
 
 
 
@@ -2246,8 +2246,8 @@ Plan class for inference.
 
 - - -
 
+<a name="td.define_plan_flags"></a>
 ### `td.define_plan_flags(default_plan_name='plan', blacklist=None)`
-(#td.define_plan_flags)
 
 Defines all of the flags used by `td.Plan.create_from_flags()`.
 
@@ -2260,8 +2260,8 @@ Defines all of the flags used by `td.Plan.create_from_flags()`.
 
 - - -
 
+<a name="td.plan_default_params"></a>
 ### `td.plan_default_params()`
-(#td.plan_default_params)
 
 Returns a dict from plan option parameter names to their defaults.
 
@@ -2271,8 +2271,8 @@ Returns a dict from plan option parameter names to their defaults.
 
 - - -
 
+<a name="td.convert_to_block"></a>
 ### `td.convert_to_block(block_like)`
-(#td.convert_to_block)
 
 Converts `block_like` to a block.
 
@@ -2302,8 +2302,8 @@ The conversion rules are as follows:
 
 - - -
 
+<a name="td.convert_to_type"></a>
 ### `td.convert_to_type(type_like)`
-(#td.convert_to_type)
 
 Converts `type_like` to a `Type`.
 
@@ -2341,8 +2341,8 @@ becomes a corresponding scalar `TensorType((), dtype)`.
 
 - - -
 
+<a name="td.canonicalize_type"></a>
 ### `td.canonicalize_type(type_like)`
-(#td.canonicalize_type)
 
 Returns a canonical representation of a type.
 
@@ -2369,8 +2369,8 @@ canonicalize_type(SequenceType(PyObjectType())) => PyObjectType()
 
 - - -
 
+<a name="td.EdibleIterator"></a>
 ### `class td.EdibleIterator`
-(#td.EdibleIterator)
 
 A wrapper around an iterator that lets it be used as a TF feed value.
 
@@ -2408,32 +2408,32 @@ e.g use tee(), which would be simpler), so we use `__array__` to
 tell NumPy how to do the conversion.
 - - -
 
+<a name="td.EdibleIterator.__array__"></a>
 #### `td.EdibleIterator.__array__(dtype=None)`
-(#td.EdibleIterator.__array__)
 
 NumPy array protocol; returns iterator values as an ndarray.
 
 
 - - -
 
+<a name="td.EdibleIterator.__init__"></a>
 #### `td.EdibleIterator.__init__(iterable)`
-(#td.EdibleIterator.__init__)
 
 
 
 
 - - -
 
+<a name="td.EdibleIterator.__next__"></a>
 #### `td.EdibleIterator.__next__()`
-(#td.EdibleIterator.__next__)
 
 
 
 
 - - -
 
+<a name="td.EdibleIterator.value"></a>
 #### `td.EdibleIterator.value`
-(#td.EdibleIterator.value)
 
 Returns iterator values as an ndarray if it exists, else None.
 
@@ -2441,8 +2441,8 @@ Returns iterator values as an ndarray if it exists, else None.
 
 - - -
 
+<a name="td.group_by_batches"></a>
 ### `td.group_by_batches(iterable, batch_size, truncate=False)`
-(#td.group_by_batches)
 
 Yields successive batches from an iterable, as lists.
 
@@ -2468,8 +2468,8 @@ Yields successive batches from an iterable, as lists.
 
 - - -
 
+<a name="td.epochs"></a>
 ### `td.epochs(items, n=None, shuffle=True, prng=None)`
-(#td.epochs)
 
 Yields the items of an iterable repeatedly.
 
@@ -2511,8 +2511,8 @@ memoization.
 
 - - -
 
+<a name="td.parse_spec"></a>
 ### `td.parse_spec(spec)`
-(#td.parse_spec)
 
 Parses a list of key values pairs.
 
@@ -2533,8 +2533,8 @@ Parses a list of key values pairs.
 
 - - -
 
+<a name="td.build_optimizer_from_params"></a>
 ### `td.build_optimizer_from_params(optimizer='adam', **kwargs)`
-(#td.build_optimizer_from_params)
 
 Constructs an optimizer from key-value pairs.
 
@@ -2565,8 +2565,8 @@ creates a MomentumOptimizer with momentum 0.9 and learning rate 1e-3.
 
 - - -
 
+<a name="td.create_variable_scope"></a>
 ### `td.create_variable_scope(name)`
-(#td.create_variable_scope)
 
 Creates a new variable scope based on `name`, nested in the current scope.
 
@@ -2596,46 +2596,46 @@ made globally unique, in the context of the current graph (e.g.
 
 - - -
 
+<a name="td.IOBase"></a>
 ### `class td.IOBase`
-(#td.IOBase)
 
 Base class for objects with associated input/output types and names.
 - - -
 
+<a name="td.IOBase.__init__"></a>
 #### `td.IOBase.__init__(input_type=None, output_type=None, name=None)`
-(#td.IOBase.__init__)
 
 
 
 
 - - -
 
+<a name="td.IOBase.input_type"></a>
 #### `td.IOBase.input_type`
-(#td.IOBase.input_type)
 
 Returns the input type if known, else None.
 
 
 - - -
 
+<a name="td.IOBase.name"></a>
 #### `td.IOBase.name`
-(#td.IOBase.name)
 
 
 
 
 - - -
 
+<a name="td.IOBase.output_type"></a>
 #### `td.IOBase.output_type`
-(#td.IOBase.output_type)
 
 Returns the output type if known, else None.
 
 
 - - -
 
+<a name="td.IOBase.set_input_type"></a>
 #### `td.IOBase.set_input_type(input_type)`
-(#td.IOBase.set_input_type)
 
 Updates the input type.
 
@@ -2657,8 +2657,8 @@ Updates the input type.
 
 - - -
 
+<a name="td.IOBase.set_input_type_class"></a>
 #### `td.IOBase.set_input_type_class(input_type_class)`
-(#td.IOBase.set_input_type_class)
 
 Updates the type class of the input type.
 
@@ -2680,8 +2680,8 @@ Updates the type class of the input type.
 
 - - -
 
+<a name="td.IOBase.set_io_types"></a>
 #### `td.IOBase.set_io_types(other)`
-(#td.IOBase.set_io_types)
 
 Updates input and output types of two `IOBase` objects to match.
 
@@ -2702,8 +2702,8 @@ Updates input and output types of two `IOBase` objects to match.
 
 - - -
 
+<a name="td.IOBase.set_output_type"></a>
 #### `td.IOBase.set_output_type(output_type)`
-(#td.IOBase.set_output_type)
 
 Updates the output type.
 
@@ -2725,8 +2725,8 @@ Updates the output type.
 
 - - -
 
+<a name="td.IOBase.set_output_type_class"></a>
 #### `td.IOBase.set_output_type_class(output_type_class)`
-(#td.IOBase.set_output_type_class)
 
 Updates the type class of the output type.
 
@@ -2749,8 +2749,8 @@ Updates the type class of the output type.
 
 - - -
 
+<a name="td.Block"></a>
 ### `class td.Block`
-(#td.Block)
 
 Base class for all blocks.
 
@@ -2768,40 +2768,40 @@ of blocks to a persistent [`td.Compiler`](#td.Compiler) object (note that
 [`eval`](#td.Block.eval) creates a compiler object behind the scenes.)
 - - -
 
+<a name="td.Block.__getitem__"></a>
 #### `td.Block.__getitem__(i)`
-(#td.Block.__getitem__)
 
 Return a reference to the i^th output from this block.
 
 
 - - -
 
+<a name="td.Block.__init__"></a>
 #### `td.Block.__init__(children=None, input_type=None, output_type=None, name=None)`
-(#td.Block.__init__)
 
 
 
 
 - - -
 
+<a name="td.Block.__rrshift__"></a>
 #### `td.Block.__rrshift__(lhs)`
-(#td.Block.__rrshift__)
 
 
 
 
 - - -
 
+<a name="td.Block.__rshift__"></a>
 #### `td.Block.__rshift__(rhs)`
-(#td.Block.__rshift__)
 
 
 
 
 - - -
 
+<a name="td.Block.eval"></a>
 #### `td.Block.eval(inp, feed_dict=None, session=None, tolist=False, use_while_loop=True)`
-(#td.Block.eval)
 
 Evaluates this block on `inp` in a TF session.
 
@@ -2839,16 +2839,16 @@ uninitialized variables, they will be initialized prior to evaluation.
 
 - - -
 
+<a name="td.Block.is_forward_declaration_ref"></a>
 #### `td.Block.is_forward_declaration_ref`
-(#td.Block.is_forward_declaration_ref)
 
 
 
 
 - - -
 
+<a name="td.Block.max_depth"></a>
 #### `td.Block.max_depth(inp)`
-(#td.Block.max_depth)
 
 Returns the loom `max_depth` needed to evaluate `inp`.
 
@@ -2869,8 +2869,8 @@ does not have this limitation).
 
 - - -
 
+<a name="td.Block.reads"></a>
 #### `td.Block.reads(*other)`
-(#td.Block.reads)
 
 Sets `self` to read its inputs from `other`.
 
@@ -2892,14 +2892,14 @@ Sets `self` to read its inputs from `other`.
 
 - - -
 
+<a name="td.Layer"></a>
 ### `class td.Layer`
-(#td.Layer)
 
 A callable that accepts and returns nests of batched of tensors.
 - - -
 
+<a name="td.Layer.__init__"></a>
 #### `td.Layer.__init__(input_type=None, output_type=None, name_or_scope=None)`
-(#td.Layer.__init__)
 
 Creates the layer.
 
@@ -2918,16 +2918,16 @@ Creates the layer.
 
 - - -
 
+<a name="td.Layer.__rrshift__"></a>
 #### `td.Layer.__rrshift__(lhs)`
-(#td.Layer.__rrshift__)
 
 
 
 
 - - -
 
+<a name="td.Layer.__rshift__"></a>
 #### `td.Layer.__rshift__(rhs)`
-(#td.Layer.__rshift__)
 
 
 
@@ -2935,30 +2935,30 @@ Creates the layer.
 
 - - -
 
+<a name="td.ResultType"></a>
 ### `class td.ResultType`
-(#td.ResultType)
 
 Base class for types that can be used as inputs/outputs to blocks.
 - - -
 
+<a name="td.ResultType.flatten"></a>
 #### `td.ResultType.flatten(instance)`
-(#td.ResultType.flatten)
 
 Converts an instance of this type to a flat list of terminal values.
 
 
 - - -
 
+<a name="td.ResultType.for_each_terminal"></a>
 #### `td.ResultType.for_each_terminal(fn, instance)`
-(#td.ResultType.for_each_terminal)
 
 Calls fn(terminal_type, value) for all terminal values in instance.
 
 
 - - -
 
+<a name="td.ResultType.size"></a>
 #### `td.ResultType.size`
-(#td.ResultType.size)
 
 Returns the total number of scalar elements in the type.
 
@@ -2968,8 +2968,8 @@ sequence.
 
 - - -
 
+<a name="td.ResultType.terminal_types"></a>
 #### `td.ResultType.terminal_types()`
-(#td.ResultType.terminal_types)
 
 Returns an iterable of all terminal types in this type, in pre-order.
 
@@ -2983,8 +2983,8 @@ needed to construct it. Instead, it has no terminal types.
 
 - - -
 
+<a name="td.ResultType.unflatten"></a>
 #### `td.ResultType.unflatten(flat, unused_shaped_like)`
-(#td.ResultType.unflatten)
 
 Converts a iterator over terminal values to an instance of this type.
 

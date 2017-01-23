@@ -115,8 +115,8 @@ used with numpy tensors, e.g.
   td.FromTensor(tf.Variable(tf.zeros([])))  # a trainable variable
 ```
 
+<a name="functions"></a>
 ### Functions and Layers
-(#functions)
 
 A `Function` block wraps a TensorFlow operation into a block.  It accepts
 tensor(s) as input, and produces tensor(s) as output.  Functions which take
@@ -165,8 +165,8 @@ on any such attempt.
 Blocks can be composed with other blocks in various ways to create blocks
 with more complex behavior.
 
+<a name="composition"></a>
 ### Wiring blocks together
-(#composition)
 
 The simplest form of composition is to wire the output of one block to the
 input of another, using the `>>` operator.  The syntax `f >> g` denotes
@@ -185,8 +185,8 @@ mnist_model = (td.InputTransform(lambda s: [ord(c) / 255.0 for c in s])
                >> td.Function(td.FC(100)))   # layer 2, 100 hidden units
 ```
 
+<a name="sequences"></a>
 ### Dealing with sequences
-(#sequences)
 
 Fold processes sequences of data using blocks which are analagous to
 higher-order functions like

@@ -16,22 +16,22 @@ REGISTER_KERNEL_BUILDER( Name("DeserializingWeaver").Device(tensorflow::DEVICE_C
 
 ###Member Details
 
+<a name="tensorflow_fold_WeaverOpBase_WeaverOpBase"></a>
 #### `tensorflow::fold::WeaverOpBase::WeaverOpBase(tensorflow::OpKernelConstruction *c)`
-(#tensorflow_fold_WeaverOpBase_WeaverOpBase)
 
 
 
 Reads the metadata, constant_types, and num_types_shapes attributes and makes sure they&apos;re consistent. Dies if they&apos;re not.
 
+<a name="virtual_tensorflow_Status_tensorflow_fold_WeaverOpBase_Weave"></a>
 #### `virtual tensorflow::Status tensorflow::fold::WeaverOpBase::Weave(tensorflow::OpKernelContext *c, Weaver *weaver)=0`
-(#virtual_tensorflow_Status_tensorflow_fold_WeaverOpBase_Weave)
 
 
 
 Weave is a virtual method, to be subclassed. Weave&apos;s responsibility is to read the ops inputs and use the weaver to schedule LoomOps to be executed on the loom. `Weave` should not call ` Weaver::Finalize `.
 
+<a name="void_tensorflow_fold_WeaverOpBase_Compute"></a>
 #### `void tensorflow::fold::WeaverOpBase::Compute(tensorflow::OpKernelContext *c) override`
-(#void_tensorflow_fold_WeaverOpBase_Compute)
 
 
 

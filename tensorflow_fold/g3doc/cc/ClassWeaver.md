@@ -20,8 +20,8 @@ Weaver also supports serialization and deserialization to `WeaverMessage` via `W
 
 ###Member Details
 
+<a name="tensorflow_fold_Weaver_Weaver"></a>
 #### `tensorflow::fold::Weaver::Weaver(const string &serialized_loom_metadata)`
-(#tensorflow_fold_Weaver_Weaver)
 
 
 
@@ -31,29 +31,29 @@ Sets a non-empty error string if either the metadata fails to deserialize to a L
 
 The caller must check for a status after constructing the Weaver before using it for anything.
 
+<a name="const_string_tensorflow_fold_Weaver_error_string"></a>
 #### `const string& tensorflow::fold::Weaver::error_string()`
-(#const_string_tensorflow_fold_Weaver_error_string)
 
 Returns the error string (non empty if any previous operation has failed.)
 
 
 
+<a name="void_tensorflow_fold_Weaver_Reset"></a>
 #### `void tensorflow::fold::Weaver::Reset()`
-(#void_tensorflow_fold_Weaver_Reset)
 
 
 
 Resets the weaver back to the state it was in right when the constructor was called.
 
+<a name="Tensor_tensorflow_fold_Weaver_BatchConstantValues"></a>
 #### `Tensor tensorflow::fold::Weaver::BatchConstantValues(tensor_idx_t ts_idx) const`
-(#Tensor_tensorflow_fold_Weaver_BatchConstantValues)
 
 
 
 Returns an N-dimensional array containing the constant values for the given typeshape, stacked in a batch.
 
+<a name="string_tensorflow_fold_Weaver_Serialize"></a>
 #### `string tensorflow::fold::Weaver::Serialize() const`
-(#string_tensorflow_fold_Weaver_Serialize)
 
 
 
@@ -61,8 +61,8 @@ Serializes this Weaver into a string (a serialized WeaverMessage.)
 
 Returns the empty string and sets an error string if serialization fails.
 
+<a name="bool_tensorflow_fold_Weaver_Deserialize"></a>
 #### `bool tensorflow::fold::Weaver::Deserialize(const string &serialized_weaver)`
-(#bool_tensorflow_fold_Weaver_Deserialize)
 
 
 
@@ -72,57 +72,57 @@ Returns true unless an error occurs during deserialization. If an error occurs, 
 
 WARNING: does almost no checking as to whether the contents of serialized_weaver are valid.
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_MaxDepth"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::MaxDepth() const`
-(#tensor_idx_t_tensorflow_fold_Weaver_MaxDepth)
 
 Returns the maximum depth of this scheduler.
 
 
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_NumTypeShapes"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::NumTypeShapes() const`
-(#tensor_idx_t_tensorflow_fold_Weaver_NumTypeShapes)
 
 Returns the number of typeshapes this scheduler has.
 
 
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_Deepest"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::Deepest() const`
-(#tensor_idx_t_tensorflow_fold_Weaver_Deepest)
 
 Returns the largest depth of any operation scheduled so far.
 
 
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_NumOps"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::NumOps() const`
-(#tensor_idx_t_tensorflow_fold_Weaver_NumOps)
 
 Returns the number of operations this scheduler supports.
 
 
 
+<a name="const_string_tensorflow_fold_Weaver_OpName"></a>
 #### `const string& tensorflow::fold::Weaver::OpName(tensor_idx_t op_idx) const`
-(#const_string_tensorflow_fold_Weaver_OpName)
 
 Returns the name of an op given its index.
 
 
 
+<a name="const_std_vector_tensor_idx_t_tensorflow_fold_Weaver_InputTypeShapes"></a>
 #### `const std::vector<tensor_idx_t>& tensorflow::fold::Weaver::InputTypeShapes(tensor_idx_t op_idx) const`
-(#const_std_vector_tensor_idx_t_tensorflow_fold_Weaver_InputTypeShapes)
 
 Returns the TypeShape indices of an operation&apos;s arguments.
 
 
 
+<a name="const_std_vector_tensor_idx_t_tensorflow_fold_Weaver_OutputTypeShapes"></a>
 #### `const std::vector<tensor_idx_t>& tensorflow::fold::Weaver::OutputTypeShapes(tensor_idx_t op_idx) const`
-(#const_std_vector_tensor_idx_t_tensorflow_fold_Weaver_OutputTypeShapes)
 
 Returns the TypeShape indices of an operation&apos;s return values.
 
 
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_Depth"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::Depth(tensor_idx_t result_id) const`
-(#tensor_idx_t_tensorflow_fold_Weaver_Depth)
 
 
 
@@ -130,8 +130,8 @@ Returns the depth of the node `result_id`.
 
 Returns -1 if `result_id` is invalid.
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_GetTypeShape"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::GetTypeShape(tensor_idx_t result_id) const`
-(#tensor_idx_t_tensorflow_fold_Weaver_GetTypeShape)
 
 
 
@@ -139,8 +139,8 @@ Returns the TypeShape ID of the node `result_id`.
 
 Returns -1 if `result_id` is invalid.
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_GetNamedTensor"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::GetNamedTensor(tensor_idx_t ts_idx, tensor_idx_t named_tensor_idx)`
-(#tensor_idx_t_tensorflow_fold_Weaver_GetNamedTensor)
 
 
 
@@ -148,8 +148,8 @@ Creates a result ID refering to the `named_tensor_idx`th NamedTensor with TypeSh
 
 Note: Repeated calls to GetNamedTensor can bloat the schedule with copies of the tensor. Writers of C++ Weaver Ops should call GetNamedTensor once for each Named Tensor they wish to use.
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_MakeConstantSerialized"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::MakeConstantSerialized(tensor_idx_t ts_idx, const string &tensor_bytes)`
-(#tensor_idx_t_tensorflow_fold_Weaver_MakeConstantSerialized)
 
 
 
@@ -157,8 +157,8 @@ MakeConstantSerialized creates a new result ID representing an input value of Ty
 
 Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape is in batch-mode or if the value to be set is invalid.
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_MakeConstant"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::MakeConstant(tensor_idx_t ts_idx, const tensorflow::TensorProto &tensor_proto)`
-(#tensor_idx_t_tensorflow_fold_Weaver_MakeConstant)
 
 
 
@@ -166,8 +166,8 @@ MakeConstant creates a new result ID representing an input value of TypeShape `t
 
 Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape is in batch-mode or if the value to be set is invalid.
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_MakeConstant"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::MakeConstant(tensor_idx_t ts_idx, const tensorflow::Tensor &tensor)`
-(#tensor_idx_t_tensorflow_fold_Weaver_MakeConstant)
 
 
 
@@ -175,8 +175,8 @@ MakeConstant creates a new result ID representing an input value of TypeShape `t
 
 Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape is in batch-mode or if the value to be set is invalid.
 
+<a name="tensor_idx_t_tensorflow_fold_Weaver_BatchInput"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::BatchInput(tensor_idx_t ts_idx, tensor_idx_t batch_idx)`
-(#tensor_idx_t_tensorflow_fold_Weaver_BatchInput)
 
 
 
@@ -186,8 +186,8 @@ Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape
 
 Runs with no errors if batch_idx is out of range (that will result in a gather error when the loom is run; this is because the weaver doesn&apos;t know how large the batch will be.)
 
+<a name="std_vector_tensor_idx_t_tensorflow_fold_Weaver_CallOp"></a>
 #### `std::vector< tensor_idx_t > tensorflow::fold::Weaver::CallOp(tensor_idx_t op_idx, const std::vector< tensor_idx_t > &args)`
-(#std_vector_tensor_idx_t_tensorflow_fold_Weaver_CallOp)
 
 
 
@@ -199,8 +199,8 @@ Returns an empty vector and sets the error string if `op_idx` is an invalid op I
 
 Returns the a vector of result IDs representing the return values.
 
+<a name="bool_tensorflow_fold_Weaver_AddOutput"></a>
 #### `bool tensorflow::fold::Weaver::AddOutput(tensor_idx_t result_id)`
-(#bool_tensorflow_fold_Weaver_AddOutput)
 
 
 
@@ -208,8 +208,8 @@ Adds `result_id` to the list of results to pass on to the Loom&apos;s output ten
 
 Returns false and sets the error string if `result_id` is invalid.
 
+<a name="bool_tensorflow_fold_Weaver_MergeFromSerialized"></a>
 #### `bool tensorflow::fold::Weaver::MergeFromSerialized(const string &other)`
-(#bool_tensorflow_fold_Weaver_MergeFromSerialized)
 
 
 
@@ -219,8 +219,8 @@ May return false and set the error string in some cases in which the merge is im
 
 WARNING: does not check whether `other` has the same set of loom ops, same set of type-shapes, etc. Unpredictable behavior may ensue if you call MergeFromSerialized with a serialized scheduler with a different op set.
 
+<a name="void_tensorflow_fold_Weaver_Finalize"></a>
 #### `void tensorflow::fold::Weaver::Finalize()`
-(#void_tensorflow_fold_Weaver_Finalize)
 
 
 
@@ -228,8 +228,8 @@ Compiles this graph into a wiring diagram which can be accessed using ` Weaver::
 
 Only does anything the first time it&apos;s called.
 
+<a name="const_std_vector_tensor_idx_t_tensorflow_fold_Weaver_GetWiring"></a>
 #### `const std::vector<tensor_idx_t>& tensorflow::fold::Weaver::GetWiring(tensor_idx_t depth, tensor_idx_t op_idx, tensor_idx_t op_arg_idx) const`
-(#const_std_vector_tensor_idx_t_tensorflow_fold_Weaver_GetWiring)
 
 
 
@@ -237,8 +237,8 @@ Returns the wiring for the gather operation at `depth` for the `op_arg_idx`th ar
 
 Should only be called after ` Weaver::Finalize ` has been called.
 
+<a name="const_std_vector_tensor_idx_t_tensorflow_fold_Weaver_GetOutputWiring"></a>
 #### `const std::vector<tensor_idx_t>& tensorflow::fold::Weaver::GetOutputWiring(tensor_idx_t ts_idx) const`
-(#const_std_vector_tensor_idx_t_tensorflow_fold_Weaver_GetOutputWiring)
 
 
 
