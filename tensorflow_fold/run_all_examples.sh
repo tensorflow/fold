@@ -1,7 +1,7 @@
 #!/bin/bash
 # Smoke test that runs all examples. Command-line arguments are
 # forwarded to 'bazel build', e.g.
-# ./tensorflow_fold/run_all_examples.sh -c opt --copt=-mavx
+# ./tensorflow_fold/run_all_examples.sh --config=opt
 set -o verbose
 set -e
 bazel build "$@" tensorflow_fold/...

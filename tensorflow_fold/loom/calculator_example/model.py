@@ -123,9 +123,8 @@ class CalculatorSignClassifier(object):
 
     self._output_weights = tf.matmul(
         self._calculator_loom.output(), self._classifier_weights)
-    self._loss = tf.reduce_mean(
-        tf.contrib.nn.deprecated_flipped_softmax_cross_entropy_with_logits(
-            self._output_weights, self._labels_placeholder))
+    self._loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+        logits=self._output_weights, labels=self._labels_placeholder))
 
     self._true_labels = tf.argmax(self._labels_placeholder, dimension=1)
     self._prediction = tf.argmax(self._output_weights, dimension=1)

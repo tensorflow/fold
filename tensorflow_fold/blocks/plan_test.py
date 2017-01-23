@@ -145,7 +145,7 @@ class PlanTest(PlanTestBase):
       self.assertEqual(6, p.loss_total.eval({p.batch_size_placeholder: 1}))
       summary = tf.Summary()
       summary.ParseFromString(p.summaries.eval({p.batch_size_placeholder: 1}))
-      qux_string = tf.contrib.deprecated.histogram_summary('', [5, 6]).eval()
+      qux_string = tf.summary.histogram('qux', [5, 6]).eval()
       qux_proto = tf.Summary()
       qux_proto.ParseFromString(qux_string)
       qux_histogram = qux_proto.value[0].histo

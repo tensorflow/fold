@@ -149,8 +149,7 @@ def add_metrics(is_root, is_neutral):
     y = td.Function(lambda x: tf.cast(tf.argmax(x, 1), tf.int32)).reads(logits)
 
     # calculate loss
-    loss = td.Function(
-        tf.contrib.nn.deprecated_flipped_sparse_softmax_cross_entropy_with_logits)  # pylint: disable=line-too-long
+    loss = td.Function(_loss)
     td.Metric('all_loss').reads(loss.reads(logits, y_))
     if is_root: td.Metric('root_loss').reads(loss)
 
@@ -168,6 +167,11 @@ def add_metrics(is_root, is_neutral):
     # output the state, which will be read by our by parent's LSTM cell
     c.output.reads(state)
   return c
+
+
+def _loss(logits, labels):
+  return tf.nn.sparse_softmax_cross_entropy_with_logits(
+      logits=logits, labels=labels)
 
 
 def tf_binary_hits(logits, y_):

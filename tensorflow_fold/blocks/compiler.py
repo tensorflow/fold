@@ -461,8 +461,8 @@ class Compiler(object):
     Args:
       examples: A non-empty iterable of examples to be built into tensors.
       batch_size: The maximum number of examples to compile into each loom
-        input. Defaults to 10000. If multiprocessing then this will be the
-        chunk size for each unit of work, and defaults to 100.
+        input. Defaults to 100. If multiprocessing then this will also be the
+        chunk size for each unit of work.
       metric_labels: Whether or not to return metric labels.
       ordered: Whether or not to preserve ordering when multiprocessing,
         otherwise has not effect (and order is always preserved).

@@ -71,7 +71,7 @@ class Layer(tdt.IOBase):
 def create_variable_scope(name):
   """Creates a new variable scope based on `name`, nested in the current scope.
 
-  If ends with a `/` then the new scope will be created exactly as if
+  If `name` ends with a `/` then the new scope will be created exactly as if
   you called `tf.variable_scope(name)`.  Otherwise, the name will be
   made globally unique, in the context of the current graph (e.g.
   `foo` will become `foo_1` if a `foo` variable scope already exists).

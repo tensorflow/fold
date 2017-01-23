@@ -1,6 +1,17 @@
 # Running Blocks in TensorFlow
 
-[TOC]
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Evaluating individual inputs](#evaluating-individual-inputs)
+- [Batching inputs](#batching-inputs)
+  - [Scenario 1: Feeding with in-memory data](#scenario-1-feeding-with-in-memory-data)
+  - [Scenario 2: Feeding with streamed data](#scenario-2-feeding-with-streamed-data)
+  - [Scenario 3: Reading from a tensor](#scenario-3-reading-from-a-tensor)
+  - [Accelerating evaluation with multiprocessing](#accelerating-evaluation-with-multiprocessing)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 A model define with the high-level TensorFlow Fold API is a single  [Block](blocks.md)
 

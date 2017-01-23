@@ -1,7 +1,18 @@
 <!-- This file is machine generated: DO NOT EDIT! -->
 
 # TensorFlow Fold Python Loom API
-[TOC]
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [`module tensorflow_fold.loom` (`loom`)](#module-tensorflow_foldloom-loom)
+  - [`class loom.TypeShape`](#class-loomtypeshape)
+  - [`class loom.LoomOp`](#class-loomloomop)
+  - [`class loom.PassThroughLoomOp`](#class-loompassthroughloomop)
+  - [`class loom.Loom`](#class-loomloom)
+  - [`class loom.Weaver`](#class-loomweaver)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 - - -
 ## `module tensorflow_fold.loom` (`loom`)
@@ -62,7 +73,8 @@ with tf.Session() as sess:
 
 - - -
 
-### `class loom.TypeShape` {#loom.TypeShape}
+### `class loom.TypeShape`
+(#loom.TypeShape)
 
 A type and shape defining a kind of tensor.
 
@@ -81,14 +93,16 @@ operations on the emulated graph.
 
 - - -
 
-#### `loom.TypeShape.dtype_enum` {#loom.TypeShape.dtype_enum}
+#### `loom.TypeShape.dtype_enum`
+(#loom.TypeShape.dtype_enum)
 
 The dtype of this TypeShape as an enum.
 
 
 - - -
 
-#### `loom.TypeShape.tensor_flow_name()` {#loom.TypeShape.tensor_flow_name}
+#### `loom.TypeShape.tensor_flow_name()`
+(#loom.TypeShape.tensor_flow_name)
 
 Makes a name for the TypeShape usuable as a TF op name.
 
@@ -96,26 +110,30 @@ Makes a name for the TypeShape usuable as a TF op name.
 
 - - -
 
-### `class loom.LoomOp` {#loom.LoomOp}
+### `class loom.LoomOp`
+(#loom.LoomOp)
 
 Class to be subclassed for defining Loom operations.
 - - -
 
-#### `loom.LoomOp.__init__(input_type_shapes, output_type_shapes)` {#loom.LoomOp.__init__}
+#### `loom.LoomOp.__init__(input_type_shapes, output_type_shapes)`
+(#loom.LoomOp.__init__)
 
 Setup the input and output typeshapes for the LoomOp, with checking.
 
 
 - - -
 
-#### `loom.LoomOp.input_type_shapes` {#loom.LoomOp.input_type_shapes}
+#### `loom.LoomOp.input_type_shapes`
+(#loom.LoomOp.input_type_shapes)
 
 A list of TypeShapes of the arguments to this LoomOp.
 
 
 - - -
 
-#### `loom.LoomOp.instantiate_batch(inputs)` {#loom.LoomOp.instantiate_batch}
+#### `loom.LoomOp.instantiate_batch(inputs)`
+(#loom.LoomOp.instantiate_batch)
 
 Instantiate the TensorFlow ops for running this loom Op.
 
@@ -136,7 +154,8 @@ Instantiate the TensorFlow ops for running this loom Op.
 
 - - -
 
-#### `loom.LoomOp.output_type_shapes` {#loom.LoomOp.output_type_shapes}
+#### `loom.LoomOp.output_type_shapes`
+(#loom.LoomOp.output_type_shapes)
 
 A list of TypeShapes of the return values of this LoomOp.
 
@@ -144,7 +163,8 @@ A list of TypeShapes of the return values of this LoomOp.
 
 - - -
 
-### `class loom.PassThroughLoomOp` {#loom.PassThroughLoomOp}
+### `class loom.PassThroughLoomOp`
+(#loom.PassThroughLoomOp)
 
 Op which leaves its input alone.
 
@@ -157,7 +177,8 @@ now a level above "c". To fix this, c needs to be passed through depth 1
 so it can be an argument to the second "+" at depth 2.
 - - -
 
-#### `loom.PassThroughLoomOp.__init__(type_shape)` {#loom.PassThroughLoomOp.__init__}
+#### `loom.PassThroughLoomOp.__init__(type_shape)`
+(#loom.PassThroughLoomOp.__init__)
 
 
 
@@ -165,7 +186,8 @@ so it can be an argument to the second "+" at depth 2.
 
 - - -
 
-### `class loom.Loom` {#loom.Loom}
+### `class loom.Loom`
+(#loom.Loom)
 
 A Loom lets TensorFlow quickly run dynamic graphs, with back-prop.
 
@@ -251,7 +273,8 @@ Implementation Details:
   instantiating `max_depth` copies the loom layer.
 - - -
 
-#### `loom.Loom.__init__(max_depth=None, named_tensors=None, named_ops=None, batch_inputs=None, extra_type_shapes=None, dry_run=False, parallel_iterations=None, back_prop=None, swap_memory=None, direct_feed_dict=False, loom_input_tensor=None, weaver_op=None)` {#loom.Loom.__init__}
+#### `loom.Loom.__init__(max_depth=None, named_tensors=None, named_ops=None, batch_inputs=None, extra_type_shapes=None, dry_run=False, parallel_iterations=None, back_prop=None, swap_memory=None, direct_feed_dict=False, loom_input_tensor=None, weaver_op=None)`
+(#loom.Loom.__init__)
 
 Constructs a Loom.
 
@@ -337,14 +360,16 @@ construct `WeaverMessages` to drive another instance of the same loom.
 
 - - -
 
-#### `loom.Loom.deserialize_weaver(serialized_weaver)` {#loom.Loom.deserialize_weaver}
+#### `loom.Loom.deserialize_weaver(serialized_weaver)`
+(#loom.Loom.deserialize_weaver)
 
 Turn a serialized WeaverMessage proto into an python Weaver object.
 
 
 - - -
 
-#### `loom.Loom.input_tensor` {#loom.Loom.input_tensor}
+#### `loom.Loom.input_tensor`
+(#loom.Loom.input_tensor)
 
 The input tensor for this loom.
 
@@ -359,14 +384,16 @@ The input tensor for this loom.
 
 - - -
 
-#### `loom.Loom.make_weaver()` {#loom.Loom.make_weaver}
+#### `loom.Loom.make_weaver()`
+(#loom.Loom.make_weaver)
 
 Constructs a Weaver object for the current loom.
 
 
 - - -
 
-#### `loom.Loom.output_tensor(type_shape)` {#loom.Loom.output_tensor}
+#### `loom.Loom.output_tensor(type_shape)`
+(#loom.Loom.output_tensor)
 
 Return the output Tensor for the given TypeShape.
 
@@ -387,7 +414,8 @@ Return the output Tensor for the given TypeShape.
 
 - - -
 
-#### `loom.Loom.type_shapes` {#loom.Loom.type_shapes}
+#### `loom.Loom.type_shapes`
+(#loom.Loom.type_shapes)
 
 The list of TypeShapes used by this loom.
 
@@ -395,7 +423,8 @@ The list of TypeShapes used by this loom.
 
 - - -
 
-### `class loom.Weaver` {#loom.Weaver}
+### `class loom.Weaver`
+(#loom.Weaver)
 
 A (partially constructed) wiring diagram or schedule for a Loom object.
 
@@ -410,7 +439,8 @@ schedule to a string in order to eventually pass it into a Loom's
 `input_tensor`.
 - - -
 
-#### `loom.Weaver.__init__(loom)` {#loom.Weaver.__init__}
+#### `loom.Weaver.__init__(loom)`
+(#loom.Weaver.__init__)
 
 Sets up the Weaver Object.
 
@@ -429,14 +459,16 @@ Sets up the Weaver Object.
 
 - - -
 
-#### `loom.Weaver.add_output(result)` {#loom.Weaver.add_output}
+#### `loom.Weaver.add_output(result)`
+(#loom.Weaver.add_output)
 
 Mark 'result' as an output of the loom.
 
 
 - - -
 
-#### `loom.Weaver.batch_input(type_shape, batch_idx)` {#loom.Weaver.batch_input}
+#### `loom.Weaver.batch_input(type_shape, batch_idx)`
+(#loom.Weaver.batch_input)
 
 Return a LoomResult which stands for en element of a batch_input tensor.
 
@@ -459,7 +491,8 @@ Return a LoomResult which stands for en element of a batch_input tensor.
 
 - - -
 
-#### `loom.Weaver.build_feed_dict(outputs=None)` {#loom.Weaver.build_feed_dict}
+#### `loom.Weaver.build_feed_dict(outputs=None)`
+(#loom.Weaver.build_feed_dict)
 
 Turn this diagram into a dictionary for feed_dict.
 
@@ -481,7 +514,8 @@ calls Weaver::Finalize, which freezes the Weaver's output wirings.
 
 - - -
 
-#### `loom.Weaver.constant(value, tag='')` {#loom.Weaver.constant}
+#### `loom.Weaver.constant(value, tag='')`
+(#loom.Weaver.constant)
 
 Return a LoomResult which stands in a constant value.
 
@@ -505,14 +539,16 @@ Return a LoomResult which stands in a constant value.
 
 - - -
 
-#### `loom.Weaver.deepest` {#loom.Weaver.deepest}
+#### `loom.Weaver.deepest`
+(#loom.Weaver.deepest)
 
 The maximum depth of any LoomResult created by this input.
 
 
 - - -
 
-#### `loom.Weaver.depth(result)` {#loom.Weaver.depth}
+#### `loom.Weaver.depth(result)`
+(#loom.Weaver.depth)
 
 Returns the depth of a given itermediate loom result.
 
@@ -531,21 +567,24 @@ have maximum depth `n-1` have depth `n`
 
 - - -
 
-#### `loom.Weaver.get_type_shape(result)` {#loom.Weaver.get_type_shape}
+#### `loom.Weaver.get_type_shape(result)`
+(#loom.Weaver.get_type_shape)
 
 Returns the TypeShape of the tensor represented by `result`.
 
 
 - - -
 
-#### `loom.Weaver.named_tensor(name)` {#loom.Weaver.named_tensor}
+#### `loom.Weaver.named_tensor(name)`
+(#loom.Weaver.named_tensor)
 
 Return a LoomResult which stands in for the named Tensor input.
 
 
 - - -
 
-#### `loom.Weaver.op(op_name, args)` {#loom.Weaver.op}
+#### `loom.Weaver.op(op_name, args)`
+(#loom.Weaver.op)
 
 Creates a LoomResult representing the invocation of a LoomOp.
 
@@ -571,7 +610,8 @@ Creates a LoomResult representing the invocation of a LoomOp.
 
 - - -
 
-#### `loom.Weaver.serialize()` {#loom.Weaver.serialize}
+#### `loom.Weaver.serialize()`
+(#loom.Weaver.serialize)
 
 Turn this Weaver into a serialized WeaverMessage proto.
 

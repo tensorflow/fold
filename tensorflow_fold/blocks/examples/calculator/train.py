@@ -22,7 +22,7 @@ To run, first make the data set:
 
 Then run the trainer:
 
-  ./learning/protonn/tensorflow_fold.blocks/examples/calculator/train \
+  ./tensorflow_fold/blocks/examples/calculator/train \
     --train_data_path=DIR/calc_data.dat
 """
 from __future__ import absolute_import

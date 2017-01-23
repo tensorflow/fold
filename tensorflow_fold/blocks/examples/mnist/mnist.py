@@ -16,21 +16,21 @@ r"""TensorFlow Fold for MNIST with fully connected layers and dropout.
 With default settings the test accuracy after 20 epochs is ~ 98.4%.
 
 Build:
-  bazel build -c opt --copt=-mavx \
-    //learning/protonn/tensorflow_fold.blocks/examples/mnist
+  bazel build --config=opt \
+    //tensorflow_fold/blocks/examples/mnist
 
 Train:
-  ./bazel-bin/learning/protonn/tensorflow_fold.blocks/examples/mnist/mnist
+  ./bazel-bin/tensorflow_fold/blocks/examples/mnist/mnist
 
 Eval:
-  ./bazel-bin/learning/protonn/tensorflow_fold.blocks/examples/mnist/mnist \
+  ./bazel-bin/tensorflow_fold/blocks/examples/mnist/mnist \
     --mode=eval --eval_interval_secs=10  # set to 0 to evaluate once and exit
 
 Inference:
-  ./bazel-bin/learning/protonn/tensorflow_fold.blocks/examples/mnist/mnist \
+  ./bazel-bin/tensorflow_fold/blocks/examples/mnist/mnist \
     --mode=infer
 
-See below and <learning/protonn/tensorflow_fold.blocks/plan.py>
+See below and <tensorflow_fold/blocks/plan.py>
 for additional flag options.
 """
 from __future__ import absolute_import
@@ -100,8 +100,8 @@ def setup_plan(plan):
     plan.outputs = [y]
   else:
     # Create loss and accuracy tensors, and add them to the plan.
-    loss = tf.contrib.nn.deprecated_flipped_sparse_softmax_cross_entropy_with_logits(  # pylint: disable=line-too-long
-        logits, y_)
+    loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
+        logits=logits, labels=y_)
     plan.losses['cross_entropy'] = loss
     accuracy = tf.reduce_mean(tf.cast(tf.equal(y, y_), tf.float32))
     plan.metrics['accuracy'] = accuracy

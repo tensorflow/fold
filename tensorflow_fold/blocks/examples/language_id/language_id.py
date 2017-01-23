@@ -31,12 +31,12 @@ punctuation. Labels are three letter abbreviations, like eng (English) or fra
 
 Usage:
 
-./learning/protonn/tensorflow_fold.blocks/examples/language_id/fetch_datasets.sh
+./tensorflow_fold/blocks/examples/language_id/fetch_datasets.sh
 
-bazel run -c opt --copt=-mavx \
-    //learning/protonn/tensorflow_fold.blocks/examples/language_id
+bazel run --config=opt \
+    //tensorflow_fold/blocks/examples/language_id
 
-See below and <learning/protonn/tensorflow_fold.blocks/plan.py>
+See below and <tensorflow_fold/blocks/plan.py>
 for flag options.
 """
 from __future__ import absolute_import
@@ -151,9 +151,8 @@ def setup_plan(plan):
   # These are TF tensors, and we can use them to compute loss in the usual way.
   logits, labels = plan.compiler.output_tensors
 
-  plan.losses['cross_entropy'] = (
-      tf.contrib.nn.deprecated_flipped_sparse_softmax_cross_entropy_with_logits(
-          logits, labels))
+  plan.losses['cross_entropy'] = tf.nn.sparse_softmax_cross_entropy_with_logits(
+      logits=logits, labels=labels)
   predictions = tf.argmax(logits, 1)
   plan.metrics['accuracy'] = tf.reduce_mean(
       tf.cast(tf.equal(predictions, labels), dtype=tf.float32))
