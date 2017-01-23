@@ -74,7 +74,7 @@ with tf.Session() as sess:
 - - -
 
 ### `class loom.TypeShape`
-(#loom.TypeShape)
+<a name="loom.TypeShape"></a>
 
 A type and shape defining a kind of tensor.
 
