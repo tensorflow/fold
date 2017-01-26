@@ -85,7 +85,7 @@ operations on the emulated graph.
 
 
 *  <b>`dtype`</b>: What type the cells of the tensor should have. Should be a
-    tf.DType, or stringified version thereof (e.g. 'int64').
+    `tf.DType`, or stringified version thereof (e.g. 'int64').
 *  <b>`shape`</b>: A tuple of integers for the shape of the tensor.
 *  <b>`tag`</b>: A name for the type.  Two TypeShapes with the same dtype and
     shape, but with different names, will be treated as different types.
@@ -208,7 +208,8 @@ build up a graph. To run the emulated graph you can then call the Weaver's
 build_feed_dict method to get a dictionary that can be passed to
 TensorFlow's `Tensor.eval` or `Session.run` methods.
 
-Batch input mode:
+##### Batch input mode
+
   In batch input mode, Loom reads inputs from a batched input tensor (which
   will contain a batch of elements of the appropriate TypeShape) instead of
   from constants passed in via Weaver.  The main advantage is that is that
@@ -221,7 +222,8 @@ Batch input mode:
   input mode are that bulky constants need not bloat the weaver messages and
   they may be changed at runtime.
 
-Bypass modes:
+##### Bypass modes
+
   Loom can bypass python graph specification should it become a bottle-neck.
   If the `Loom` is constructed with an `input_tensor`, that input tensor
   should contain serialized `WeaverMessages` (which specify a graph or
@@ -236,7 +238,7 @@ Bypass modes:
   constructor should then be given a `weaver_op`, a function which will be
   passed Loom's metadata and instantiate the user's custom op.
 
-`direct_feed_dict` mode:
+##### `direct_feed_dict` mode
   Loom can also be run in direct_feed_dict mode.  This bypasses
   DeserializingWeaverOp (a TensorFlow op which turns serialized
   `WeaverMessages` in a string tensor into the sorts of tensors that can drive
@@ -246,8 +248,9 @@ Bypass modes:
   mode is not compatible with the bypass modes above because it avoids putting
   any of its schedules into a string tensor as a `WeaverMessage` entirely.
 
-Implementation Details:
-  TODO(mherreshoff): Add a pretty picture here of the TF graph here.
+##### Implementation details
+
+  ![wiring diagram](wiring.png)
 
   A Loom object wraps a sequence of loom layers each of which can be directed
   to perform a variety of operations. In order to carry a variety of types at
@@ -266,7 +269,7 @@ Implementation Details:
   outputs of the LoomOps (using tf.concat) to form the state tensors to be
   passed on to sub-layer 1 of the next Unit.
 
-  (See Loom._construct_loom_layer for the implementation.)
+  (See `Loom._construct_loom_layer` for the implementation.)
 
   By default, `max_depth` is unspecified and Loom wraps a single loom layer in
   a `tf.while_loop`.  If max_depth is specified, loom unrolls the loop by
@@ -303,23 +306,23 @@ construct `WeaverMessages` to drive another instance of the same loom.
 ##### Args:
 
 
-*  <b>`max_depth`</b>: an optional integer depth to unroll the generic network to.  If
+*  <b>`max_depth`</b>: An optional integer depth to unroll the generic network to.  If
     absent, Loom uses a `tf.while_loop`.  `max_depth` is provided for
     compatibility with old versions of TensorFlow with bad support for
     `tf.while_loop` and for debugging purposes.
-*  <b>`named_tensors`</b>: an optional dictionary mapping strings to Tensors. (Named
+*  <b>`named_tensors`</b>: An optional dictionary mapping strings to Tensors. (Named
     tensors are effectively zero argument LoomOps.)  Each value of
     `named_tensors` must be either a tf.Tensor or a tuple of the form
     (tf.Tensor, str) with the string specifying a TypeShape tag.
-*  <b>`named_ops`</b>: a mandatory dictionary mapping strings to LoomOp objects (the
+*  <b>`named_ops`</b>: A mandatory dictionary mapping strings to LoomOp objects (the
     set of operations the Loom should support.)
-*  <b>`batch_inputs`</b>: an optional dictionary mapping TypeShapes to Tensors.  Each
+*  <b>`batch_inputs`</b>: An optional dictionary mapping TypeShapes to Tensors.  Each
     Tensor in the dictionary should have the type and shape to contain a
     batch of things of that TypeShape stacked along dimension 0.
-*  <b>`extra_type_shapes`</b>: an optional iterable containing extra TypeShapes that
+*  <b>`extra_type_shapes`</b>: An optional iterable containing extra TypeShapes that
     may not be inputs or outputs of LoomOps but that the Loom should support
     anyway.
-*  <b>`dry_run`</b>: Boolean. if true, don't build the TensorFlow graph (and make the
+*  <b>`dry_run`</b>: Boolean. If true, don't build the TensorFlow graph (and make the
     output tensors be dummy constants.)  This is useful for rapid testing in
     situtions where building the TensorFlow graph is expensive (eg. large
     max_depth) or when the objective is to construct schedules and serialize
@@ -336,13 +339,13 @@ construct `WeaverMessages` to drive another instance of the same loom.
 *  <b>`direct_feed_dict`</b>: Boolean. If true, this loom doesn't create a loom_input
     tensor for WeaverMessages, and instead creates placeholders for the
     wiring diagrams. Default: False.
-*  <b>`loom_input_tensor`</b>: an optional string Tensor from which to read
+*  <b>`loom_input_tensor`</b>: An optional string Tensor from which to read
     WeaverMessages which specify how to wire the loom.  If more than one is
     present they will be merged (auto-merge is provided so that
     WeaverMessages for individual inputs can be cached in advance while
     still using random mini-batches at run-time.)  Mutally exclusive with
     `weaver_op`.
-*  <b>`weaver_op`</b>: an optional callable which constructs a TensorFlow op to
+*  <b>`weaver_op`</b>: An optional callable which constructs a TensorFlow op to
     produce inputs for the loom.  Mutually exclusive with
     `loom_input_tensor`.  If absent, the loom acts as though `weaver_op`
     were a function creating a `deserializing_weaver` op which consumes
@@ -354,8 +357,8 @@ construct `WeaverMessages` to drive another instance of the same loom.
 ##### Raises:
 
 
-*  <b>`TypeError`</b>: if `named_ops` is not provided.
-*  <b>`TypeError`</b>: if more than one tagged TypeShape has the same tag.
+*  <b>`TypeError`</b>: If `named_ops` is not provided.
+*  <b>`TypeError`</b>: If more than one tagged TypeShape has the same tag.
 
 
 - - -
@@ -363,7 +366,7 @@ construct `WeaverMessages` to drive another instance of the same loom.
 <a name="loom.Loom.deserialize_weaver"></a>
 #### `loom.Loom.deserialize_weaver(serialized_weaver)`
 
-Turn a serialized WeaverMessage proto into an python Weaver object.
+Turn a serialized `WeaverMessage` proto into an Python Weaver object.
 
 
 - - -
@@ -401,15 +404,15 @@ Return the output Tensor for the given TypeShape.
 
   An output Tensor has one more dimension than the type_shape (the first
   dimension is the one along which all the values of that TypeShape have
-  been concatenated. For example if the TypeShape were ('float32', (3, 5))
-  we'd return a float32 tensor whose dimensions are (*, 3, 5) where the *
-  can be any number. The Tensor will contains a batch of all 3x5 matrix
-  results passed to Weaver's build_feed_dict.
+  been concatenated. For example if the TypeShape were `('float32', (3, 5))`
+  we'd return a `float32` tensor whose dimensions are `(*, 3, 5)` where the
+  `*` can be any number. The Tensor will contains a batch of all 3x5 matrix
+  results passed to Weaver's `build_feed_dict`.
 
 ##### Args:
 
 
-*  <b>`type_shape`</b>: the TypeShape we want to look up.
+*  <b>`type_shape`</b>: The TypeShape we want to look up.
 
 
 - - -
@@ -428,7 +431,7 @@ The list of TypeShapes used by this loom.
 
 A (partially constructed) wiring diagram or schedule for a Loom object.
 
-This object is a user-friendly wrapper for the tensorflow::fold::Weaver C++
+This object is a user-friendly wrapper for the `tensorflow::fold::Weaver` C++
 object.
 
 The `build_feed_dict` method uses the Weaver to construct a dict directing the
@@ -447,13 +450,13 @@ Sets up the Weaver Object.
 ##### Args:
 
 
-*  <b>`loom`</b>: the Loom object backing this Weaver.
+*  <b>`loom`</b>: The Loom object backing this Weaver.
 
 ##### Raises:
 
 
-*  <b>`TypeError`</b>: if loom is not a Loom object.
-*  <b>`AssertionError`</b>: if the Weaver object cannot be constructed or if any of
+*  <b>`TypeError`</b>: If loom is not a Loom object.
+*  <b>`AssertionError`</b>: If the Weaver object cannot be constructed or if any of
     its named tensors cannot be retrieved.
 
 
@@ -475,8 +478,8 @@ Return a LoomResult which stands for en element of a batch_input tensor.
 ##### Args:
 
 
-*  <b>`type_shape`</b>: which typeshape the input is from.
-*  <b>`batch_idx`</b>: which element of the batch this input is.
+*  <b>`type_shape`</b>: Which typeshape the input is from.
+*  <b>`batch_idx`</b>: Which element of the batch this input is.
 
 ##### Returns:
 
@@ -485,8 +488,8 @@ Return a LoomResult which stands for en element of a batch_input tensor.
 ##### Raises:
 
 
-*  <b>`TypeError`</b>: raised if `type_shape` is not a recognized TypeShape.
-*  <b>`AssertionError`</b>: if an internal error occurs in creating the batch input.
+*  <b>`TypeError`</b>: Raised if `type_shape` is not a recognized TypeShape.
+*  <b>`AssertionError`</b>: If an internal error occurs in creating the batch input.
 
 
 - - -
@@ -496,20 +499,22 @@ Return a LoomResult which stands for en element of a batch_input tensor.
 
 Turn this diagram into a dictionary for feed_dict.
 
-Warning: no changes made to this Weaver will be reflected in the results of
-build_feed_dict after the first time it is called because build_feed_dict
-calls Weaver::Finalize, which freezes the Weaver's output wirings.
+Warning: No changes made to this Weaver will be reflected in the
+results of `build_feed_dict` after the first time it is called
+because `build_feed_dict` calls `Weaver::Finalize`, which freezes
+the Weaver's output wirings.
 
 ##### Returns:
 
- A dictionary which can be passed to feed_dict which will cause this
- Weaver's Loom to behave like the diagram.
+ A dictionary which can be passed as a `feed_dict` argument to
+ `tf.Session.run()` t which will cause this Weaver's Loom to behave like
+the diagram.
 
 ##### Args:
 
 
 *  <b>`outputs`</b>: Additional nodes which should be sent to the output tensors
-    (these can also be set using 'add_output'.)
+    (these can also be set using `add_output`.)
 
 
 - - -
@@ -522,7 +527,7 @@ Return a LoomResult which stands in a constant value.
 ##### Args:
 
 
-*  <b>`value`</b>: A numpy object containing the constant.
+*  <b>`value`</b>: A NumPy object containing the constant.
 *  <b>`tag`</b>: What tag the value's TypeShape ought to have.
 
 ##### Returns:
@@ -532,9 +537,9 @@ Return a LoomResult which stands in a constant value.
 ##### Raises:
 
 
-*  <b>`TypeError`</b>: raised if the constant does not have one of the TypeShapes
+*  <b>`TypeError`</b>: Raised if the constant does not have one of the TypeShapes
     supported by the loom.
-*  <b>`AssertionError`</b>: if an internal error occurs in creating the constant.
+*  <b>`AssertionError`</b>: If an internal error occurs in creating the constant.
 
 
 - - -
@@ -558,7 +563,7 @@ have maximum depth `n-1` have depth `n`
 ##### Args:
 
 
-*  <b>`result`</b>: a loom result whose depth is to be calculated.
+*  <b>`result`</b>: A loom result whose depth is to be calculated.
 
 ##### Returns:
 
@@ -591,8 +596,8 @@ Creates a LoomResult representing the invocation of a LoomOp.
 ##### Args:
 
 
-*  <b>`op_name`</b>: which operation to call.
-*  <b>`args`</b>: a list of LoomResult objects representing the arguments of the op.
+*  <b>`op_name`</b>: Which operation to call.
+*  <b>`args`</b>: A list of LoomResult objects representing the arguments of the op.
 
 ##### Returns:
 
@@ -601,9 +606,9 @@ Creates a LoomResult representing the invocation of a LoomOp.
 ##### Raises:
 
 
-*  <b>`KeyError`</b>: raised if op_name is not the name of a LoomOp for this Loom.
-*  <b>`TypeError`</b>: raised if any of 'args' is not an integer.
-*  <b>`AssertionError`</b>: if an internal error occurs calling the op.  Raised if the
+*  <b>`KeyError`</b>: Raised if op_name is not the name of a LoomOp for this Loom.
+*  <b>`TypeError`</b>: Raised if any of 'args' is not an integer.
+*  <b>`AssertionError`</b>: If an internal error occurs calling the op.  Raised if the
     LoomResult arguments are of the wrong TypeShape or if the user attempts
     to create a graph deeper than the Loom's max_depth.
 
@@ -613,7 +618,7 @@ Creates a LoomResult representing the invocation of a LoomOp.
 <a name="loom.Weaver.serialize"></a>
 #### `loom.Weaver.serialize()`
 
-Turn this Weaver into a serialized WeaverMessage proto.
+Turn this Weaver into a serialized `WeaverMessage` proto.
 
 ##### Returns:
 

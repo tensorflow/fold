@@ -36,7 +36,7 @@ tuples of `N` items.  For `1 <= i <= N`, item `i` has type `T`<sub>`i`</sub>.
 5. [`SequenceType(T)`](py/td.md#td.SequenceType): variable-length sequences all
 of whose elements are the same type (`T`).
 
-6. [`BroadcastSequenceType(T)`](py/td.md#td.BroacastSequenceType): an infinite
+6. [`BroadcastSequenceType(T)`](py/td.md#td.BroadcastSequenceType): an infinite
 sequence (i.e. generator) of type `T`.
 
 Types are immutable and well-ordered.

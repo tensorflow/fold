@@ -8,7 +8,7 @@
   - [Motivating example](#motivating-example)
 - [Basic concepts](#basic-concepts)
 - [Primitive blocks](#primitive-blocks)
-  - [Converting python objects into tensors.](#converting-python-objects-into-tensors)
+  - [Converting Python objects into tensors.](#converting-python-objects-into-tensors)
   - [Using TensorFlow tensors.](#using-tensorflow-tensors)
   - [Functions and Layers](#functions-and-layers)
   - [Python operations](#python-operations)
@@ -28,7 +28,7 @@ learning.  If not, the [TensorFlow
 tutorials](https://www.tensorflow.org/tutorials/)
 are a good place to start.
 
-The input to a Fold Blocks model is a mini-batch of python objects. These
+The input to a Fold model is a mini-batch of Python objects. These
 objects may be produced by deserializing a protocol buffer, JSON, XML, or a
 custom parser of some kind.  The input objects are assumed to be
 tree-structured.  The output of a Fold model is a set of TensorFlow tensors,
@@ -80,7 +80,7 @@ The following sections explain these operations in more detail.
 The basic component of a Fold model is the `Block`.  A block is
 essentially a function -- it takes an object as input, and produces another
 object as output.  The objects in question may be tensors, but they may also
-be tuples, lists, python dictionaries, or combinations thereof.  The
+be tuples, lists, Python dictionaries, or combinations thereof.  The
 [types](types.md) page describes the Fold type system in more detail.
 
 Blocks are organized hierarchically into a tree, much like expressions in a
@@ -88,18 +88,18 @@ programming language, where larger and more complex blocks are composed from
 smaller, simpler blocks.  Note that the block structure must be a tree, not
 a DAG.  In other words, each block (i.e. each instance of one of the block
 classes below) must have a unique position in the tree.  The type-checking
-and compilation steps depend on tree property.
+and [compilation steps](running.md) depend on tree property.
 
 ## Primitive blocks
 
 Primitive blocks form the leaves of the block hierarchy, and are responsible for
 basic computations on tensors.
 
-### Converting python objects into tensors.
+### Converting Python objects into tensors.
 
-A `td.Scalar()` block converts a python scalar to a 0-rank tensor.
+A `td.Scalar()` block converts a Python scalar to a 0-rank tensor.
 
-A `td.Vector(shape)` block converts a python list into a tensor of the given
+A `td.Vector(shape)` block converts a Python list into a tensor of the given
 shape.
 
 ### Using TensorFlow tensors.
@@ -127,7 +127,7 @@ sum) as output.
 
 Function blocks can be used in conjuction with *Layers* to perform typical
 neural network computations, such as fully-connected layers and embeddings.
-A `Layer` is a callable python object that implements weight sharing between
+A `Layer` is a callable Python object that implements weight sharing between
 different instances of the layer.
 
 In the example below, `ffnet` is a three-layer feed forward-network, where
@@ -145,9 +145,9 @@ The `>>` operator denotes [function composition](#composition).
 
 ### Python operations
 
-The `InputTransform` block wraps an arbitrary python function into a block.
-It takes a python object as input, and returns a python object as output.
-For example, the following block converts a python string to a list of
+The `InputTransform` block wraps an arbitrary Python function into a block.
+It takes a Python object as input, and returns a Python object as output.
+For example, the following block converts a Python string to a list of
 floats.
 
 ```python
@@ -155,9 +155,9 @@ td.InputTransform(lambda s: [ord(c)/255.0 for c in s])
 ```
 
 As its name suggests, InputTransform is primarily used to preprocess the
-input data in python before passing it to TensorFlow.  Once data has reached
+input data in Python before passing it to TensorFlow.  Once data has reached
 the TensorFlow portion of the pipeline, it is no longer possible to run
-arbitrary python code on the data, and Fold will produce a type error
+arbitrary Python code on the data, and Fold will produce a type error
 on any such attempt.
 
 ## Block composition
@@ -179,10 +179,10 @@ string into a list of floats, converts the list into a tensor, and runs the
 tensor through two fully connected layers.
 
 ```python
-mnist_model = (td.InputTransform(lambda s: [ord(c) / 255.0 for c in s])
-               >> td.Vector(784)             # convert python list to tensor
-               >> td.Function(td.FC(100))    # layer 1, 100 hidden units
-               >> td.Function(td.FC(100)))   # layer 2, 100 hidden units
+mnist_model = (td.InputTransform(lambda s: [ord(c) / 255.0 for c in s]) >>
+               td.Vector(784) >>             # convert python list to tensor
+               td.Function(td.FC(100)) >>    # layer 1, 100 hidden units
+               td.Function(td.FC(100)))      # layer 2, 100 hidden units
 ```
 
 <a name="sequences"></a>
@@ -259,7 +259,7 @@ to a manageable length using `td.InputTransform`.
 ### Dealing with records
 
 A record is a set of named fields, each of which may have a different type,
-such as a python dictionary, or protobuf message.  A `Record` block takes a
+such as a Python dictionary, or protobuf message.  A `Record` block takes a
 record as input, applies a child block to each field, and combines the results
 into a tuple, which it produces as output.  The output tuple can be passed to
 `td.Concat()` to get an output vector.
@@ -279,8 +279,8 @@ three results together and passes them through a fully-connected layer.
 rec = (td.Record([('id', td.Scalar('int32') >>
                          td.Function(td.Embedding(num_ids, embed_len))),
                   ('name', char_rnn),
-                  ('location', td.Vector(2))])
-       >> td.Concat() >> td.Function(td.FC(128)))
+                  ('location', td.Vector(2))]) >>
+       td.Concat() >> td.Function(td.FC(128)))
 ```
 
 The fully-connected layer has 128 hidden units, and thus outputs a vector of
@@ -344,11 +344,11 @@ expressions:
 # the expr block processes objects of the form:
 # expr_type ::=  {'op': 'lit', 'val': <float>}
 #             |  {'op': 'add', 'left': <expr_type>, 'right': <expr_type>}
-expr_fwd = pvb.ForwardDeclaration(pvt.PyObjectType(), pvt.Scalar())
-lit_case = pvb.GetItem('val') >> pvb.Scalar()
-add_case = (pvb.Record({'left': expr_fwd(), 'right': expr_fwd()})
-            >> pvb.Function(tf.add))
-expr = pvb.OneOf(lambda x: x['op'], {'lit': lit_case, 'add': add_case})
+expr_fwd = td.ForwardDeclaration(pvt.PyObjectType(), pvt.Scalar())
+lit_case = td.GetItem('val') >> td.Scalar()
+add_case = (td.Record({'left': expr_fwd(), 'right': expr_fwd()}) >>
+            td.Function(tf.add))
+expr = td.OneOf(lambda x: x['op'], {'lit': lit_case, 'add': add_case})
 expr_fwd.resolve_to(expr)
 ```
 

@@ -122,12 +122,12 @@ bool VerifyLoomMetadata(const LoomMetadata &metadata, string *error_string);
 /// definition of `WeaverMessage`.)
 class Weaver {
  public:
-  ///   serialized_loom_metadata: A serialized LoomMetatdata proto.  See
+  ///   `serialized_loom_metadata`: A serialized `LoomMetatdata` proto.  See
   ///   loom.proto for details.
   ///
   /// Sets a non-empty error string if either the metadata fails to
-  /// deserialize to a LoomMetadata proto, or the LoomMetadata is invalid
-  /// according to VerifyLoomMetadata.
+  /// deserialize to a `LoomMetadata` proto, or the `LoomMetadata` is invalid
+  /// according to `VerifyLoomMetadata`.
   ///
   /// The caller must check for a status after constructing the Weaver before
   /// using it for anything.
@@ -147,19 +147,19 @@ class Weaver {
   tensorflow::Tensor BatchConstantValues(tensor_idx_t ts_idx) const;
 
   /// Serializes this Weaver into a string (a serialized
-  /// WeaverMessage.)
+  /// `WeaverMessage`.)
   ///
   /// Returns the empty string and sets an error string if serialization fails.
   string Serialize() const;
 
-  /// Overwrites this Weaver from the string (a serialized WeaverMessage.)
+  /// Overwrites this Weaver from the string (a serialized `WeaverMessage`.)
   ///
   /// Returns true unless an error occurs during deserialization.  If an error
   /// occurs, returns false and sets the error string.  In the event an error
   /// occurs, no guarantees are made about the Weaver's future behavior.
   ///
   /// WARNING: does almost no checking as to whether the contents of
-  /// serialized_weaver are valid.
+  /// `serialized_weaver` are valid.
   bool Deserialize(const string &serialized_weaver);
 
   /// Returns the maximum depth of this scheduler.
@@ -213,13 +213,13 @@ class Weaver {
   /// Returns -1 and sets the error string if either `ts_idx` or
   /// `named_tensor_idx` is invalid.
   ///
-  /// Note: Repeated calls to GetNamedTensor can bloat the schedule with copies
-  /// of the tensor.  Writers of C++ Weaver Ops should call GetNamedTensor once
-  /// for each Named Tensor they wish to use.
+  /// Note: Repeated calls to `GetNamedTensor` can bloat the schedule
+  /// with copies of the tensor.  Writers of C++ Weaver Ops should
+  /// call `GetNamedTensor` once for each named tensor they wish to use.
   tensor_idx_t GetNamedTensor(
       tensor_idx_t ts_idx, tensor_idx_t named_tensor_idx);
 
-  /// MakeConstantSerialized creates a new result ID representing an input
+  /// `MakeConstantSerialized` creates a new result ID representing an input
   /// value of TypeShape `ts_idx` using the serialized contents of
   /// `tensor_bytes`.  (It's the Weaver's responsibility to hold the value)
   ///
@@ -228,7 +228,7 @@ class Weaver {
   tensor_idx_t MakeConstantSerialized(
       tensor_idx_t ts_idx, const string &tensor_bytes);
 
-  /// MakeConstant creates a new result ID representing an input
+  /// `MakeConstant` creates a new result ID representing an input
   /// value of TypeShape `ts_idx`  using the serialized contents of
   /// `tensor_proto`.  (It's the Weaver's responsibility to hold the value)
   ///
@@ -237,7 +237,7 @@ class Weaver {
   tensor_idx_t MakeConstant(
       tensor_idx_t ts_idx, const tensorflow::TensorProto &tensor_proto);
 
-  /// MakeConstant creates a new result ID representing an input
+  /// `MakeConstant` creates a new result ID representing an input
   /// value of TypeShape `ts_idx`  using the serialized contents of
   /// `tensor`.  (It's the Weaver's responsibility to hold the value)
   ///
@@ -246,14 +246,14 @@ class Weaver {
   tensor_idx_t MakeConstant(
       tensor_idx_t ts_idx, const tensorflow::Tensor &tensor);
 
-  /// BatchInput creates a new result ID representing the `batch_idx`th row of
+  /// `BatchInput` creates a new result ID representing the `batch_idx`th row of
   /// the batch input tensor for TypeShape `ts_idx` (a single batch tensor
   /// provided to the loom on construction.)
   ///
   /// Returns -1 and sets the error string if `ts_idx` is invalid or if that
   /// TypeShape is not in batch-mode.
   ///
-  /// Runs with no errors if batch_idx is out of range (that will result in a
+  /// Runs with no errors if `batch_idx` is out of range (that will result in a
   /// gather error when the loom is run; this is because the weaver doesn't know
   /// how large the batch will be.)
   tensor_idx_t BatchInput(tensor_idx_t ts_idx, tensor_idx_t batch_idx);
@@ -282,7 +282,7 @@ class Weaver {
   ///
   /// WARNING: does not check whether `other` has the same set of loom ops, same
   /// set of type-shapes, etc.  Unpredictable behavior may ensue if you call
-  /// MergeFromSerialized with a serialized scheduler with a different op set.
+  /// `MergeFromSerialized` with a serialized scheduler with a different op set.
   bool MergeFromSerialized(const string &other);
 
   /// Compiles this graph into a wiring diagram which can be accessed using

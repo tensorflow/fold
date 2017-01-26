@@ -72,7 +72,7 @@ def create_variable_scope(name):
   """Creates a new variable scope based on `name`, nested in the current scope.
 
   If `name` ends with a `/` then the new scope will be created exactly as if
-  you called `tf.variable_scope(name)`.  Otherwise, the name will be
+  you called `tf.variable_scope(name)`.  Otherwise, `name` will be
   made globally unique, in the context of the current graph (e.g.
   `foo` will become `foo_1` if a `foo` variable scope already exists).
 
@@ -216,7 +216,7 @@ class FC(TensorToTensorLayer):
         to name the variable scope where the variables for the layer live.
     """
     if not initializer:
-      # TODO(eisenstat): This constant is calibrated for ReLU, something else
+      # TODO(SamEisenstat): This constant is calibrated for ReLU, something else
       # might be better for ReLU6.
       if activation in [tf.nn.relu, tf.nn.relu6]:
         initializer = tf.uniform_unit_scaling_initializer(1.43)
@@ -369,7 +369,6 @@ class FractalNet(TensorToTensorLayer):
   _JUST_BASE = 1
   _JUST_RECURSE = 2
 
-  # TODO(mherreshoff): Add support for the DropPath regularizer.
   def __init__(self, num_fractal_blocks, fractal_block_depth,
                base_layer_builder, mixer=None, drop_path=False,
                p_local_drop_path=0.5, p_drop_base_case=0.25,

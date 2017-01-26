@@ -1397,10 +1397,39 @@ with y.scope():
   y.output.reads(prediction)
 ```
 
-The input type of the block must be a tensor, or a (tensor, pyboject) tuple.
-The output type is always void. In the tuple input case, the second item of
-the tuple becomes a label for the tensor value, which can be used to identify
-where the value came from in a nested data structure and/or batch of inputs.
+The input type of the block must be a `TensorType`, or a
+`(TensorType, PyObjectType)` tuple.
+The output type is always `VoidType`. In the tuple input case, the
+second item of the tuple becomes a label for the tensor value, which
+can be used to identify where the value came from in a nested data
+structure and/or batch of inputs.
+
+For example:
+
+```python
+sess = tf.InteractiveSession()
+# We pipe Map() to Void() because blocks with sequence output types
+# cannot be compiled.
+block = td.Map(td.Scalar() >> td.Metric('foo')) >> td.Void()
+compiler = td.Compiler.create(block)
+sess.run(compiler.metric_tensors['foo'],
+         compiler.build_feed_dict([range(3), range(4)])) =>
+  array([ 0.,  1.,  2.,  0.,  1.,  2.,  3.], dtype=float32)
+```
+
+Or with labels:
+
+```python
+sess = tf.InteractiveSession()
+block = td.Map((td.Scalar(), td.Identity()) >> td.Metric('bar')) >> td.Void()
+compiler = td.Compiler.create(block)
+feed_dict, metric_labels = compiler.build_feed_dict(
+    [[(0, 'zero'), (1, 'one')], [(2, 'two')]],
+    metric_labels=True)
+metric_labels  =>  {'bar': ['zero', 'one', 'two']}
+sess.run(compiler.metric_tensors['bar'], feed_dict)  =>
+    array([ 0.,  1.,  2.], dtype=float32)
+```
 - - -
 
 <a name="td.Metric.__init__"></a>
@@ -2571,7 +2600,7 @@ creates a MomentumOptimizer with momentum 0.9 and learning rate 1e-3.
 Creates a new variable scope based on `name`, nested in the current scope.
 
 If `name` ends with a `/` then the new scope will be created exactly as if
-you called `tf.variable_scope(name)`.  Otherwise, the name will be
+you called `tf.variable_scope(name)`.  Otherwise, `name` will be
 made globally unique, in the context of the current graph (e.g.
 `foo` will become `foo_1` if a `foo` variable scope already exists).
 

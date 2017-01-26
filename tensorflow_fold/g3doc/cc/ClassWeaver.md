@@ -25,9 +25,9 @@ Weaver also supports serialization and deserialization to `WeaverMessage` via `W
 
 
 
-serialized_loom_metadata: A serialized LoomMetatdata proto. See loom.proto for details.
+`serialized_loom_metadata`: A serialized `LoomMetatdata` proto. See loom.proto for details.
 
-Sets a non-empty error string if either the metadata fails to deserialize to a LoomMetadata proto, or the LoomMetadata is invalid according to VerifyLoomMetadata.
+Sets a non-empty error string if either the metadata fails to deserialize to a `LoomMetadata` proto, or the `LoomMetadata` is invalid according to `VerifyLoomMetadata`.
 
 The caller must check for a status after constructing the Weaver before using it for anything.
 
@@ -57,7 +57,7 @@ Returns an N-dimensional array containing the constant values for the given type
 
 
 
-Serializes this Weaver into a string (a serialized WeaverMessage.)
+Serializes this Weaver into a string (a serialized `WeaverMessage`.)
 
 Returns the empty string and sets an error string if serialization fails.
 
@@ -66,11 +66,11 @@ Returns the empty string and sets an error string if serialization fails.
 
 
 
-Overwrites this Weaver from the string (a serialized WeaverMessage.)
+Overwrites this Weaver from the string (a serialized `WeaverMessage`.)
 
 Returns true unless an error occurs during deserialization. If an error occurs, returns false and sets the error string. In the event an error occurs, no guarantees are made about the Weaver &apos;s future behavior.
 
-WARNING: does almost no checking as to whether the contents of serialized_weaver are valid.
+WARNING: does almost no checking as to whether the contents of `serialized_weaver` are valid.
 
 <a name="tensor_idx_t_tensorflow_fold_Weaver_MaxDepth"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::MaxDepth() const`
@@ -146,14 +146,14 @@ Returns -1 if `result_id` is invalid.
 
 Creates a result ID refering to the `named_tensor_idx`th NamedTensor with TypeShape `ts_idx` (these were passed to the Loom when it was constructed.) Returns -1 and sets the error string if either `ts_idx` or `named_tensor_idx` is invalid.
 
-Note: Repeated calls to GetNamedTensor can bloat the schedule with copies of the tensor. Writers of C++ Weaver Ops should call GetNamedTensor once for each Named Tensor they wish to use.
+Note: Repeated calls to `GetNamedTensor` can bloat the schedule with copies of the tensor. Writers of C++ Weaver Ops should call `GetNamedTensor` once for each named tensor they wish to use.
 
 <a name="tensor_idx_t_tensorflow_fold_Weaver_MakeConstantSerialized"></a>
 #### `tensor_idx_t tensorflow::fold::Weaver::MakeConstantSerialized(tensor_idx_t ts_idx, const string &tensor_bytes)`
 
 
 
-MakeConstantSerialized creates a new result ID representing an input value of TypeShape `ts_idx` using the serialized contents of `tensor_bytes`. (It&apos;s the Weaver &apos;s responsibility to hold the value)
+`MakeConstantSerialized` creates a new result ID representing an input value of TypeShape `ts_idx` using the serialized contents of `tensor_bytes`. (It&apos;s the Weaver &apos;s responsibility to hold the value)
 
 Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape is in batch-mode or if the value to be set is invalid.
 
@@ -162,7 +162,7 @@ Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape
 
 
 
-MakeConstant creates a new result ID representing an input value of TypeShape `ts_idx` using the serialized contents of `tensor_proto`. (It&apos;s the Weaver &apos;s responsibility to hold the value)
+`MakeConstant` creates a new result ID representing an input value of TypeShape `ts_idx` using the serialized contents of `tensor_proto`. (It&apos;s the Weaver &apos;s responsibility to hold the value)
 
 Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape is in batch-mode or if the value to be set is invalid.
 
@@ -171,7 +171,7 @@ Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape
 
 
 
-MakeConstant creates a new result ID representing an input value of TypeShape `ts_idx` using the serialized contents of `tensor`. (It&apos;s the Weaver &apos;s responsibility to hold the value)
+`MakeConstant` creates a new result ID representing an input value of TypeShape `ts_idx` using the serialized contents of `tensor`. (It&apos;s the Weaver &apos;s responsibility to hold the value)
 
 Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape is in batch-mode or if the value to be set is invalid.
 
@@ -180,11 +180,11 @@ Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape
 
 
 
-BatchInput creates a new result ID representing the `batch_idx`th row of the batch input tensor for TypeShape `ts_idx` (a single batch tensor provided to the loom on construction.)
+`BatchInput` creates a new result ID representing the `batch_idx`th row of the batch input tensor for TypeShape `ts_idx` (a single batch tensor provided to the loom on construction.)
 
 Returns -1 and sets the error string if `ts_idx` is invalid or if that TypeShape is not in batch-mode.
 
-Runs with no errors if batch_idx is out of range (that will result in a gather error when the loom is run; this is because the weaver doesn&apos;t know how large the batch will be.)
+Runs with no errors if `batch_idx` is out of range (that will result in a gather error when the loom is run; this is because the weaver doesn&apos;t know how large the batch will be.)
 
 <a name="std_vector_tensor_idx_t_tensorflow_fold_Weaver_CallOp"></a>
 #### `std::vector< tensor_idx_t > tensorflow::fold::Weaver::CallOp(tensor_idx_t op_idx, const std::vector< tensor_idx_t > &args)`
@@ -217,7 +217,7 @@ Merges the wiring and set outputs from `other` into this Weaver .
 
 May return false and set the error string in some cases in which the merge is impossible.
 
-WARNING: does not check whether `other` has the same set of loom ops, same set of type-shapes, etc. Unpredictable behavior may ensue if you call MergeFromSerialized with a serialized scheduler with a different op set.
+WARNING: does not check whether `other` has the same set of loom ops, same set of type-shapes, etc. Unpredictable behavior may ensue if you call `MergeFromSerialized` with a serialized scheduler with a different op set.
 
 <a name="void_tensorflow_fold_Weaver_Finalize"></a>
 #### `void tensorflow::fold::Weaver::Finalize()`

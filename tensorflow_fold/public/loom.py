@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""TODO(mherreshoff): Add some docs for loom here."""
+"""Public entry-point for loom; see ../loom/loom.py for details."""
 
 # pylint: disable=wildcard-import, unused-import
 from tensorflow_fold.loom.loom import *

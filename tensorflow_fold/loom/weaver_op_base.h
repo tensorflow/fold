@@ -48,26 +48,37 @@ namespace fold {
         return tensorflow::Status::OK();                                     \
       })
 
-/// WeaverOpBase is a base class for writing TensorFlow ops kernels that
+/// `WeaverOpBase` is a base class for writing TensorFlow ops kernels that
 /// schedule ops for Loom.
 ///
-/// Operations created as subclasses of WeaverOpBase should be registered with
-/// the REGISTER_WEAVER_OP macro.  For example, DeserializingWeaverOp is
+/// Operations created as subclasses of `WeaverOpBase` should be registered with
+/// the `REGISTER_WEAVER_OP` macro.  For example, `DeserializingWeaverOp` is
 /// registered using:
 ///
-/// REGISTER_WEAVER_OP("DeserializingWeaver")
-///   .Input("weaver_messages: string");
+/*! \verbatim
+```c++
+REGISTER_WEAVER_OP("DeserializingWeaver").Input("weaver_messages: string");
+```
+\endverbatim
+*/
+///
 ///
 /// And
 ///
-/// REGISTER_KERNEL_BUILDER(
-///      Name("DeserializingWeaver").Device(tensorflow::DEVICE_CPU),
-///      DeserializingWeaverOp);
+/*! \verbatim
+```c++
+REGISTER_KERNEL_BUILDER(
+    Name("DeserializingWeaver").Device(tensorflow::DEVICE_CPU),
+    DeserializingWeaverOp);
+```
+\endverbatim
+*/
 
 class WeaverOpBase : public tensorflow::OpKernel {
  public:
-  /// Reads the metadata, constant_types, and num_types_shapes attributes and
-  /// makes sure they're consistent.  Dies if they're not.
+  /// Reads the `metadata`, `constant_types`, and `num_types_shapes`
+  /// attributes and makes sure they're consistent.  Dies if they're
+  /// not.
   explicit WeaverOpBase(tensorflow::OpKernelConstruction* c);
 
   /// Weave is a virtual method, to be subclassed. Weave's responsibility is to
@@ -76,7 +87,7 @@ class WeaverOpBase : public tensorflow::OpKernel {
   virtual tensorflow::Status Weave(
       tensorflow::OpKernelContext *c, Weaver *weaver) = 0;
 
-  /// Dispatches to Weave to build a Weaver, which is then used to build
+  /// Dispatches to `Weave` to build a `Weaver`, which is then used to build
   /// the wiring diagram and constant tensors that the loom needs.
   void Compute(tensorflow::OpKernelContext *c) override;
 

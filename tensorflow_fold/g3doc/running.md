@@ -13,16 +13,14 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-A model define with the high-level TensorFlow Fold API is a single  [Block](blocks.md)
-
-A Fold model is a single large block definition that converts an
-input data structure of some kind to a tensor or tuple of
-tensors. There are a number of ways to accomplish this, depending on
-the use-case.
+A model defined with the high-level TensorFlow Fold API is a
+single [Block](py/td.md/#td.Block) object that converts an input data structure
+of some kind to a tensor or tuple of tensors. There are a number of ways to
+accomplish this, depending on the use-case.
 
 ## Evaluating individual inputs
 
-The simplest way to run a block is to [`eval`](#td.Block.eval)
+The simplest way to run a block is to [`eval`](py/td.md#td.Block.eval)
 individual inputs interactively from a REPL.
 
 For example:
@@ -51,9 +49,9 @@ td.Map(td.Scalar() >> td.Function(tf.square)).eval(xrange(5))
      array(16.0, dtype=float32)]
 ```
 
-Such blocks cannot be compiled and run on batches of inputs, because
-TensorFlow does not support ragged-edged tensors. However, see
-[metrics](#metrics) for a Fold mechanism that supports batched
+Such blocks cannot be compiled and run on batches of inputs, because TensorFlow
+does not support ragged-edged tensors. Fold does however provide
+the [Metric](py/td.md#td.Metric) block, which supports batched
 outputs that vary in size on a per-example basis.
 
 ## Batching inputs
@@ -101,7 +99,7 @@ The overall structure of a running model uses the following outline:
 ### Scenario 1: Feeding with in-memory data
 
 If your dataset is small enough to fit in memory, we recommend building
-loom inputs once and keeping them around. The canonical Fold
+loom inputs once and keeping them around. A simple Fold
 training loop for small datasets is as follows:
 
 ```python

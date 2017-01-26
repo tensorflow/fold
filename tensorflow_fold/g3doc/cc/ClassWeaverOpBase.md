@@ -4,15 +4,21 @@
 
 
 
-WeaverOpBase is a base class for writing TensorFlow ops kernels that schedule ops for Loom.
+` WeaverOpBase ` is a base class for writing TensorFlow ops kernels that schedule ops for Loom.
 
-Operations created as subclasses of WeaverOpBase should be registered with the REGISTER_WEAVER_OP macro. For example, DeserializingWeaverOp is registered using:
+Operations created as subclasses of ` WeaverOpBase ` should be registered with the `REGISTER_WEAVER_OP` macro. For example, ` DeserializingWeaverOp ` is registered using:
 
-REGISTER_WEAVER_OP("DeserializingWeaver") .Input("weaver_messages: string");
+```c++
+REGISTER_WEAVER_OP("DeserializingWeaver").Input("weaver_messages: string");
+```
 
 And
 
-REGISTER_KERNEL_BUILDER( Name("DeserializingWeaver").Device(tensorflow::DEVICE_CPU), DeserializingWeaverOp );
+```c++
+REGISTER_KERNEL_BUILDER(
+    Name("DeserializingWeaver").Device(tensorflow::DEVICE_CPU),
+    DeserializingWeaverOp);
+```
 
 ###Member Details
 
@@ -21,7 +27,7 @@ REGISTER_KERNEL_BUILDER( Name("DeserializingWeaver").Device(tensorflow::DEVICE_C
 
 
 
-Reads the metadata, constant_types, and num_types_shapes attributes and makes sure they&apos;re consistent. Dies if they&apos;re not.
+Reads the `metadata`, `constant_types`, and `num_types_shapes` attributes and makes sure they&apos;re consistent. Dies if they&apos;re not.
 
 <a name="virtual_tensorflow_Status_tensorflow_fold_WeaverOpBase_Weave"></a>
 #### `virtual tensorflow::Status tensorflow::fold::WeaverOpBase::Weave(tensorflow::OpKernelContext *c, Weaver *weaver)=0`
@@ -35,4 +41,4 @@ Weave is a virtual method, to be subclassed. Weave&apos;s responsibility is to r
 
 
 
-Dispatches to Weave to build a Weaver , which is then used to build the wiring diagram and constant tensors that the loom needs.
+Dispatches to `Weave` to build a ` Weaver `, which is then used to build the wiring diagram and constant tensors that the loom needs.
