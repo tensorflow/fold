@@ -113,7 +113,11 @@ if '--project_name' in sys.argv:
   sys.argv.pop(project_name_idx)
 
 REQUIRED_PACKAGES = [
-    'tensorflow >= 0.12.0',
+    'tensorflow >= 1.0.0',
+    'numpy >= 1.11.0',
+    'six >= 1.10.0',
+    'protobuf >= 3.1.0',
+    'nltk >= 3.0.0',
 ]
 
 TEST_PACKAGES = [
@@ -125,7 +129,8 @@ if sys.version_info.major == 3:
 else:
   REQUIRED_PACKAGES.append('wheel')
   # mock comes with unittest.mock for python3, need to install for python2
-  TEST_PACKAGES.append('mock >= 2.0.0')
+  REQUIRED_PACKAGES.append('mock >= 2.0.0')
+
 
 setup(
     name=project_name,
