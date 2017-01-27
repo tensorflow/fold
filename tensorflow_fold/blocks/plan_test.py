@@ -586,7 +586,7 @@ class EvalPlanTest(PlanTestBase):
     tf.get_variable('global_step', [], tf.int32, tf.constant_initializer(42))
     p = self._make_plan()
     p.eval_interval_secs = 0.01
-    p.should_stop = mock.Mock(side_effect=[False, True])
+    p.should_stop = mock.Mock(side_effect=[False, False, True])
     # We aren't using a managed session, so we need to run this ourselves.
     init_op = tf.global_variables_initializer()
     sv = p.create_supervisor()
@@ -611,7 +611,7 @@ class EvalPlanTest(PlanTestBase):
       expected = '\n'.join(expected_lines) + '\n'
       self.assertTrue(log_str.endswith(expected), msg=log_str)
 
-      p.should_stop = mock.Mock(side_effect=[False, True])
+      p.should_stop = mock.Mock(side_effect=[False, False, True])
       p.examples = [4]
       p.print_file = six.StringIO()
       p.save_best = False

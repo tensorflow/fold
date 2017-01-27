@@ -213,7 +213,7 @@ class BinaryTreeLSTMCell(tf.contrib.rnn.BasicLSTMCell):
       c0, h0 = lhs
       c1, h1 = rhs
       concat = tf.contrib.layers.linear(
-          tf.concat_v2([inputs, h0, h1], 1), 5 * self._num_units)
+          tf.concat([inputs, h0, h1], 1), 5 * self._num_units)
 
       # i = input_gate, j = new_input, f = forget_gate, o = output_gate
       i, j, f0, f1, o = tf.split(value=concat, num_or_size_splits=5, axis=1)

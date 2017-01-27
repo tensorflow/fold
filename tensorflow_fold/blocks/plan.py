@@ -641,6 +641,60 @@ class Plan(object):
       save_fname = saver.save(session, save_path, global_step=step)
       self.log_and_print('new best model saved in file: %s' % save_fname)
 
+  def _eval_batches(self, supervisor, session, batches, step, is_dev=False):
+    """Runs a batchwise eval.
+
+    Args:
+      supervisor: A TF supervisor.
+      session: A TF session.
+      batches: An iterable of (batch_size, feed_dict) pairs.
+      step: The current global step.
+      is_dev: Whether or not we are running on the dev set. If so we never
+        compute summaries (because they would overwrite summaries from the
+        training set).
+
+    Returns:
+      A (size, loss_total, metrics) tuple, or (None, None, None) if should_stop
+      return True before the eval was completed.
+
+    Raises:
+      ValueError: if batches is empty.
+    """
+    compute_summaries = self.compute_summaries and not is_dev
+    size = 0
+    metrics = collections.OrderedDict.fromkeys(self.metrics, 0.0)
+    loss = 0.0
+    fetches = {'metrics': self.metrics, 'loss': self.loss_total}
+    if compute_summaries:
+      fetches['summaries'] = self.summaries
+      summary_pb = tf.Summary()
+      tag_value = {}
+    for batch_size, feed_dict in batches:
+      size += batch_size
+      if compute_summaries:
+        feed_dict[self.batch_size_placeholder] = batch_size
+      if self._should_stop(supervisor): return None, None, None
+      results = session.run(fetches, feed_dict)
+      for name, value in six.iteritems(results['metrics']):
+        metrics[name] += value * batch_size
+      loss += results['loss']
+      if compute_summaries:
+        for value in tf.Summary.FromString(results['summaries']).value:
+          if value.HasField('simple_value'):
+            if value.tag not in tag_value:
+              tag_value[value.tag] = summary_pb.value.add(tag=value.tag)
+            tag_value[value.tag].simple_value += value.simple_value * batch_size
+    if size == 0:
+      raise ValueError('dev_examples must be non-empty' if is_dev else
+                       'examples must be non-empty')
+    for name in six.iterkeys(metrics):
+      metrics[name] /= size
+    if compute_summaries:
+      for name in six.iterkeys(tag_value):
+        tag_value[name].simple_value /= size
+      supervisor.SummaryComputed(session, summary_pb, global_step=step)
+    return size, loss, metrics
+
 
 class TrainPlan(Plan):
   """Plan class for training.
@@ -849,10 +903,11 @@ class TrainPlan(Plan):
     else:
       epochs, train_size = self._by_input_tensor(train_feed_dict)
     if self.dev_examples:
-      dev_examples, dev_size = _lazy_length(self.dev_examples)
-      dev_feed_dict = self.compiler.build_feed_dict(dev_examples)
-      dev_fetches = {'loss': self.loss_total, 'metrics': self.metrics,
-                     'step': self.global_step}
+      # Memoize a generator of batches of (size, feed_dict) pairs.
+      gen_dev_batches = util.epochs(
+          ((len(batch), self.compiler.build_feed_dict(batch))
+           for batch in util.group_by_batches(
+               self.dev_examples, self.batch_size)), shuffle=False)
 
     for epoch, batches in enumerate(epochs, 1):
       train_loss = 0.0
@@ -875,13 +930,15 @@ class TrainPlan(Plan):
       self.report_loss(results['step'], train_loss)
       log_str = 'epoch:%5d train[loss: %.3e]' % (epoch, train_loss)
       if self.dev_examples:
-        results = session.run(dev_fetches, dev_feed_dict)
+        dev_size, dev_loss, dev_metrics = self._eval_batches(
+            supervisor, session, next(gen_dev_batches), results['step'],
+            is_dev=True)
+        if dev_size is None: return  # should_stop returned true
         if epoch == 1: self.log_and_print('train_size: %d dev_size: %d' %
                                           (train_size, dev_size))
-        log_str += ' dev[%s]' % _eval_str(dev_size, **results)
+        log_str += ' dev[%s]' % _eval_str(dev_size, dev_loss, dev_metrics)
         self.log_and_print(log_str)
-        self._save_best(session, supervisor.saver,
-                        results['loss'], results['step'])
+        self._save_best(session, supervisor.saver, dev_loss, results['step'])
       else:
         if epoch == 1: self.log_and_print('train_size: %d' % train_size)
         self.log_and_print(log_str)
@@ -979,50 +1036,25 @@ class EvalPlan(_StreamingPlan):
           step = tf.train.global_step(session, self.global_step)
           if step > max_reported_step:
             max_reported_step = step
-            self._do_eval(supervisor, session, next(gen_batches), step)
+            results = self._eval_batches(
+                supervisor, session, next(gen_batches), step)
+            if results[0] is None: break  # should_stop returned true
+            self._report_loss_and_save_best(supervisor, session, step, *results)
           else:
             self.log_and_print('not running eval because step=%s' % step)
         sleep_time = self.eval_interval_secs - (time.time() - start_time)
         if sleep_time > 0: time.sleep(sleep_time)
     elif self._restore(supervisor, session):
-      self._do_eval(supervisor, session, batches,
-                    tf.train.global_step(session, self.global_step))
+      step = tf.train.global_step(session, self.global_step)
+      results = self._eval_batches(supervisor, session, batches, step)
+      if results[0] is not None:
+        self._report_loss_and_save_best(supervisor, session, step, *results)
     self.report_done()
 
-  def _do_eval(self, supervisor, session, batches, step):
-    """Runs a single eval over `batches`."""
-    size = 0
-    metrics = collections.OrderedDict.fromkeys(self.metrics, 0.0)
-    loss = 0.0
-    fetches = {'metrics': self.metrics, 'loss': self.loss_total}
-    if self.compute_summaries:
-      fetches['summaries'] = self.summaries
-      summary_pb = tf.Summary()
-      tag_value = {}
-    for batch_size, feed_dict in batches:
-      size += batch_size
-      if self.compute_summaries:
-        feed_dict[self.batch_size_placeholder] = batch_size
-      results = session.run(fetches, feed_dict)
-      for name, value in six.iteritems(results['metrics']):
-        metrics[name] += value * batch_size
-      loss += results['loss']
-      if self.compute_summaries:
-        for value in tf.Summary.FromString(results['summaries']).value:
-          if value.HasField('simple_value'):
-            if value.tag not in tag_value:
-              tag_value[value.tag] = summary_pb.value.add(tag=value.tag)
-            tag_value[value.tag].simple_value += value.simple_value * batch_size
-    if size == 0: raise ValueError('examples must be non-empty')
-    for name in six.iterkeys(metrics):
-      metrics[name] /= size
+  def _report_loss_and_save_best(self, supervisor, session, step,
+                                 size, loss, metrics):
     self.log_and_print('step:%8d %s' % (step, _eval_str(size, loss, metrics)))
-    loss /= size
-    self.report_loss(step, loss)
-    if self.compute_summaries:
-      for name in six.iterkeys(tag_value):
-        tag_value[name].simple_value /= size
-      supervisor.SummaryComputed(session, summary_pb, global_step=step)
+    self.report_loss(step, loss / size)
     if self.save_best: self._save_best(session, supervisor.saver, loss, step)
 
   def _restore(self, supervisor, session):
@@ -1127,7 +1159,7 @@ def _format_items(items):
     last_large_output = large_output
 
 
-def _eval_str(eval_size, loss, metrics, **_):
+def _eval_str(eval_size, loss, metrics):
   items = [('loss', loss / eval_size)]
   items.extend(metrics.items())
   return ''.join(_format_items(items))

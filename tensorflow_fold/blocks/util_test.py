@@ -38,7 +38,7 @@ class UtilTest(test_lib.TestCase):
       self.assertEqual(b'foo', sess.run(x[0], {x: i}))
       self.assertEqual(b'bar', sess.run(x[1], {x: i}))
       self.assertEqual([b'foo', b'bar', b'foo', b'bar'],
-                       sess.run(tf.concat_v2([x, x], 0), {x: i}).tolist())
+                       sess.run(tf.concat([x, x], 0), {x: i}).tolist())
 
   def test_edible_iterator_empty(self):
     with self.test_session() as sess:
@@ -46,7 +46,7 @@ class UtilTest(test_lib.TestCase):
       x = tf.placeholder(tf.string)
       self.assertEqual([[]], sess.run(tf.expand_dims(x, 0), {x: i}).tolist())
       self.assertEqual([b'foo'],
-                       sess.run(tf.concat_v2([['foo'], x], 0), {x: i}).tolist())
+                       sess.run(tf.concat([['foo'], x], 0), {x: i}).tolist())
 
   def test_group_by_batches(self):
     self.assertEqual([], list(util.group_by_batches([], 2)))

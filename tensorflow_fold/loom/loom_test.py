@@ -50,7 +50,7 @@ class CatLoomOp(loom.LoomOp):
         [left_type_shape, right_type_shape], [cat_type_shape])
 
   def instantiate_batch(self, inputs):
-    return [tf.concat_v2(inputs, 1)]
+    return [tf.concat(inputs, 1)]
 
 
 def group_values(xs, group_size):

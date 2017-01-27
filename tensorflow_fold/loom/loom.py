@@ -597,7 +597,7 @@ class Loom(object):
       if not named_tensors:
         state.append(inputs_tensor)
       else:
-        state.append(tf.concat_v2([tf.stack(named_tensors), inputs_tensor], 0))
+        state.append(tf.concat([tf.stack(named_tensors), inputs_tensor], 0))
 
     # This block builds up the static graph that consumes Loom's wiring
     # diagrams and emulates the dynamic network.
@@ -746,8 +746,10 @@ class Loom(object):
       # input from any output of any LoomOp (provided it is of the same
       # TypeShape.)
       return [
-          tf.concat_v2(s, 0, name=self._type_shapes[ts_idx].tensor_flow_name())
-          for ts_idx, s in enumerate(new_state_segments)]
+          tf.concat(
+              s, 0, name=self._type_shapes[ts_idx].tensor_flow_name())
+          for ts_idx, s in enumerate(new_state_segments)
+      ]
 
   def output_tensor(self, type_shape):
     """Return the output Tensor for the given TypeShape.

@@ -1668,7 +1668,7 @@ class Concat(Function):
       inputs = list(inputs)
       for i in self._scalar_indices:
         inputs[i] = tf.expand_dims(inputs[i], 1)
-      return tf.concat_v2(inputs, concat_dim + 1)  # first dimension is batch
+      return tf.concat(inputs, concat_dim + 1)  # first dimension is batch
     super(Concat, self).__init__(tf_fn=tf_concat, name=name)
 
   def _repr_kwargs(self):

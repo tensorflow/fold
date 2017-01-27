@@ -46,7 +46,7 @@ class CombineLoomOp(loom.LoomOp):
     self._output_type_shapes = [self._type_shape]
 
   def instantiate_batch(self, inputs):
-    return [tf.nn.relu(tf.matmul(tf.concat_v2(inputs, 1), self._weights))]
+    return [tf.nn.relu(tf.matmul(tf.concat(inputs, 1), self._weights))]
 
 
 class CalculatorLoom(object):
