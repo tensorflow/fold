@@ -17,16 +17,20 @@ import os
 
 # import google3
 import tensorflow as tf
-from tensorflow_fold.util import proto
+from tensorflow_fold.util import proto_tools
 from tensorflow_fold.util import test3_pb2
 from tensorflow_fold.util import test_pb2
 from google.protobuf import text_format
 
 
 # Make sure SerializedMessageToTree can see our proto files.
-proto.MapProtoPath("", os.getcwd())  # Tests run in the bazel root directory.
-proto.ImportProtoFile("tensorflow_fold/util/test.proto")
-proto.ImportProtoFile("tensorflow_fold/util/test3.proto")
+
+proto_tools.map_proto_source_tree_path("", os.getcwd())
+# Note: Tests run in the bazel root directory, which we will use as the root for
+# our source protos.
+
+proto_tools.import_proto_file("tensorflow_fold/util/test.proto")
+proto_tools.import_proto_file("tensorflow_fold/util/test3.proto")
 
 
 def MakeCyclicProto(message_str):
@@ -55,7 +59,7 @@ class ProtoTest(tf.test.TestCase):
         "  >"
         ">"
         "some_enum: THAT")
-    result = proto.SerializedMessageToTree(
+    result = proto_tools.serialized_message_to_tree(
         "tensorflow.fold.CyclicType", example.SerializeToString())
     self.assertEqual(result["some_same"]["many_int32"], [1, 2])
     self.assertEqual(result["some_same"]["some_same"]["many_int32"], [3, 4])
@@ -80,7 +84,7 @@ class ProtoTest(tf.test.TestCase):
         "  >"
         ">"
         "some_enum: THAT")
-    result = proto.SerializedMessageToTree(
+    result = proto_tools.serialized_message_to_tree(
         "tensorflow.fold.CyclicType3", example.SerializeToString())
     self.assertEqual(result["some_same"]["many_int32"], [1, 2])
     self.assertEqual(result["some_same"]["some_same"]["many_int32"], [3, 4])
@@ -95,7 +99,7 @@ class ProtoTest(tf.test.TestCase):
 
   def testSerializedMessageToTreeOneofEmpty(self):
     empty_proto = MakeOneAtomProto("").SerializeToString()
-    empty_result = proto.SerializedMessageToTree(
+    empty_result = proto_tools.serialized_message_to_tree(
         "tensorflow.fold.OneAtom", empty_proto)
     self.assertEqual(empty_result["atom_type"], None)
     self.assertEqual(empty_result["some_int32"], None)
@@ -110,7 +114,7 @@ class ProtoTest(tf.test.TestCase):
 
   def testSerializedMessageToTreeOneof(self):
     empty_proto = MakeOneAtomProto("some_string: \"x\"").SerializeToString()
-    empty_result = proto.SerializedMessageToTree(
+    empty_result = proto_tools.serialized_message_to_tree(
         "tensorflow.fold.OneAtom", empty_proto)
     self.assertEqual(empty_result["atom_type"], "some_string")
     self.assertEqual(empty_result["some_int32"], None)
@@ -129,11 +133,11 @@ class ProtoTest(tf.test.TestCase):
         the_enum=test_pb2.NonConsecutiveEnumMessage.THREE)
     self.assertEqual(
         {"the_enum": {"name": "THREE", "index": 1, "number": 3}},
-        proto.SerializedMessageToTree(name, msg.SerializeToString()))
+        proto_tools.serialized_message_to_tree(name, msg.SerializeToString()))
     msg.the_enum = test_pb2.NonConsecutiveEnumMessage.SEVEN
     self.assertEqual(
         {"the_enum": {"name": "SEVEN", "index": 0, "number": 7}},
-        proto.SerializedMessageToTree(name, msg.SerializeToString()))
+        proto_tools.serialized_message_to_tree(name, msg.SerializeToString()))
 
 
 if __name__ == "__main__":
