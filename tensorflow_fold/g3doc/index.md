@@ -38,3 +38,4 @@ modify the underlying computation graph at run-time.
 * [Python Blocks API](py/td.md)
 * [Python Loom API](py/loom.md)
 * [C++ Weaver API](cc/index.md)
+* [Protocol Buffer Decoding](proto.md)
