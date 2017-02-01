@@ -65,23 +65,24 @@ word_lstm = td.Map(char_lstm >> td.GetItem(1)) >> td.RNN(word_cell)
 
 A hierarchical LSTM takes a list of strings as input, where each string is a
 word, and produces a sentence vector as output.  It does this using two nested
-LSTMs.  A character LSTM takes a string as input, and produces a word
-vector as output.  It converts the string to a list of integers,
-(`td.InputTransform`), looks up each integer in an embedding table
-(`td.Embedding`), and processes the sequence of embeddings with an LSTM to
-yield a word vector.  The word LSTM maps (`td.Map`) the character LSTM over
-a sequence of words to get a sequence of word vectors, and processes the
-word vectors with a second, larger LSTM to yield a sentence vector.
+LSTMs.  A character LSTM takes a string as input, and produces a word vector as
+output.  It converts the string to a list of integers,
+([`td.InputTransform`](py/td.md#td.InputTransform)), looks up each integer in an
+embedding table ([`td.Embedding`](py/td.md#td.Embedding)), and processes the
+sequence of embeddings with an LSTM to yield a word vector.  The word LSTM maps
+([`td.Map`](py/td.md#td.Map)) the character LSTM over a sequence of words to get
+a sequence of word vectors, and processes the word vectors with a second, larger
+LSTM to yield a sentence vector.
 
 The following sections explain these operations in more detail.
 
 ## Basic concepts
 
-The basic component of a Fold model is the `Block`.  A block is
-essentially a function -- it takes an object as input, and produces another
-object as output.  The objects in question may be tensors, but they may also
-be tuples, lists, Python dictionaries, or combinations thereof.  The
-[types](types.md) page describes the Fold type system in more detail.
+The basic component of a Fold model is the [`td.Block`](py/td.md#td.Block).  A
+block is essentially a function -- it takes an object as input, and produces
+another object as output.  The objects in question may be tensors, but they may
+also be tuples, lists, Python dictionaries, or combinations thereof.
+The [types](types.md) page describes the Fold type system in more detail.
 
 Blocks are organized hierarchically into a tree, much like expressions in a
 programming language, where larger and more complex blocks are composed from
@@ -97,17 +98,18 @@ basic computations on tensors.
 
 ### Converting Python objects into tensors.
 
-A `td.Scalar()` block converts a Python scalar to a 0-rank tensor.
+A [`td.Scalar()`](py/td.md#td.Scalar) block converts a Python scalar to a
+0-rank tensor.
 
-A `td.Vector(shape)` block converts a Python list into a tensor of the given
-shape.
+A [`td.Vector(shape)`](py/td.md#td.Vector) block converts a Python list
+into a tensor of the given shape.
 
 ### Using TensorFlow tensors.
 
-A `FromTensor` block will wrap a TensorFlow tensor into a block.  Like a
-function with no arguments, a `FromTensor` block does not accept any input;
-it just produces the corresponding tensor as output.  `FromTensor` can also be
-used with numpy tensors, e.g.
+A [`td.FromTensor`](py/td.md#td.FromTensor) block will wrap a TensorFlow tensor
+into a block.  Like a function with no arguments, a `FromTensor` block does not
+accept any input; it just produces the corresponding tensor as output.
+`FromTensor` can also be used with numpy tensors, e.g.
 
 ```python
   td.FromTensor(np.zeros([]))  # a constant with dtype=float64
@@ -118,17 +120,17 @@ used with numpy tensors, e.g.
 <a name="functions"></a>
 ### Functions and Layers
 
-A `Function` block wraps a TensorFlow operation into a block.  It accepts
-tensor(s) as input, and produces tensor(s) as output.  Functions which take
-multiple arguments, or produce multiple results, pass tuples of tensors
-as input/output.  For example, `td.Function(tf.add)` is a block that
-takes a tuple of two tensors as input, and produces a single tensor (the
-sum) as output.
+A [`td.Function`](py/td.md#td.Function) block wraps a TensorFlow operation into
+a block.  It accepts tensor(s) as input, and produces tensor(s) as output.
+Functions which take multiple arguments, or produce multiple results, pass
+tuples of tensors as input/output.  For example, `td.Function(tf.add)` is a
+block that takes a tuple of two tensors as input, and produces a single tensor
+(the sum) as output.
 
 Function blocks can be used in conjuction with *Layers* to perform typical
 neural network computations, such as fully-connected layers and embeddings.
-A `Layer` is a callable Python object that implements weight sharing between
-different instances of the layer.
+A [`td.Layer`](py/td.md#td.Layer) is a callable Python object that implements
+weight sharing between different instances of the layer.
 
 In the example below, `ffnet` is a three-layer feed forward-network, where
 each of the three layers shares weights.
@@ -141,14 +143,15 @@ fclayer = td.FC(1024)
 ffnet = td.Function(fclayer) >>  td.Function(fclayer) >> td.Function(fclayer)
 ```
 
-The `>>` operator denotes [function composition](#composition).
+The [`>>`](py/td.md#td.Block.__rshift__) operator
+denotes [function composition](#composition).
 
 ### Python operations
 
-The `InputTransform` block wraps an arbitrary Python function into a block.
-It takes a Python object as input, and returns a Python object as output.
-For example, the following block converts a Python string to a list of
-floats.
+The [`td.InputTransform`](py/td.md#td.InputTransform) block wraps an arbitrary
+Python function into a block.  It takes a Python object as input, and returns a
+Python object as output.  For example, the following block converts a Python
+string to a list of floats.
 
 ```python
 td.InputTransform(lambda s: [ord(c)/255.0 for c in s])
@@ -196,28 +199,30 @@ Sequences may be of arbitrary length, and may vary in length from example to
 example; there is no need to truncate or pad the sequence out to a
 pre-defined length.
 
-* `Map(f)`: Takes a sequence as input, applies block `f` to every element in
-  the sequence, and produces a sequence as output.
+* [`td.Map(f)`](py/td.md#td.Map): Takes a sequence as input, applies block
+  `f` to every element in the sequence, and produces a sequence as output.
 
-* `Fold(f, z)`: Takes a sequence as input, and performs a
-  left-[fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)),
-  using the output of block `z` as the initial element.
+* [`td.Fold(f, z)`](py/td.md#td.Fold): Takes a sequence as input, and
+  performs a
+  left-[fold](https://en.wikipedia.org/wiki/Fold_(higher-order_function)), using
+  the output of block `z` as the initial element.
 
-* `RNN(c)`: A recurrent neural network, which is a combination of Map and Fold.
-  Takes an initial state and input sequence, uses the rnn-cell `c` to
-  produce new states and outputs from previous states and inputs, and
-  returns a final state and output sequence.
+* [`td.RNN(c)`](py/td.md#td.RNN): A recurrent neural network, which is a
+  combination of Map and Fold.  Takes an initial state and input sequence, uses
+  the rnn-cell `c` to produce new states and outputs from previous states and
+  inputs, and returns a final state and output sequence.
 
-* `Reduce(f)`: Takes a sequence as input, and reduces it to a single value
-  by applying `f` to elements pair-wise, essentially executing a binary
-  expression tree with `f`.
+* [`td.Reduce(f)`](py/td.md#td.Reduce): Takes a sequence as input, and
+  reduces it to a single value by applying `f` to elements pair-wise,
+  essentially executing a binary expression tree with `f`.
 
-* `Zip()`: Takes a tuple of sequences as inputs, and produces a sequence
-  of tuples as output.
+* [`td.Zip()`](py/td.md#td.Zip): Takes a tuple of sequences as inputs, and
+  produces a sequence of tuples as output.
 
-* `Broadcast(a)`: Takes the output of block `a`, and turns it into an infinite
-  repeating sequence.  Typically used in conjunction with Zip and Map, to
-  process each element of a sequence with a function that uses `a`.
+* [`td.Broadcast(a)`](py/td.md#td.Broadcast): Takes the output of block `a`,
+  and turns it into an infinite repeating sequence.  Typically used in
+  conjunction with Zip and Map, to process each element of a sequence with a
+  function that uses `a`.
 
 Examples:
 
@@ -258,11 +263,12 @@ to a manageable length using `td.InputTransform`.
 
 ### Dealing with records
 
-A record is a set of named fields, each of which may have a different type,
-such as a Python dictionary, or protobuf message.  A `Record` block takes a
-record as input, applies a child block to each field, and combines the results
-into a tuple, which it produces as output.  The output tuple can be passed to
-`td.Concat()` to get an output vector.
+A record is a set of named fields, each of which may have a different type, such
+as a Python dictionary, or protobuf message.
+A [`td.Record`](py/td.md#td.Record) block takes a record as input, applies a
+child block to each field, and combines the results into a tuple, which it
+produces as output.  The output tuple can be passed
+to [`td.Concat()`](py/td.md#td.Concat) to get an output vector.
 
 For example, the following block converts a record of three fields into a
 128-dimensional vector.  It converts the `id` field to a vector using an
@@ -294,16 +300,15 @@ Simple function composition using the `>>` operator resembles standard Unix
 sufficient in most cases, especially when combined with blocks like `Record`
 and `Fold` that traverse the input data structure.
 
-However, some models may need to wire things together in more complicated
-ways.  A `Composition` block allows the inputs and outputs of its children
-to be wired together in an arbitrary DAG.  For example, the following code
-defines an LSTM cell as a block, which is suitable for use with the RNN
-block [mentioned above](#sequences). Every block defined within the
-`lstm_cell.scope()` becomes a child of `lstm_cell`. The `b.reads(...)`
-method wires the output of another block or tuple of blocks to the input of
-`b`, and roughly corresponds to function application.  If the output of `b`
-is a tuple, then the `b[i]` syntax can be used to select individual elements
-of the tuple.
+However, some models may need to wire things together in more complicated ways.
+A [`td.Composition`](py/td.md#td.Composition) block allows the inputs and
+outputs of its children to be wired together in an arbitrary DAG.  For example,
+the following code defines an LSTM cell as a block, which is suitable for use
+with the RNN block [mentioned above](#sequences). Every block defined within the
+`lstm_cell.scope()` becomes a child of `lstm_cell`. The `b.reads(...)` method
+wires the output of another block or tuple of blocks to the input of `b`, and
+roughly corresponds to function application.  If the output of `b` is a tuple,
+then the `b[i]` syntax can be used to select individual elements of the tuple.
 
 ```python
 # The input to lstm_cell is (input_vec, (previous_cell_state, previous_output_vec))
@@ -332,10 +337,13 @@ efficient to implement LSTM cells directly as a simple `Layer`, rather than a
 ### Recursion and forward declarations
 
 Implementing a tree-recursive neural network requires a recursive block
-definition.  The type of the block is first declared with a
-`ForwardDeclaration`.  Then the block itself is defined as usual using the
-forward declaration to create recursive references.  Finally, a call to
-`resolve_to` will tie the recursive definition to its forward declaration.
+definition.  The type of the block is first declared with
+a [`td.ForwardDeclaration`](py/td.md#td.ForwardDeclaration).  Then the block
+itself is defined as usual using the forward declaration to create recursive
+references.  Finally, a call
+to
+[`td.ForwardDeclaration.resolve_to`](py/td.md#td.ForwardDeclaration.resolve_to)
+will tie the recursive definition to its forward declaration.
 
 For example, here is a block that uses TensorFlow to evaluate arithmetic
 expressions:

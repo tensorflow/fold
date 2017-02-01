@@ -1,6 +1,12 @@
 <!-- This file is machine generated: DO NOT EDIT! -->
 
 # TensorFlow Fold Python Blocks API
+
+Note: Functions taking `Block` arguments can also take anything accepted by
+[`td.convert_to_block`](#td.convert_to_block). Functions taking `ResultType`
+arguments can can also take anything accepted by
+[`td.convert_to_type`](#td.convert_to_type).
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -730,11 +736,17 @@ with c.scope():
 
 Creates a composition which pipes each block into the next one.
 
+`Pipe(a, b, c)` is equivalent to `a >> b >> c`.
+
+```python
+Pipe(a, b, c).eval(x) => c(b(a(x)))
+```
+
 ##### Args:
 
 
 *  <b>`*blocks`</b>: A tuple of blocks.
-*  <b>`**kwargs`</b>: {name: name_string} or {}.
+*  <b>`**kwargs`</b>: `{'name': name_string}` or `{}`.
 
 ##### Returns:
 
@@ -865,7 +877,7 @@ advantage of TensorFlow's parallelism.
 - - -
 
 <a name="td.Function.__init__"></a>
-#### `td.Function.__init__(tf_fn, name=None)`
+#### `td.Function.__init__(tf_fn, name=None, infer_output_type=True)`
 
 Creates a `Function` block.
 
@@ -875,6 +887,9 @@ Creates a `Function` block.
 *  <b>`tf_fn`</b>: The batch version of the TensorFlow function to be evaluated.
 *  <b>`name`</b>: An optional string name for the block. If present, must be a valid
     name for a TensorFlow scope.
+*  <b>`infer_output_type`</b>: A bool; whether or not to infer the output type of
+    of the block by invoking `tf_fn` once on dummy placeholder. If False,
+    you will probably need to call `set_output_type()` explicitly.
 
 
 - - -
@@ -2822,7 +2837,7 @@ Return a reference to the i^th output from this block.
 <a name="td.Block.__rrshift__"></a>
 #### `td.Block.__rrshift__(lhs)`
 
-
+Function composition; `(a >> b).eval(x) => b(a(x))`.
 
 
 - - -
@@ -2830,7 +2845,7 @@ Return a reference to the i^th output from this block.
 <a name="td.Block.__rshift__"></a>
 #### `td.Block.__rshift__(rhs)`
 
-
+Function composition; `(a >> b).eval(x) => b(a(x))`.
 
 
 - - -

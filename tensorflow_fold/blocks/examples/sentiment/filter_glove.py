@@ -33,7 +33,7 @@ flags.DEFINE_string('output_file', None, 'Output file')
 
 
 def main(_):
-  vocab = set(['<unk>'])  # keep the special unknown token
+  vocab = set()
   with codecs.open(FLAGS.sentence_file, encoding='utf-8') as f:
     for line in f:
       # Drop the trailing newline and strip backslashes. Split into words.

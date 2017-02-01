@@ -11,7 +11,7 @@ such as models of the
 [Stanford sentiment treebank](http://nlp.stanford.edu/sentiment/index.html),
 [tree LSTMs](https://arxiv.org/pdf/1503.00075.pdf),
 [hierarchical LSTMs](https://arxiv.org/pdf/1506.01057v2.pdf), and
-graph-convolutional neural networks.
+[graph-convolutional neural networks](https://arxiv.org/pdf/1603.00856v3.pdf).
 
 TensorFlow by itself was not designed to work with tree or graph structured
 data.  It does not natively support any data types other than tensors, nor does

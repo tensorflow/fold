@@ -67,6 +67,9 @@ def load_embeddings(filename):
   # '-RRB-' respectively in the parse-trees.
   word_idx[u'-LRB-'] = word_idx.pop(u'(')
   word_idx[u'-RRB-'] = word_idx.pop(u')')
+  # Random embedding vector for unknown words.
+  weight_vectors.append(np.random.uniform(
+      -0.05, 0.05, weight_vectors[0].shape).astype(np.float32))
   return np.stack(weight_vectors), word_idx
 
 
@@ -87,7 +90,7 @@ def create_model(word_embedding, word_idx, lstm_num_units, keep_prob=1):
 
   embed_subtree = td.ForwardDeclaration(output_type=tree_lstm.state_size)
 
-  unknown_idx = word_idx['<unk>']
+  unknown_idx = len(word_idx)
   def lookup_word(word):
     return word_idx.get(word, unknown_idx)
 

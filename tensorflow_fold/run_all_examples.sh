@@ -49,7 +49,6 @@ echo '( 0.1 0.2' > "${TMP}"/glove
 echo ') 0.3 0.4' >> "${TMP}"/glove
 echo 'foo 0.1 0.2' >> "${TMP}"/glove
 echo 'bar 0.3 0.4' >> "${TMP}"/glove
-echo '<unk> 0.5 0.6'  >> "${TMP}"/glove
 echo 'foo|bar|)|(|baz' > "${TMP}"/sents
 echo '(3 (1 bar) (2 mu))' > "${TMP}"/train.txt
 echo '(3 (1 bar) (2 mu))' > "${TMP}"/dev.txt

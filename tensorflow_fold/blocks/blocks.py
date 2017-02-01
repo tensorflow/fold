@@ -152,9 +152,11 @@ class Block(tdt.IOBase):
     return self
 
   def __rshift__(self, rhs):
+    """Function composition; `(a >> b).eval(x) => b(a(x))`."""
     return Pipe(self, rhs)
 
   def __rrshift__(self, lhs):
+    """Function composition; `(a >> b).eval(x) => b(a(x))`."""
     return Pipe(lhs, self)
 
   @property
@@ -367,19 +369,23 @@ class Function(Block):
   advantage of TensorFlow's parallelism.
   """
 
-  def __init__(self, tf_fn, name=None):
+  def __init__(self, tf_fn, name=None, infer_output_type=True):
     """Creates a `Function` block.
 
     Args:
       tf_fn: The batch version of the TensorFlow function to be evaluated.
       name: An optional string name for the block. If present, must be a valid
         name for a TensorFlow scope.
+      infer_output_type: A bool; whether or not to infer the output type of
+        of the block by invoking `tf_fn` once on dummy placeholder. If False,
+        you will probably need to call `set_output_type()` explicitly.
     """
     if not callable(tf_fn):
       raise TypeError('tf_fn is not callable: %s' % str(tf_fn))
     super(Function, self).__init__(name=name)
     self._tf_fn = tf_fn
     if _is_layer(self._tf_fn): self.set_io_types(self._tf_fn)
+    self._infer_output_type = infer_output_type
 
   def _repr_kwargs(self):
     return dict(tf_fn=self.tf_fn)
@@ -408,9 +414,11 @@ class Function(Block):
   def _validate(self, compiler_ctx):
     if _is_layer(self.tf_fn): self.set_io_types(self.tf_fn)
     self._check_input_type()
-    if self.output_type is None:
+    if self._infer_output_type and (
+        not _is_layer(self.tf_fn) or self.output_type is None):
       self.set_output_type(_infer_tf_output_type_from_input_type(
           self.tf_fn, self.input_type))
+    self._check_output_type()
 
   def _compile(self, compiler_ctx):
     fop = loom_ops.FuncallOp(self.tf_fn, self.input_type, self.output_type)
@@ -973,9 +981,15 @@ class Composition(Block):
 def Pipe(*blocks, **kwargs):  # pylint: disable=invalid-name
   """Creates a composition which pipes each block into the next one.
 
+  `Pipe(a, b, c)` is equivalent to `a >> b >> c`.
+
+  ```python
+  Pipe(a, b, c).eval(x) => c(b(a(x)))
+  ```
+
   Args:
     *blocks: A tuple of blocks.
-    **kwargs: {name: name_string} or {}.
+    **kwargs: `{'name': name_string}` or `{}`.
 
   Returns:
     A block.
@@ -1669,7 +1683,8 @@ class Concat(Function):
       for i in self._scalar_indices:
         inputs[i] = tf.expand_dims(inputs[i], 1)
       return tf.concat(inputs, concat_dim + 1)  # first dimension is batch
-    super(Concat, self).__init__(tf_fn=tf_concat, name=name)
+    super(Concat, self).__init__(
+        tf_fn=tf_concat, name=name, infer_output_type=False)
 
   def _repr_kwargs(self):
     return dict(concat_dim=self._concat_dim, flatten=self._flatten)

@@ -60,8 +60,8 @@ accept short-hands.
 
 ## Type inference
 
-Some blocks, like `Scalar()`, have predetermined input and output types. This is
-not always the case. For example:
+Some blocks, like [`td.Scalar()`](py/td.md#td.Scalar), have predetermined
+input and output types. This is not always the case. For example:
 
 ``` python
 td.Length().input_type => None
@@ -118,11 +118,12 @@ f.input_type => TupleType(TensorType((), 'float32'), TensorType((), 'float32'))
 ```
 
 But in order to obtain the output type, we need to actually call the function
-that we are wrapping (`td.add`, in this case). These calls are made with
+that we are wrapping (`tf.add`, in this case). These calls are made with
 placeholders in a special `tensorflow_fold_output_type_inference` name
 scope. Because of TensorFlow's execution semantics, the subgraphs thus created
-are never executed, but they are still there. If you don't want them, simply
-call `set_output_type` on your Function block immediately after it is
+are never run, but they are still there. If you don't want them, simply pass
+`infer_output_type=False` when you construct the block, and call
+`set_output_type` explicitly on your Function block immediately after it is
 constructed.
 
 ## Type canoncialization
