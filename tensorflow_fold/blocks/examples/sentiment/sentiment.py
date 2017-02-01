@@ -203,7 +203,7 @@ class BinaryTreeLSTMCell(tf.contrib.rnn.BasicLSTMCell):
       seed: Random seed for dropout.
     """
     super(BinaryTreeLSTMCell, self).__init__(
-        num_units, state_is_tuple=True, activation=activation)
+        num_units, forget_bias=forget_bias, activation=activation)
     self._keep_prob = keep_prob
     self._seed = seed
 
@@ -220,7 +220,7 @@ class BinaryTreeLSTMCell(tf.contrib.rnn.BasicLSTMCell):
 
       j = self._activation(j)
       if not isinstance(self._keep_prob, float) or self._keep_prob < 1:
-        j = tf.nn.dropout(j, self._keep_prob, self._seed)
+        j = tf.nn.dropout(j, self._keep_prob, seed=self._seed)
 
       new_c = (c0 * tf.sigmoid(f0 + self._forget_bias) +
                c1 * tf.sigmoid(f1 + self._forget_bias) +

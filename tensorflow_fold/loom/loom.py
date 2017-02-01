@@ -723,7 +723,7 @@ class Loom(object):
             raise ValueError('Op %s output %d: %s' % (
                 self._loom_op_names[op_idx], output_idx, e))
           if output.dtype.base_dtype.name != output_ts.dtype:
-            raise ValueError('Op %s output %d: expected dtype %s got %d' % (
+            raise ValueError('Op %s output %d: expected dtype %s got %s' % (
                 self._loom_op_names[op_idx], output_idx,
                 output_ts.dtype, output.dtype.base_dtype.name))
 

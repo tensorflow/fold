@@ -23,6 +23,12 @@ import tensorflow_fold.blocks.types as tdt
 class Metric(tdb.Block):
   """A block that computes a metric.
 
+  Metrics are used in Fold when the size of a model's output is not
+  fixed, but varies as a function of the input data. They are also
+  handy for accumulating results across sequential and recursive
+  computations without having the thread them through explicitly as
+  return values.
+
   For example, to create a block `y` that takes a (label, prediction)
   as input, adds an L2 `'loss'` metric, and returns the prediction as
   its output, you could say:
