@@ -13,6 +13,7 @@ static computation graph. This graph has the same structure regardless of what
 input it receives, and can be executed efficiently by TensorFlow.
 
 * [Download and Setup](tensorflow_fold/g3doc/setup.md)
+* [Quick Start Notebook](tensorflow_fold/g3doc/quick.ipynb)
 * [Documentation](tensorflow_fold/g3doc/index.md)
 
 If you'd like to contribute to TensorFlow Fold, please review the
