@@ -34,7 +34,7 @@ source ~/tensorflow/bin/activate      # if using bash
 source ~/tensorflow/bin/activate.csh  # if using csh
 ```
 
-Install the pip for TensorFlow. For Python 2.7 CPU-only, this will be:
+Install the pip package for TensorFlow. For Python 2.7 CPU-only, this will be:
 
 ```
 pip install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.0.0rc0-cp27-none-linux_x86_64.whl
@@ -45,7 +45,7 @@ see
 [here](https://www.tensorflow.org/versions/r1.0/get_started/os_setup#using_pip)
 for the full list of available TF binaries. 
 
-Install the pip for Fold.  For Python 2.7, this will be:
+Install the pip package for Fold.  For Python 2.7, this will be:
 
 ```
 pip install https://storage.googleapis.com/tensorflow_fold/tensorflow_fold-0.0.1-cp27-none-linux_x86_64.whl
