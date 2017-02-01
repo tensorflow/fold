@@ -48,7 +48,7 @@ bazel build --config=opt //tensorflow_fold/util:build_pip_package
 ```
 
 You also need to build a pip wheel for TensorFlow. Unfortuately this means we
-need to rebuild everython, due to known Bazel limitations
+need to rebuild all of TensorFlow, due to known Bazel limitations
 ([#1248](https://github.com/bazelbuild/bazel/issues/1248)). If you want skip
 this step and reuse an existing TensorFlow wheel file, make sure that the
 configuration and version are the same ones that Fold has to ensure consistency.
