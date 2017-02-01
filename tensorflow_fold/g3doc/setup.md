@@ -1,78 +1,64 @@
 # Download and Setup
 
-Fold must be installed from the github source; we do not currently provide
-pre-built binaries.
-
-## Requirements
-
 Fold runs under Linux; we have not tested it on other platforms. Python 2.7 and
-3.3+ are both supported.
+3.3+ are both supported. We recommend installing
+using [Virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/)
+and [pip](https://pip.pypa.io/en/stable/). For Python 3.3+, say `pip3` instead
+of `pip` below. See [here](sources.md) for instructions on installing from
+sources, if that's how you roll. If you run into trouble, the TensorFlow main
+site has a list
+of
+[common problems](https://www.tensorflow.org/versions/r1.0/get_started/os_setup#common_problems) with
+some solutions that might be helpful.
 
-TensorFlow sources and binaries are required; we strongly
-recommend
-[installing from sources](https://www.tensorflow.org/get_started/os_setup#installing_from_sources) to ensure consistency.
+Please note that Fold requires TensorFlow 1.0; it is not compatible with earlier
+versions due to breaking API changes.
 
-The [sentiment model](tensorflow_fold/g3doc/sentiment.ipynb) example
-requires [NLTK](http://www.nltk.org/); `sudo pip install nltk` or
-`sudo pip3 install nltk`.
-
-Make sure that TensorFlow and all of its prerequisites are installed and that
-you have run `./configure` from the root of the TensorFlow source tree. Fold
-inherits its configuration options, such as the location of Python and which
-optimization flags to use during compilation, from TensorFlow.
-
-## Download
+First install Python, pip, and Virtualenv:
 
 ```
-git clone https://github.com/tensorflow/fold
-cd fold
+sudo apt-get install python-pip python-dev python-virtualenv
 ```
 
-Fold requires a symlink from the TensorFlow source tree. Assuming both source
-trees are in the same parent directory:
+Create a Virtualenv environment in the directory `foo`:
 
 ```
-ln -s ../tensorflow/ .
+virtualenv foo             # for Python 2.7
+virtualenv -p python3 foo  # for Python 3.3+
 ```
 
-## Test (optional)
-
-To run the unit tests, do:
+Activate the environment:
 
 ```
-bazel test --config=opt tensorflow_fold/...
+source ~/tensorflow/bin/activate      # if using bash
+source ~/tensorflow/bin/activate.csh  # if using csh
 ```
 
-There is also a smoke test that runs all of the included examples:
+Install the pip for TensorFlow. For Python 2.7 CPU-only, this will be:
 
 ```
-./tensorflow_fold/run_all_examples.sh --config=opt
+pip install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.0.0rc0-cp27-none-linux_x86_64.whl
 ```
 
-## Build a pip wheel
+For Python 3.3+ and/or GPU,
+see
+[here](https://www.tensorflow.org/versions/r1.0/get_started/os_setup#using_pip)
+for the full list of available TF binaries. 
+
+Install the pip for Fold.  For Python 2.7, this will be:
 
 ```
-bazel build --config=opt //tensorflow_fold/util:build_pip_package
-./bazel-bin/tensorflow_fold/util/build_pip_package /tmp/tensorflow_fold_pkg
+pip install https://storage.googleapis.com/tensorflow_fold//tensorflow_fold-0.0.1-cp27-none-linux_x86_64.whl
 ```
 
-## Install
-
-The precise name of the .whl file will depend on your platform.
-
-For Python 2.7:
+For Python 3.3:
 
 ```
-sudo pip install /tmp/tensorflow_fold_pkg/tensorflow_fold-0.0.1-PLATFORM.whl
-```
-
-For Python 3.3+:
-
-```
-sudo pip3 install /tmp/tensorflow_fold_pkg/tensorflow_fold-0.0.1-PLATFORM.whl
+pip3 install https://storage.googleapis.com/tensorflow_fold//tensorflow_fold-0.0.1-py3-none-linux_x86_64.whl
 ```
 
 ## Next steps
 
+* try out the [quick start notebook](quick.ipynb)
 * browse the [documentation](index.md)
 * hacks and glory
