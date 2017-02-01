@@ -14,8 +14,8 @@ package(
 fold_py_library(
     name = "blocks",
     srcs = [
+        "block_compiler.py",
         "blocks.py",
-        "compiler.py",
         "layers.py",
         "loom_ops.py",
         "metrics.py",
@@ -24,7 +24,7 @@ fold_py_library(
         "//tensorflow_fold/util:proto_tools",
     ],
     deps = [
-        ":types",
+        ":result_types",
         ":util",
         "//tensorflow_fold/public:loom",
         # numpy",
@@ -65,8 +65,8 @@ fold_py_test(
 )
 
 fold_py_test(
-    name = "compiler_test",
-    srcs = ["compiler_test.py"],
+    name = "block_compiler_test",
+    srcs = ["block_compiler_test.py"],
     deps = [
         ":blocks",
         ":test_lib",
@@ -95,8 +95,8 @@ fold_py_test(
 )
 
 fold_py_library(
-    name = "types",
-    srcs = ["types.py"],
+    name = "result_types",
+    srcs = ["result_types.py"],
     deps = [
         "//tensorflow_fold/public:loom",
         # numpy",
@@ -106,11 +106,11 @@ fold_py_library(
 )
 
 fold_py_test(
-    name = "types_test",
-    srcs = ["types_test.py"],
+    name = "result_types_test",
+    srcs = ["result_types_test.py"],
     deps = [
+        ":result_types",
         ":test_lib",
-        ":types",
         "@org_tensorflow//tensorflow:tensorflow_py",
     ],
 )

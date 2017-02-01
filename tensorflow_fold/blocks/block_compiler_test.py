@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for tensorflow_fold.blocks.compiler."""
+"""Tests for tensorflow_fold.blocks.block_compiler."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -21,8 +21,8 @@ import six
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 from tensorflow_fold.blocks import test_lib
+import tensorflow_fold.blocks.block_compiler as tdc
 import tensorflow_fold.blocks.blocks as tdb
-import tensorflow_fold.blocks.compiler as tdc
 
 
 class CompilerTest(test_lib.TestCase):

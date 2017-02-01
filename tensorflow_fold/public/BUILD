@@ -32,7 +32,7 @@ fold_py_library(
     deps = [
         "//tensorflow_fold/blocks",
         "//tensorflow_fold/blocks:plan",
-        "//tensorflow_fold/blocks:types",
+        "//tensorflow_fold/blocks:result_types",
         "//tensorflow_fold/blocks:util",
     ],
 )

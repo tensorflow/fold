@@ -26,7 +26,7 @@ from six.moves import map  # pylint: disable=redefined-builtin
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 from tensorflow_fold.blocks import loom_ops
-from tensorflow_fold.blocks import types as tdt
+from tensorflow_fold.blocks import result_types as tdt
 from tensorflow_fold.blocks import util
 import tensorflow_fold.blocks.blocks
 from tensorflow_fold.public import loom

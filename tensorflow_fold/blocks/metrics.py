@@ -17,7 +17,7 @@ from __future__ import division
 from __future__ import print_function
 # import google3
 import tensorflow_fold.blocks.blocks as tdb
-import tensorflow_fold.blocks.types as tdt
+import tensorflow_fold.blocks.result_types as tdt
 
 
 class Metric(tdb.Block):

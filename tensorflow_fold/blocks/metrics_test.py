@@ -20,8 +20,8 @@ import numpy as np
 import six
 import tensorflow as tf
 from tensorflow_fold.blocks import test_lib
+import tensorflow_fold.blocks.block_compiler as tdc
 import tensorflow_fold.blocks.blocks as tdb
-import tensorflow_fold.blocks.compiler as tdc
 import tensorflow_fold.blocks.metrics as tdm
 
 

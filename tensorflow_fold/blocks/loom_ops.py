@@ -16,7 +16,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 # import google3
-import tensorflow_fold.blocks.types as tdt
+import tensorflow_fold.blocks.result_types as tdt
 from tensorflow_fold.public import loom
 
 

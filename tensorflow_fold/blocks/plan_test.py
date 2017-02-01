@@ -21,8 +21,8 @@ import shutil
 import six
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
+from tensorflow_fold.blocks import block_compiler
 from tensorflow_fold.blocks import blocks
-from tensorflow_fold.blocks import compiler
 from tensorflow_fold.blocks import plan
 from tensorflow_fold.blocks import test_lib
 from tensorflow_fold.blocks.test_lib import mock
@@ -176,7 +176,7 @@ class PlanTest(PlanTestBase):
     p = plan.Plan(None)
     self.assertRaisesWithLiteralMatch(
         ValueError, 'compiler is required', p.assert_runnable)
-    p.compiler = compiler.Compiler.create(blocks.Scalar())
+    p.compiler = block_compiler.Compiler.create(blocks.Scalar())
     self.assertRaisesWithLiteralMatch(
         ValueError, 'logdir is required', p.assert_runnable)
     p.logdir = '/tmp/'
@@ -201,7 +201,7 @@ class TrainPlanTest(PlanTestBase):
     tf.flags.FLAGS.batches_per_epoch = 123
     foo = tf.get_variable('foo', [], tf.float32, tf.constant_initializer(4))
     p = plan.Plan.create_from_flags(_setup_plan(
-        compiler=compiler.Compiler.create(blocks.Scalar()),
+        compiler=block_compiler.Compiler.create(blocks.Scalar()),
         losses={'foo': foo},
         examples=xrange(5)))
     self.assertEqual(p.num_multiprocess_processes, 4)
@@ -223,7 +223,7 @@ class TrainPlanTest(PlanTestBase):
     tf.flags.FLAGS.task = 42
     train_op = tf.no_op()
     p = plan.Plan.create_from_flags(_setup_plan(
-        compiler=compiler.Compiler.create(blocks.Scalar()),
+        compiler=block_compiler.Compiler.create(blocks.Scalar()),
         losses={'foo': tf.constant(3.14)},
         train_op=train_op,
         examples=xrange(5)))
@@ -242,7 +242,7 @@ class TrainPlanTest(PlanTestBase):
         'batches_per_epoch': 123})
     foo = tf.get_variable('foo', [], tf.float32, tf.constant_initializer(4))
     p = plan.Plan.create_from_params(_setup_plan(
-        compiler=compiler.Compiler.create(blocks.Scalar()),
+        compiler=block_compiler.Compiler.create(blocks.Scalar()),
         losses={'foo': foo},
         examples=xrange(5)), params)
     self.assertEqual(p.num_multiprocess_processes, 4)
@@ -264,7 +264,7 @@ class TrainPlanTest(PlanTestBase):
     tf.flags.FLAGS.task = 42
     train_op = tf.no_op()
     p = plan.Plan.create_from_flags(_setup_plan(
-        compiler=compiler.Compiler.create(blocks.Scalar()),
+        compiler=block_compiler.Compiler.create(blocks.Scalar()),
         losses={'foo': tf.constant(3.14)},
         train_op=train_op,
         examples=xrange(5)))
@@ -285,7 +285,7 @@ class TrainPlanTest(PlanTestBase):
     p.losses['foo'] = tf.constant(42.0)
     self.assertRaisesWithLiteralMatch(
         ValueError, 'compiler is required', p.assert_runnable)
-    p.compiler = compiler.Compiler.create(blocks.Scalar())
+    p.compiler = block_compiler.Compiler.create(blocks.Scalar())
     self.assertRaisesWithLiteralMatch(
         RuntimeError, 'finalize_stats() has not been called', p.assert_runnable)
     p.finalize_stats()
@@ -340,7 +340,7 @@ class TrainPlanTest(PlanTestBase):
   def create_plan(self, loom_input_tensor):
     p = plan.TrainPlan()
     foo = tf.get_variable('foo', [], tf.float32, tf.constant_initializer(12))
-    p.compiler = compiler.Compiler.create(
+    p.compiler = block_compiler.Compiler.create(
         blocks.Scalar() >> blocks.Function(lambda x: x * foo),
         loom_input_tensor=loom_input_tensor)
     p.losses['foo'] = p.compiler.output_tensors[0]
@@ -383,7 +383,7 @@ class TrainPlanTest(PlanTestBase):
 
   def test_init_loom(self):
     p = plan.TrainPlan()
-    p.compiler = compiler.Compiler().compile(blocks.Scalar())
+    p.compiler = block_compiler.Compiler().compile(blocks.Scalar())
     p.batch_size = 3
     p.task = 13
     p.num_dequeuers = 7
@@ -407,23 +407,23 @@ class TrainPlanTest(PlanTestBase):
 
     self.assertEqual(p.init_loom(), (True, False))
 
-    p.compiler = compiler.Compiler().compile(blocks.Scalar())
+    p.compiler = block_compiler.Compiler().compile(blocks.Scalar())
     p.task = 3
     self.assertEqual(p.init_loom(), (False, True))
 
-    p.compiler = compiler.Compiler().compile(blocks.Scalar())
+    p.compiler = block_compiler.Compiler().compile(blocks.Scalar())
     p.num_dequeuers = 0
     self.assertRaisesWithLiteralMatch(
         ValueError, 'cannot specify queue_capacity without also '
         'specifying num_dequeuers', p.init_loom)
 
-    p.compiler = compiler.Compiler().compile(blocks.Scalar())
+    p.compiler = block_compiler.Compiler().compile(blocks.Scalar())
     p.queue_capacity = 0
     self.assertEqual(p.init_loom(), (True, True))
 
   def test_enqueue(self):
     p = plan.TrainPlan()
-    p.compiler = compiler.Compiler().compile(blocks.Scalar())
+    p.compiler = block_compiler.Compiler().compile(blocks.Scalar())
     p.examples = [7] * 8  # two items should be ignored (8 % 3 == 2)
     p.is_chief_trainer = True
     p.batch_size = 3
@@ -459,7 +459,7 @@ class TrainPlanTest(PlanTestBase):
 
   def test_dequeue(self):
     p = plan.TrainPlan()
-    p.compiler = compiler.Compiler().compile(blocks.Scalar())
+    p.compiler = block_compiler.Compiler().compile(blocks.Scalar())
     p.is_chief_trainer = True
     p.batch_size = 3
     p.batches_per_epoch = 2
@@ -497,7 +497,7 @@ class EvalPlanTest(PlanTestBase):
     tf.flags.FLAGS.mode = plan.Plan.mode_keys.EVAL
     tf.flags.FLAGS.truncate_examples = 3
     p = plan.Plan.create_from_flags(_setup_plan(
-        compiler=compiler.Compiler.create(blocks.Scalar()),
+        compiler=block_compiler.Compiler.create(blocks.Scalar()),
         losses={'foo': tf.constant(42.0)},
         examples=xrange(5)))
     self.assertEqual(p.logdir, os.path.join('/tmp/', 'plan', 'run_0', 'eval'))
@@ -514,7 +514,7 @@ class EvalPlanTest(PlanTestBase):
         'mode': plan.Plan.mode_keys.EVAL,
         'truncate_examples': 3})
     p = plan.Plan.create_from_params(_setup_plan(
-        compiler=compiler.Compiler.create(blocks.Scalar()),
+        compiler=block_compiler.Compiler.create(blocks.Scalar()),
         losses={'foo': tf.constant(42.0)},
         examples=xrange(5)), params)
     self.assertEqual(p.logdir, os.path.join('/tmp/', 'plan', 'run_0', 'eval'))
@@ -529,7 +529,7 @@ class EvalPlanTest(PlanTestBase):
     p = plan.EvalPlan()
     self.assertRaisesWithLiteralMatch(
         ValueError, 'compiler is required', p.assert_runnable)
-    p.compiler = compiler.Compiler.create(blocks.Scalar())
+    p.compiler = block_compiler.Compiler.create(blocks.Scalar())
     p.logdir = '/tmp/'
     self.assertRaisesWithLiteralMatch(
         ValueError, 'examples is required', p.assert_runnable)
@@ -545,7 +545,7 @@ class EvalPlanTest(PlanTestBase):
 
   def _make_plan(self):
     p = plan.EvalPlan()
-    p.compiler = compiler.Compiler.create(blocks.Scalar())
+    p.compiler = block_compiler.Compiler.create(blocks.Scalar())
     temp_dir = self.get_temp_dir()
     p.logdir = os.path.join(temp_dir, 'eval')
     p.logdir_restore = os.path.join(temp_dir, 'train')
@@ -657,7 +657,7 @@ class InferPlanTest(PlanTestBase):
     tf.flags.FLAGS.mode = plan.Plan.mode_keys.INFER
     tf.flags.FLAGS.truncate_examples = 3
     p = plan.Plan.create_from_flags(_setup_plan(
-        compiler=compiler.Compiler.create(blocks.Scalar()),
+        compiler=block_compiler.Compiler.create(blocks.Scalar()),
         examples=xrange(5),
         infer_from='/foo',
         outputs=tf.constant(42)))
@@ -667,7 +667,7 @@ class InferPlanTest(PlanTestBase):
     p = plan.InferPlan()
     self.assertRaisesWithLiteralMatch(
         ValueError, 'compiler is required', p.assert_runnable)
-    p.compiler = compiler.Compiler.create(blocks.Scalar())
+    p.compiler = block_compiler.Compiler.create(blocks.Scalar())
     p.logdir = '/tmp/'
     self.assertRaisesWithLiteralMatch(
         ValueError, 'examples is required', p.assert_runnable)
@@ -682,7 +682,7 @@ class InferPlanTest(PlanTestBase):
 
   def test_run_no_key_fn(self):
     p = plan.InferPlan()
-    p.compiler = compiler.Compiler.create(
+    p.compiler = block_compiler.Compiler.create(
         blocks.Scalar() >> blocks.Function(tf.negative))
     p.logdir = self.get_temp_dir()
     p.examples = xrange(5)
@@ -698,7 +698,7 @@ class InferPlanTest(PlanTestBase):
 
   def test_run_key_fn(self):
     p = plan.InferPlan()
-    p.compiler = compiler.Compiler.create(
+    p.compiler = block_compiler.Compiler.create(
         blocks.Scalar() >> blocks.Function(tf.negative))
     p.logdir = self.get_temp_dir()
     p.examples = xrange(5)

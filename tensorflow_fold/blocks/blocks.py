@@ -28,8 +28,8 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 from six.moves import zip  # pylint: disable=redefined-builtin
 import tensorflow as tf
 from tensorflow_fold.blocks import loom_ops
-from tensorflow_fold.blocks import types as tdt
-import tensorflow_fold.blocks.compiler
+from tensorflow_fold.blocks import result_types as tdt
+import tensorflow_fold.blocks.block_compiler
 import tensorflow_fold.blocks.layers
 from tensorflow_fold.util import proto_tools
 
@@ -247,7 +247,7 @@ class Block(tdt.IOBase):
         required.
     """
     # pylint: disable=protected-access
-    return tensorflow_fold.blocks.compiler.Compiler._interactive(  # pylint: disable=line-too-long
+    return tensorflow_fold.blocks.block_compiler.Compiler._interactive(  # pylint: disable=line-too-long
         self)._eval(inp, feed_dict, session, tolist, use_while_loop)
 
   def max_depth(self, inp):
@@ -265,7 +265,7 @@ class Block(tdt.IOBase):
       An int (see above).
     """
     # pylint: disable=protected-access
-    return tensorflow_fold.blocks.compiler.Compiler._interactive(  # pylint: disable=line-too-long
+    return tensorflow_fold.blocks.block_compiler.Compiler._interactive(  # pylint: disable=line-too-long
         self).max_depth(inp)
 
 

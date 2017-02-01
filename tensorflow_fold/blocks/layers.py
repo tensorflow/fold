@@ -26,7 +26,7 @@ import six
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 import tensorflow_fold.blocks.blocks
-import tensorflow_fold.blocks.types as tdt
+import tensorflow_fold.blocks.result_types as tdt
 
 
 class Layer(tdt.IOBase):

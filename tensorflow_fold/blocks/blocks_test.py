@@ -24,11 +24,11 @@ import six
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 from tensorflow_fold.blocks import test_lib
+import tensorflow_fold.blocks.block_compiler as tdc
 import tensorflow_fold.blocks.blocks as tdb
-import tensorflow_fold.blocks.compiler as tdc
 import tensorflow_fold.blocks.layers as tdl
 import tensorflow_fold.blocks.metrics as tdm
-import tensorflow_fold.blocks.types as tdt
+import tensorflow_fold.blocks.result_types as tdt
 from tensorflow_fold.util import test_pb2
 
 

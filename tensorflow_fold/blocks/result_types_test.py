@@ -20,8 +20,8 @@ import itertools
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
+from tensorflow_fold.blocks import result_types as tdt
 from tensorflow_fold.blocks import test_lib
-from tensorflow_fold.blocks import types as tdt
 from tensorflow_fold.public import loom
 
 

@@ -19,11 +19,11 @@ We suggest importing it as:
 """
 
 # pylint: disable=wildcard-import, unused-import
+from tensorflow_fold.blocks.block_compiler import *
 from tensorflow_fold.blocks.blocks import *
-from tensorflow_fold.blocks.compiler import *
 from tensorflow_fold.blocks.layers import *
 from tensorflow_fold.blocks.metrics import *
 from tensorflow_fold.blocks.plan import *
-from tensorflow_fold.blocks.types import *
+from tensorflow_fold.blocks.result_types import *
 from tensorflow_fold.blocks.util import *
 # pylint: enable=wildcard-import, unused-import
