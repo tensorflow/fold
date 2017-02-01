@@ -35,7 +35,7 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 from tensorflow_fold.blocks.examples.calculator import model
 from tensorflow_fold.loom.calculator_example import calculator_pb2
-from tensorflow_fold.util import proto
+from tensorflow_fold.util import proto_tools
 
 tf.flags.DEFINE_string(
     'train_data_path', '',
@@ -75,15 +75,16 @@ CALCULATOR_EXPRESSION_PROTO = ('tensorflow_fold.loom.'
                                'calculator_example.CalculatorExpression')
 
 
-# Make sure SerializedMessageToTree can find the calculator example proto:
-proto.MapProtoPath('', CALCULATOR_SOURCE_ROOT)
-proto.ImportProtoFile(CALCULATOR_PROTO_FILE)
+# Make sure serialized_message_to_tree can find the calculator example proto:
+proto_tools.map_proto_source_tree_path('', CALCULATOR_SOURCE_ROOT)
+proto_tools.import_proto_file(CALCULATOR_PROTO_FILE)
 
 
 def iterate_over_tf_record_protos(table_path, unused_message_type):
   while True:
     for v in tf.python_io.tf_record_iterator(table_path):
-      yield proto.SerializedMessageToTree(CALCULATOR_EXPRESSION_PROTO, v)
+      yield proto_tools.serialized_message_to_tree(
+          CALCULATOR_EXPRESSION_PROTO, v)
 
 
 def emit_values(supervisor, session, step, values):
