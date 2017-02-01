@@ -29,7 +29,7 @@ statements are written relative to that directory, then a single call to:
 
 Next, the protocol buffer message types that you care about should be imported
 using `proto_tools.import_proto_file(viritual_path)`.  One of the calls to
-`map_proto_source-tree_path` must have taken a virtual path which is a prefix of
+`map_proto_source_tree_path` must have taken a virtual path which is a prefix of
 `virtual_path` for the import to resolve.  `virtual_path` should point to a
 valid `.proto` file (after the path has been resolved), as should any paths in
 any import statements the `.proto` file might contain, etc.
@@ -39,7 +39,7 @@ str)` should work properly with any protocol buffer message types declared in
 the imported proto files.  (Here `message_type` is the fully qualified message
 type which includes the package name, e.g. `tensorflow.fold.LoomMetadata`.)
 
-See `util/proto_test.py` for example usages.
+See [util/proto\_test.py](../util/proto_test.py) for example usages.
 
 ## Outputs
 
