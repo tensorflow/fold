@@ -113,7 +113,7 @@ if '--project_name' in sys.argv:
   sys.argv.pop(project_name_idx)
 
 REQUIRED_PACKAGES = [
-    'tensorflow >= 1.0.0',
+    'tensorflow == 1.0.0rc0',
     'numpy >= 1.11.0',
     'six >= 1.10.0',
     'protobuf >= 3.1.0',
