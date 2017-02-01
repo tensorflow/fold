@@ -23,6 +23,13 @@ import os.path
 import tensorflow as tf
 from tensorflow_fold.loom.weaver_op_base import RegisterWeaverOp
 
+# This is a gross hack that (apparently) prevents Python from
+# occasionally segfaulting at shutdown when unlinking dynamic
+# libraries, possibly related to <https://goo.gl/aSx6Bi>.  We need to
+# call some function tf.pywrap_tensorflow that munges protos, *before*
+# we dlopen the deserializing weaver library (which also munges protos).
+tf.pywrap_tensorflow.list_devices()
+
 _deserializing_weaver = tf.load_op_library(os.path.join(
     tf.resource_loader.get_data_files_path(), '_deserializing_weaver_op.so'))
 deserializing_weaver = _deserializing_weaver.deserializing_weaver
