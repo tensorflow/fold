@@ -30,8 +30,8 @@ virtualenv -p python3 foo  # for Python 3.3+
 Activate the environment:
 
 ```
-source ~/tensorflow/bin/activate      # if using bash
-source ~/tensorflow/bin/activate.csh  # if using csh
+source ./foo/bin/activate      # if using bash
+source ./foo/bin/activate.csh  # if using csh
 ```
 
 Install the pip package for TensorFlow. For Python 2.7 CPU-only, this will be:
