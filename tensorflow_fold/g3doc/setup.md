@@ -48,13 +48,13 @@ for the full list of available TF binaries.
 Install the pip for Fold.  For Python 2.7, this will be:
 
 ```
-pip install https://storage.googleapis.com/tensorflow_fold//tensorflow_fold-0.0.1-cp27-none-linux_x86_64.whl
+pip install https://storage.googleapis.com/tensorflow_fold/tensorflow_fold-0.0.1-cp27-none-linux_x86_64.whl
 ```
 
 For Python 3.3:
 
 ```
-pip3 install https://storage.googleapis.com/tensorflow_fold//tensorflow_fold-0.0.1-py3-none-linux_x86_64.whl
+pip3 install https://storage.googleapis.com/tensorflow_fold/tensorflow_fold-0.0.1-py3-none-linux_x86_64.whl
 ```
 
 ## Next steps
