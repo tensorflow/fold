@@ -9,6 +9,10 @@ native Python data-structure composed of dictionaries and lists.  This
 function's behavior is analogous to `json.loads` (except that enum values are
 treated specially, which will be described in more detail below.)
 
+The Fold blocks API provides a 
+[`SerializedMessageToTree`](py/td.md#tdserializedmessagetotreemessage_type_name)
+block that serves as a convenient wrapper for this function.
+
 ## Rationale
 
 The outputs of `serialized_message_to_tree` can be traversed faster than the
