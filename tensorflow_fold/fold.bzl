@@ -116,7 +116,7 @@ _fold_py_wrap_cc = rule(
         "module_name": attr.string(mandatory = True),
         "py_module_name": attr.string(mandatory = True),
         "swig_binary": attr.label(
-            default = Label("//tensorflow_fold/util:swig"),
+            default = Label("@swig//:swig"),
             cfg = "host",
             executable = True,
             allow_files = True,

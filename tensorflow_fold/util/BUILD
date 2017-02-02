@@ -81,11 +81,6 @@ fold_py_test(
 )
 
 sh_binary(
-    name = "swig",
-    srcs = ["swig.sh"],
-)
-
-sh_binary(
     name = "build_pip_package",
     srcs = ["build_pip_package.sh"],
     data = [
