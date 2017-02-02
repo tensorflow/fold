@@ -3,8 +3,7 @@
 Fold runs under Linux; we have not tested it on other platforms. Python 2.7 and
 3.3+ are both supported. We recommend installing
 using [Virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/)
-and [pip](https://pip.pypa.io/en/stable/). For Python 3.3+, say `pip3` instead
-of `pip` below. See [here](sources.md) for instructions on installing from
+and [pip](https://pip.pypa.io/en/stable/). See [here](sources.md) for instructions on installing from
 sources, if that's how you roll. If you run into trouble, the TensorFlow main
 site has a list
 of
@@ -54,13 +53,13 @@ python -c 'import tensorflow'
 Install the pip package for Fold.  For Python 2.7, this will be:
 
 ```
-pip install https://storage.googleapis.com/tensorflow_fold//tensorflow_fold-0.0.1-cp27-none-linux_x86_64.whl
+pip install https://storage.googleapis.com/tensorflow_fold/tensorflow_fold-0.0.1-cp27-none-linux_x86_64.whl
 ```
 
 For Python 3.3:
 
 ```
-pip3 install https://storage.googleapis.com/tensorflow_fold//tensorflow_fold-0.0.1-py3-none-linux_x86_64.whl
+pip install https://storage.googleapis.com/tensorflow_fold/tensorflow_fold-0.0.1-py3-none-linux_x86_64.whl
 ```
 
 Check that Fold can load:
