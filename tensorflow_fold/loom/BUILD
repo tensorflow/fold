@@ -140,11 +140,3 @@ fold_py_test(
     ],
 )
 
-fold_py_binary(
-    name = "loom_benchmark",
-    srcs = ["loom_benchmark.py"],
-    deps = [
-        ":loom",
-        "@org_tensorflow//tensorflow:tensorflow_py",
-    ],
-)
