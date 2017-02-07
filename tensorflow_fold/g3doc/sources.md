@@ -31,6 +31,11 @@ pip install mock --upgrade
 bazel test --config=opt tensorflow_fold/...
 ```
 
+When using CUDA on GPU, tests must be run sequentially:
+```
+bazel test --config=opt --config=cuda --jobs=1 tensorflow_fold/...
+```
+
 There is also a smoke test that runs all of the included examples:
 
 ```
