@@ -139,4 +139,3 @@ fold_py_test(
         "@org_tensorflow//tensorflow:tensorflow_py",
     ],
 )
-

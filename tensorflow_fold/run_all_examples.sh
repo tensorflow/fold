@@ -7,7 +7,7 @@ set -e
 bazel build "$@" tensorflow_fold/...
 
 # loom benchmark
-./bazel-bin/tensorflow_fold/loom/loom_benchmark
+./bazel-bin/tensorflow_fold/loom/benchmarks/iclr_2017_benchmark
 
 # loom calculator
 TMP=$(mktemp -d)

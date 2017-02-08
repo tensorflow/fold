@@ -109,6 +109,13 @@ class BlocksTest(test_lib.TestCase):
         TypeError, 'shape (1, 2, ?) is not fully defined; call set_shape()',
         tdb.FromTensor, tf.placeholder('int32', [1, 2, None]))
 
+  def test_pyobject_composition(self):
+    block = tdb.AllOf(tdb.Identity(), tdb.Identity())
+    self.assertBuildsConst(('foo', 'foo'), block, 'foo')
+    block = (tdb.AllOf(tdb.Identity(), tdb.Identity()) >>
+             (tdb.Scalar(), tdb.Scalar()))
+    self.assertBuilds((42.0, 42.0), block, 42, max_depth=None)
+
   def test_function_composition(self):
     sc = tdb.Scalar()
     fn1 = times_scalar_block(2.0)

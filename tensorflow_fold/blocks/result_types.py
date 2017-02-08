@@ -392,13 +392,17 @@ class _TypeVariable(object):
 
   @expected.setter
   def expected(self, type_classes):
-    if not (self.expected is None or all(issubclass(type_class, self._expected)
-                                         for type_class in type_classes)):
+    """Updates expected type classes to their intersection with type_classes."""
+    if self.expected is None:
+      self._expected = type_classes
+      return
+    expected = tuple(t for t in type_classes if issubclass(t, self._expected))
+    if not expected:
       new_types_str = ' or '.join(x.__name__ for x in type_classes)
       old_types_str = ' or '.join(x.__name__ for x in self._expected)
       raise TypeError('bad %s type %s for %s, expected %s' % (
           self._name, new_types_str, self._contained_by, old_types_str))
-    self._expected = type_classes
+    self._expected = expected
 
 
 class IOBase(object):
@@ -460,21 +464,20 @@ class IOBase(object):
     if input_type is not None: self._input_type.value = input_type
     return self
 
-  def set_input_type_class(self, input_type_class):
-    """Updates the type class of the input type.
+  def set_input_type_classes(self, *input_type_classes):
+    """Updates the type classes of the input type.
 
     Args:
-      input_type_class: A type class, or None.
+      *input_type_classes: A tuple of type classes.
 
     Returns:
       `self`
 
     Raises:
-      TypeError: If `input_type_class` is not compatible with the current input
-        type or its expected type classes.
+      TypeError: If `input_type_classes` are not compatible with the current
+        input type or its expected type classes.
     """
-    if input_type_class is not None:
-      self._input_type.expected = (input_type_class,)
+    self._input_type.expected = input_type_classes
     return self
 
   def _update_input_type(self):
@@ -497,21 +500,20 @@ class IOBase(object):
     if output_type is not None: self._output_type.value = output_type
     return self
 
-  def set_output_type_class(self, output_type_class):
+  def set_output_type_classes(self, *output_type_classes):
     """Updates the type class of the output type.
 
     Args:
-      output_type_class: A type class, or None.
+      *output_type_classes: A tuple of type classes.
 
     Returns:
       `self`
 
     Raises:
-      TypeError: If `output_type_class` is not compatible with the current
+      TypeError: If `output_type_classes` are not compatible with the current
         output type or its expected type classes.
     """
-    if output_type_class is not None:
-      self._output_type.expected = (output_type_class,)
+    self._output_type.expected = output_type_classes
     return self
 
   def _update_output_type(self):

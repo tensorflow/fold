@@ -2707,15 +2707,15 @@ Updates the input type.
 
 - - -
 
-<a name="td.IOBase.set_input_type_class"></a>
-#### `td.IOBase.set_input_type_class(input_type_class)`
+<a name="td.IOBase.set_input_type_classes"></a>
+#### `td.IOBase.set_input_type_classes(*input_type_classes)`
 
-Updates the type class of the input type.
+Updates the type classes of the input type.
 
 ##### Args:
 
 
-*  <b>`input_type_class`</b>: A type class, or None.
+*  <b>`*input_type_classes`</b>: A tuple of type classes.
 
 ##### Returns:
 
@@ -2724,8 +2724,8 @@ Updates the type class of the input type.
 ##### Raises:
 
 
-*  <b>`TypeError`</b>: If `input_type_class` is not compatible with the current input
-    type or its expected type classes.
+*  <b>`TypeError`</b>: If `input_type_classes` are not compatible with the current
+    input type or its expected type classes.
 
 
 - - -
@@ -2775,15 +2775,15 @@ Updates the output type.
 
 - - -
 
-<a name="td.IOBase.set_output_type_class"></a>
-#### `td.IOBase.set_output_type_class(output_type_class)`
+<a name="td.IOBase.set_output_type_classes"></a>
+#### `td.IOBase.set_output_type_classes(*output_type_classes)`
 
 Updates the type class of the output type.
 
 ##### Args:
 
 
-*  <b>`output_type_class`</b>: A type class, or None.
+*  <b>`*output_type_classes`</b>: A tuple of type classes.
 
 ##### Returns:
 
@@ -2792,7 +2792,7 @@ Updates the type class of the output type.
 ##### Raises:
 
 
-*  <b>`TypeError`</b>: If `output_type_class` is not compatible with the current
+*  <b>`TypeError`</b>: If `output_type_classes` are not compatible with the current
     output type or its expected type classes.
 
 

@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This is the benchmark code used in our ICLR 2017 paper, entitled
-"Deep Learning with Dynamic Computation graphs."
+"""This is the benchmark code used in the ICLR 2017 paper.
+
+The paper is entitled Deep Learning with Dynamic Computation graphs."
 """
 
 from __future__ import absolute_import
@@ -22,12 +23,15 @@ from __future__ import print_function
 import logging
 import random
 import time
+
+# import google3
+
 import numpy as np
 import six
 
 import tensorflow as tf
 
-from tensorflow_fold.loom import loom
+from tensorflow_fold.public import loom
 
 tf.flags.DEFINE_integer("vector_size", 1024, "Size of tree RNN output vector.")
 tf.flags.DEFINE_integer("tree_size", 128, "Size of trees to test.")
@@ -46,8 +50,8 @@ tf.flags.DEFINE_boolean("quick_run", False, "Use a limited set of batch sizes.")
 FLAGS = tf.flags.FLAGS
 
 
-logging.basicConfig(format='%(asctime)s %(message)s')
-_logger = logging.getLogger('benchmark')
+logging.basicConfig(format="%(asctime)s %(message)s")
+_logger = logging.getLogger("benchmark")
 _logger.setLevel(logging.INFO)
 
 
@@ -58,17 +62,20 @@ def make_random_tree(size):
   r = random.randint(1, size-1)
   return (make_random_tree(r), make_random_tree(size-r))
 
+
 def make_sequence_tree(size):
   """Make a maximally unbalanced tree (a sequence) with size nodes."""
   if size <= 1:
     return 0
   return (make_sequence_tree(size-1), 0)
 
+
 def make_balanced_tree(size):
   """Make a balanced binary tree with size nodes, where size is a power of 2."""
   if size <= 1:
     return 0
   return (make_balanced_tree(size/2), make_balanced_tree(size/2))
+
 
 def make_input_tree(size):
   """Make a tree based on the value of the tree_type flag."""
@@ -82,10 +89,11 @@ def make_input_tree(size):
 
 
 def index_type():
-  return loom.TypeShape('int32', ())
+  return loom.TypeShape("int32", ())
+
 
 def vector_type():
-  return loom.TypeShape('float32', (FLAGS.vector_size,))
+  return loom.TypeShape("float32", (FLAGS.vector_size,))
 
 
 class LeafOp(loom.LoomOp):
@@ -128,8 +136,8 @@ class NonTerminalOp(loom.LoomOp):
     # A simple tree RNN with a single fully connected layer.
     if self._weights is None:
       with tf.variable_scope(self._vscope):
-        self._weights = tf.get_variable("weights",
-            [FLAGS.vector_size*2, FLAGS.vector_size],
+        self._weights = tf.get_variable(
+            "weights", [FLAGS.vector_size*2, FLAGS.vector_size],
             initializer=tf.uniform_unit_scaling_initializer(1.43))
         self._bias = tf.get_variable("bias", [FLAGS.vector_size],
                                      initializer=tf.zeros_initializer())
@@ -141,13 +149,13 @@ class NonTerminalOp(loom.LoomOp):
     # A variation on the tree LSTM -- we add an extra hidden layer.
     if self._weights is None:
       with tf.variable_scope(self._vscope):
-        self._weights_0 = tf.get_variable("weights_0",
-            [FLAGS.vector_size*2, FLAGS.vector_size],
+        self._weights_0 = tf.get_variable(
+            "weights_0", [FLAGS.vector_size*2, FLAGS.vector_size],
             initializer=tf.uniform_unit_scaling_initializer(1.43))
         self._bias_0 = tf.get_variable("bias_0", [FLAGS.vector_size],
                                        initializer=tf.zeros_initializer())
-        self._weights = tf.get_variable("weights",
-            [FLAGS.vector_size, FLAGS.vector_size*4],
+        self._weights = tf.get_variable(
+            "weights", [FLAGS.vector_size, FLAGS.vector_size*4],
             initializer=tf.uniform_unit_scaling_initializer(1.0))
         self._bias = tf.get_variable("bias", [FLAGS.vector_size*4],
                                      initializer=tf.zeros_initializer())
@@ -166,7 +174,7 @@ class NonTerminalOp(loom.LoomOp):
 
     ylr = tf.add(tf.multiply(fl, left), tf.multiply(fr, right))
     ygi = tf.multiply(i, g)
-    y   = tf.add(ylr, ygi)
+    y = tf.add(ylr, ygi)
 
     return y
 
@@ -318,7 +326,7 @@ class TfModel(ModelBase):
       return np.array(
           [self.random_index() for _ in six.moves.xrange(0, self.batch_size)],
           dtype="int32")
-    return { p: rand_indices() for p in self._placeholders }
+    return {p: rand_indices() for p in self._placeholders}
 
 
 class LoomModel(ModelBase):
@@ -345,8 +353,8 @@ class LoomModel(ModelBase):
     # Create a dictionary of the LoomOps that the model uses.
     named_tensors = {}
     named_ops = {
-      "leaf": self._leaf_op,
-      "non_terminal": self._non_terminal_op
+        "leaf": self._leaf_op,
+        "non_terminal": self._non_terminal_op
     }
     # Make a random tree.
     self._tree = make_input_tree(FLAGS.tree_size)
@@ -403,7 +411,7 @@ class LoomModel(ModelBase):
       serialized_trees.append(weaver.serialize())
 
     # Pass the serialized trees as the input tensors.
-    return { self._loom.input_tensor: serialized_trees }
+    return {self._loom.input_tensor: serialized_trees}
 
   def traverse_tree(self, node, weaver):
     # Recursive function to invoke a LoomOp on each node in the tree.
@@ -428,7 +436,7 @@ def test_model(model_class, *args):
 
   for batch_size in batch_size_list:
     test_results[batch_size] = ([], [])
-    for epoch in six.moves.xrange(0, FLAGS.num_epochs):
+    for _ in six.moves.xrange(0, FLAGS.num_epochs):
       model = model_class(batch_size, *args)
       model.run()
       test_results[batch_size][0].extend(model.elapsed_times)
@@ -482,7 +490,7 @@ def compare_total_speedup(test_results, baseline):
     tree_times = [t/b for t in times]
     avg_time = avg(tree_times)
     _logger.info("Batch size: %d | tree time: %f, speedup: %f", b,
-                    avg_time, baseline_tree_time/avg_time)
+                 avg_time, baseline_tree_time/avg_time)
 
 
 def main(unused_argv):
@@ -500,7 +508,7 @@ def main(unused_argv):
 
   _logger.info("====================================================")
   _logger.info("Num epochs: %d; repeats per epoch %d",
-                  FLAGS.num_epochs, FLAGS.num_repeats)
+               FLAGS.num_epochs, FLAGS.num_repeats)
   _logger.info("Model type: %s, %s", model_type, FLAGS.tree_type)
   _logger.info("Vector size: %d", FLAGS.vector_size)
   _logger.info("Tree size: %d", FLAGS.tree_size)

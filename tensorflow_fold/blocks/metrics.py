@@ -16,6 +16,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 # import google3
+import six
 import tensorflow_fold.blocks.blocks as tdb
 import tensorflow_fold.blocks.result_types as tdt
 
@@ -79,6 +80,8 @@ class Metric(tdb.Block):
   """
 
   def __init__(self, metric_name):
+    if not isinstance(metric_name, six.string_types):
+      raise TypeError('metric_name must be a string: %s' % (metric_name,))
     self._metric_name = metric_name
     super(Metric, self).__init__(name=str(metric_name),
                                  output_type=tdt.VoidType())

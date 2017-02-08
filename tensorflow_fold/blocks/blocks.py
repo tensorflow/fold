@@ -761,8 +761,9 @@ class Composition(Block):
     if in_type is None: return
     wires = self._child_input_wire_dict.get(child)
     if wires is None: return
-    if len(wires) == 1: in_type = (in_type,)
-    if len(wires) != len(in_type):
+    if isinstance(in_type, tdt.PyObjectType) or len(wires) == 1:
+      in_type = (in_type,) * len(wires)
+    elif len(wires) != len(in_type):
       raise TypeError('block %s has %d inputs but expects %d' %
                       (child, len(wires), len(in_type)))
     for i, ((block, index), itype) in enumerate(zip(wires, in_type)):
@@ -878,11 +879,11 @@ class Composition(Block):
     if not input_wires:
       b.set_input_type(tdt.VoidType())
     elif len(input_wires) > 1:
-      b.set_input_type_class(tdt.TupleType)
+      b.set_input_type_classes(tdt.TupleType, tdt.PyObjectType)
 
     for block, index in input_wires:
       if index is not None:
-        block.set_output_type_class(tdt.TupleType)
+        block.set_output_type_classes(tdt.TupleType)
         if block.output_type is not None:
           arity = len(block.output_type)
           if arity < index:
