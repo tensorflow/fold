@@ -21,7 +21,7 @@ typically used to run models like tree-RNNs.  When the input consists of trees
 size and shape.  A standard TensorFlow model consists of a fixed graph of
 operations, which cannot accommodate variable-shaped data.  Fold overcomes this
 limitation by using
-the [dynamic batching algorithm](https://openreview.net/pdf?id=ryrGawqex).
+the [dynamic batching algorithm](https://arxiv.org/abs/1702.02181).
 
 Fold consists of a high-level API called Blocks, and a low-level API called
 Loom. Blocks are pure Python, whereas Loom is a mixture of Python and
