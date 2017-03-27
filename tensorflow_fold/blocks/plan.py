@@ -29,6 +29,7 @@ from six.moves import map  # pylint: disable=redefined-builtin
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from six.moves import zip  # pylint: disable=redefined-builtin
 import tensorflow as tf
+from tensorflow.python import debug as tf_debug
 from tensorflow_fold.blocks import util
 
 flags = tf.app.flags
@@ -167,6 +168,11 @@ def _register_options(register, default_plan_name='plan'):
   register(
       flags.DEFINE_string,
       'mode', 'train', 'One of train or eval or infer.')
+  register(
+      flags.DEFINE_bool,
+      'debug', False,
+      'Whether tfdbg should be enabled. For now only works for local runs, not '
+      'remotely on borg.')
   # Flags for checkpoints and summaries.
   register(
       flags.DEFINE_string,
@@ -408,6 +414,7 @@ class Plan(object):
     plan.num_multiprocess_processes = options.num_multiprocess_processes
     plan.plandir = os.path.join(options.logdir_base, options.plan_name)
     plan.master = options.master
+    plan.debug = options.debug
 
     plan._apply_options_pre(options)  # pylint:disable=protected-access
     with tf.device(device_fn):
@@ -431,6 +438,7 @@ class Plan(object):
     self.metrics = collections.OrderedDict()
     self.losses = collections.OrderedDict()
     self.num_multiprocess_processes = None
+    self.debug = False
     self.is_chief_trainer = False
     self.logdir = None
     self.rundir = None
@@ -442,7 +450,7 @@ class Plan(object):
     self._loss_total = None
     self._summaries = None
     self._global_step = tf.contrib.framework.get_or_create_global_step()
-    self._best_loss = None  # TODO(moshelooks): Store this in the graph.
+    self._best_loss = None
     self._batch_size_ph = None
 
     # Callbacks:
@@ -615,6 +623,10 @@ class Plan(object):
         self.run(supervisor, session)
       return
 
+    if self.debug:
+      session = tf_debug.LocalCLIDebugWrapperSession(session)
+      session.add_tensor_filter('has_inf_or_nan', tf_debug.has_inf_or_nan)
+
     tf.gfile.MakeDirs(self.logdir)
     self.log_and_print('running %s' % self.mode)
     with session.as_default():
@@ -634,7 +646,6 @@ class Plan(object):
     if self._platform_google: tf.logging.flush()
 
   def _save_best(self, session, saver, loss, step):
-    # TODO(moshelooks): Store best_loss for train/eval in the graph.
     if self._best_loss is None or loss < self._best_loss:
       self._best_loss = loss
       save_path = os.path.join(self.logdir, 'model.ckpt')
@@ -648,7 +659,7 @@ class Plan(object):
       supervisor: A TF supervisor.
       session: A TF session.
       batches: An iterable of (batch_size, feed_dict) pairs.
-      step: The current global step.
+      step: The current global step. Used for computing summaries.
       is_dev: Whether or not we are running on the dev set. If so we never
         compute summaries (because they would overwrite summaries from the
         training set).
@@ -908,6 +919,15 @@ class TrainPlan(Plan):
           ((len(batch), self.compiler.build_feed_dict(batch))
            for batch in util.group_by_batches(
                self.dev_examples, self.batch_size)), shuffle=False)
+      # If there is an existing checkpoint in logdir, and we are
+      # saving the best model, calculate best_loss before doing any
+      # training, so we don't potentially replace a better-performing
+      # checkpoint with a worse one.
+      ckpt = tf.train.get_checkpoint_state(self.logdir)
+      if ckpt and ckpt.model_checkpoint_path:
+        _, self._best_loss, _ = self._eval_batches(
+            supervisor, session, next(gen_dev_batches), None, is_dev=True)
+        if self._best_loss is None: return  # should_stop returned true
 
     for epoch, batches in enumerate(epochs, 1):
       train_loss = 0.0
@@ -1058,7 +1078,18 @@ class EvalPlan(_StreamingPlan):
     if self.save_best: self._save_best(session, supervisor.saver, loss, step)
 
   def _restore(self, supervisor, session):
-    ckpt = tf.train.get_checkpoint_state(self.logdir_restore)
+    """Tries to restore a checkpoint, returns True on success."""
+    # If there is an existing checkpoint in logdir, and we are saving
+    # the best model, evaluate it first, so we don't potentially
+    # replace a better-performing checkpoint with a worse one. This is
+    # ineasible for streaming evals (i.e. when eval_interval_secs is
+    # zero), so we check for that as well.
+    if self.eval_interval_secs and self.save_best and self._best_loss is None:
+      ckpt = tf.train.get_checkpoint_state(self.logdir)
+    else:
+      ckpt = None
+    if ckpt is None:
+      ckpt = tf.train.get_checkpoint_state(self.logdir_restore)
     if ckpt and ckpt.model_checkpoint_path:
       self.log_and_print('restoring from %s' % ckpt.model_checkpoint_path)
       supervisor.saver.restore(session, ckpt.model_checkpoint_path)

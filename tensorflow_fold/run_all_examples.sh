@@ -7,7 +7,8 @@ set -e
 bazel build "$@" tensorflow_fold/...
 
 # loom benchmark
-./bazel-bin/tensorflow_fold/loom/benchmarks/iclr_2017_benchmark
+./bazel-bin/tensorflow_fold/loom/benchmarks/iclr_2017_benchmark \
+  --vector_size=8 --tree_size=4 --num_repeats=1
 
 # loom calculator
 TMP=$(mktemp -d)

@@ -68,14 +68,17 @@ Tensor StackTensors(const std::vector<Tensor> &tensors,
     CHECK(expanded_tensors.back().CopyFrom(t, expanded_shape))
         << "Failed to reshape tensor during StackTensors.";
   }
-  return tensorflow::tensor::Concat(expanded_tensors);
+  tensorflow::Tensor concated;
+  CHECK(tensorflow::tensor::Concat(expanded_tensors, &concated).ok());
+  return concated;
 }
 
 std::vector<Tensor> UnstackTensors(const Tensor &stacked) {
   TensorShape shape = stacked.shape();
   shape.RemoveDim(0);
   std::vector<int64> sizes(stacked.shape().dim_size(0), 1);
-  std::vector<Tensor> split = tensorflow::tensor::Split(stacked, sizes);
+  std::vector<Tensor> split;
+  CHECK(tensorflow::tensor::Split(stacked, sizes, &split).ok());
   std::vector<Tensor> result;
   for (const Tensor &t : split) {
     result.emplace_back(t.dtype(), shape);

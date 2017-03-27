@@ -71,7 +71,13 @@ class BlocksTest(test_lib.TestCase):
         self.assertSameStructure(desired_out, out[0].tolist())
 
   def assertBuildsConst(self, desired, block, inp):
-    # TODO(moshelooks): actually test constness
+    # In this context 'const' means a block that can be evaluated
+    # entirely in python, without running TF at all. For example,
+    # (td.Map(td.Scalar()) >> td.Sum()) is const.
+    #
+    # There currently are no optimizations in Fold for const
+    # blocks. If/when these are implemented, code should go here for
+    # testing that 'block' is in fact const.
     self.assertBuilds(desired, block, inp, max_depth=None)
 
   def test_scalar(self):
@@ -301,13 +307,14 @@ class BlocksTest(test_lib.TestCase):
     self.assertBuilds(4, c1, None, max_depth=1)
 
   def test_composition_backward_type_inference(self):
-    b = tdb.Map(tdb.Identity()) >> tdb.Identity() >> tdb.Identity()
+    b = tdb._pipe([tdb.Map(tdb.Identity()), tdb.Identity(), tdb.Identity()])
     six.assertRaisesRegex(
         self, TypeError, 'bad output type VoidType',
         b.output.set_output_type, tdt.VoidType())
 
   def test_composition_forward_type_inference(self):
-    b = tdb.Identity() >> tdb.Identity() >> tdb.Map(tdb.Function(tf.negative))
+    b = tdb._pipe([tdb.Identity(), tdb.Identity(),
+                   tdb.Map(tdb.Function(tf.negative))])
     six.assertRaisesRegex(
         self, TypeError, 'bad input type PyObjectType',
         b.input.set_input_type, tdt.PyObjectType())
@@ -1090,8 +1097,9 @@ class BlocksTest(test_lib.TestCase):
         tdb.Composition(name='x').output: '<td.Composition.output \'x\'>',
         tdb.Composition(name='x'): '<td.Composition \'x\'>',
 
-        tdb.Pipe(): '<td.Pipe>',
-        tdb.Pipe(tdb.Scalar(), tdb.Identity()): '<td.Pipe>',
+        tdb.Pipe(): '<td.Identity>',
+        tdb.Pipe(tdb.Scalar(), tdb.Identity()): '<td.Scalar dtype=\'float32\'>',
+        tdb.Pipe(tdb.InputTransform(ord), tdb.Scalar('int32')): '<td.Pipe>',
 
         tdb.Record({}, name='x'): '<td.Record \'x\' ordered=False>',
         tdb.Record((), name='x'): '<td.Record \'x\' ordered=True>',

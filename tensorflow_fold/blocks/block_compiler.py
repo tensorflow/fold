@@ -408,7 +408,7 @@ class Compiler(object):
                          'loom_input_tensor for the same compiler')
       self._input_tensor = input_tensor
       loom_input_tensor = tf.py_func(
-          self.build_loom_input_batched,
+          lambda inp: np.asarray(self.build_loom_input_batched(inp), np.object),
           [self._input_tensor], [tf.string], name='Scheduler')
     passthrough_types = (self._dry.tagging_op.passthrough_types
                          if self._dry.tagging_op else None)

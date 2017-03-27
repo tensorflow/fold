@@ -24,7 +24,28 @@ from tensorflow_fold.blocks import layers as tdl
 from tensorflow_fold.blocks import test_lib
 
 
+# pylint:disable=unused-argument
+def foo_function(a, b, c=1, d='hello', e=False):
+  unused_bar = 42      # Add some additional local variables to confuse things.
+  unused_baz = 'ugly'
+  return tdl.get_local_arguments(foo_function)
+
+
+class FooClass(object):
+
+  def __init__(self, a, b, c=1, d='hello', e=False):
+    unused_bif = 0
+    self.args = tdl.get_local_arguments(FooClass.__init__, True)
+# pylint:enable=unused-argument
+
+
 class LayersTest(test_lib.TestCase):
+
+  def test_get_local_args(self):
+    self.assertEqual(foo_function(2, 3, c=42, e=True),
+                     ([2, 3], [('c', 42), ('e', True)]))
+    fc = FooClass(3, 4, d='goodbye')
+    self.assertEqual(fc.args, ([3, 4], [('d', 'goodbye')]))
 
   def test_fc_linear(self):
     fc = tdl.FC(1, None, tf.constant_initializer(2.0))
@@ -39,6 +60,16 @@ class LayersTest(test_lib.TestCase):
       out = [fc(tf.constant([x], 'float32')) for x in [[-1], [1]]]
       sess.run(tf.global_variables_initializer())
       self.assertAllEqual([[[0, 0]], [[3, 3]]], sess.run(out))
+
+  def test_fc_normalization(self):
+    def fn(inp):
+      return tf.div(inp, tf.constant([2.0], 'float32'))
+    fc = tdl.FC(
+        2, normalization_fn=fn, initializer=tf.constant_initializer(4.0))
+    with self.test_session() as sess:
+      out = [fc(tf.constant([x], 'float32')) for x in [[-1], [1]]]
+      sess.run(tf.global_variables_initializer())
+      self.assertAllEqual([[[0, 0]], [[2, 2]]], sess.run(out))
 
   def test_tf_dropout(self):
     tf.set_random_seed(123)

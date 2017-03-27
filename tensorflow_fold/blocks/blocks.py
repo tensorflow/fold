@@ -82,6 +82,7 @@ class Block(tdt.IOBase):
     self._children = []
     self._constructor_name = None
     self._constructor_args = None
+    self._constructor_kwargs = None
     if children is not None:
       for b in children:
         self._add_child(b)
@@ -90,7 +91,7 @@ class Block(tdt.IOBase):
       self._propagate_types_from_child(child)
 
   def __repr__(self):
-    strs = ['td.%s' % (self._constructor_name or  type(self).__name__,)]
+    strs = [self._constructor_name or ('td.%s' % type(self).__name__)]
     if self._name: strs.append('%r' % self._name)
     for k, v in sorted(six.iteritems(self._repr_kwargs())):
       if isinstance(v, functools.partial): v = v.func
@@ -115,6 +116,24 @@ class Block(tdt.IOBase):
   def set_constructor_args(self, *constructor_args):
     """Sets the constructor arguments for pretty printing. Returns `self`."""
     self._constructor_args = constructor_args
+    return self
+
+  def set_constructor_name_args(self, name, args, kwargs):
+    """Sets the constructor args used to pretty-print this layer.
+
+    Should be called by derived classes in __init__.
+
+    Args:
+      name: the fully qualified name of the constructor
+      args: a list of constructor arguments
+      kwargs: a list of (key,value,default) triples for keyword arguments
+
+    Returns:
+      self
+    """
+    self._constructor_name = name
+    self._constructor_args = args
+    self._constructor_kwargs = kwargs if kwargs is not None else []
     return self
 
   def _add_child(self, b):
@@ -282,9 +301,9 @@ class Tensor(Block):
 
   def _repr_kwargs(self):
     kwargs = {'dtype': self.output_type.dtype}
-    if self._constructor_name == 'Vector':
+    if self._constructor_name == 'td.Vector':
       kwargs['size'] = self.output_type.shape[0]
-    elif self._constructor_name != 'Scalar':
+    elif self._constructor_name != 'td.Scalar':
       kwargs['shape'] = self.output_type.shape
     return kwargs
 
@@ -299,13 +318,13 @@ class Tensor(Block):
 def Scalar(dtype='float32', name=None):  # pylint: disable=invalid-name
   """A block that converts its input to a scalar."""
   return Tensor(shape=[], dtype=dtype, name=name).set_constructor_name(
-      'Scalar')
+      'td.Scalar')
 
 
 def Vector(size, dtype='float32', name=None):  # pylint: disable=invalid-name
   """A block that converts its input to a vector."""
   return Tensor(shape=[size], dtype=dtype, name=name).set_constructor_name(
-      'Vector')
+      'td.Vector')
 
 
 class FromTensor(Block):
@@ -493,7 +512,7 @@ def SerializedMessageToTree(message_type_name):  # pylint: disable=invalid-name
   return InputTransform(functools.partial(
       proto_tools.serialized_message_to_tree, message_type_name),
                         name=message_type_name).set_constructor_name(
-                            'SerializedMessageToTree')
+                            'td.SerializedMessageToTree')
 
 
 class GetItem(Block):
@@ -581,7 +600,8 @@ def Slice(*args, **kwargs):  # pylint: disable=invalid-name
     raise TypeError('Slice does not accept positional arguments; allowed '
                     'keyword arguments are start, stop, and step')
   name = kwargs.pop('name', None)
-  return GetItem(_get_slice(**kwargs), name=name).set_constructor_name('Slice')
+  return GetItem(_get_slice(**kwargs), name=name).set_constructor_name(
+      'td.Slice')
 
 
 def _get_slice(start=None, stop=None, step=None):
@@ -630,7 +650,7 @@ class _ForwardDeclarationRef(Block):
     self._target_block = None
     super(_ForwardDeclarationRef, self).__init__(
         input_type=input_type, output_type=output_type, name=name)
-    self.set_constructor_name('ForwardDeclaration()')
+    self.set_constructor_name('td.ForwardDeclaration()')
 
   def _update_input_type(self):
     if self._target_block is not None:
@@ -677,7 +697,7 @@ class _ComposeIO(Identity):
       placeholder_name = 'output'
       self._update_parent = parent.set_output_type
     super(_ComposeIO, self).__init__(name=parent_name)
-    self.set_constructor_name('Composition.%s' % placeholder_name)
+    self.set_constructor_name('td.Composition.%s' % placeholder_name)
     self._parent = parent
 
   def _update_input_type(self):
@@ -989,21 +1009,21 @@ def Pipe(*blocks, **kwargs):  # pylint: disable=invalid-name
   ```
 
   Args:
-    *blocks: A tuple of blocks.
-    **kwargs: `{'name': name_string}` or `{}`.
+    *blocks:   A tuple of blocks.
+    **kwargs:  Optional keyword arguments.  Accepts name='block_name'.
 
   Returns:
     A block.
   """
-  return _pipe([convert_to_block(b) for b in blocks],
-               **kwargs).set_constructor_name('Pipe')
+  blocks = [convert_to_block(b) for b in blocks]
+  blocks = [b for b in blocks if not isinstance(b, Identity)]
+  if not blocks: return Identity(**kwargs)
+  if len(blocks) == 1: return blocks[0]
+  return _pipe(blocks, **kwargs)
 
 
 def _pipe(blocks, name=None):
   """Internal implementation of Pipe."""
-  if not blocks: return Identity(name=name)
-  if len(blocks) == 1: return blocks[0]
-
   c = Composition(blocks, name=name)
   c.connect(c.input, blocks[0])
   prev = blocks[0]
@@ -1011,7 +1031,7 @@ def _pipe(blocks, name=None):
     c.connect(prev, b)
     prev = b
   c.connect(prev, c.output)
-  return c
+  return c.set_constructor_name('td.Pipe')
 
 
 class Record(Block):
@@ -1135,15 +1155,18 @@ def AllOf(*blocks, **kwargs):  # pylint: disable=invalid-name
   Returns:
     See above.
   """
-  return _all_of([convert_to_block(b) for b in blocks],
-                 **kwargs).set_constructor_name('AllOf')
+  blocks = [convert_to_block(b) for b in blocks]
+  c = _all_of(blocks, **kwargs)
+  c.set_constructor_name('td.AllOf')
+  c.set_constructor_args(*blocks)
+  return c
 
 
 def _all_of(blocks, name=None):
   """Internal implementation of AllOf."""
   if not blocks: return Void(name=name)
   if len(blocks) == 1:
-    # TODO(moshelooks): fix composition to allow for tuple output.
+    # TODO(delesley): fix composition to allow for tuple output.
     return Pipe(blocks[0], AllOf(Identity(), Identity()), Slice(stop=1),
                 name=name)
   c = Composition(blocks, name=name)
@@ -1291,7 +1314,6 @@ class _RNN(Block):
     """
     self._rnn_cell_block = convert_to_block(rnn_cell_block)
     super(_RNN, self).__init__(children=[self._rnn_cell_block], name=name)
-    self.set_constructor_name('RNN')
 
   def _repr_kwargs(self):
     return dict(rnn_cell_block=self.rnn_cell_block)
@@ -1402,12 +1424,15 @@ def RNN(cell, initial_state=None,             # pylint: disable=invalid-name
     a block.
   """
   cell = convert_to_block(cell)
+  (args, kwargs) = _get_local_args(RNN)
 
   if initial_state_from_input:
     if initial_state is not None:
       raise ValueError('Cannot specify initial_state if '
                        'initial_state_from_input is True.')
-    return _RNN(cell, name=name)
+    rnn = _RNN(cell, name=name)
+    rnn.set_constructor_name_args('td.RNN', args, kwargs)
+    return rnn
 
   # Otherwise create a composition to wire in initial_state.
   if initial_state is None:
@@ -1421,10 +1446,11 @@ def RNN(cell, initial_state=None,             # pylint: disable=invalid-name
   else:
     initial_state = convert_to_block(initial_state)
 
-  c = Composition(name=name).set_constructor_name('RNN')
+  c = Composition(name=name).set_constructor_name('td.RNN')
   with c.scope():
     rnn = _RNN(cell, name=name).reads(c.input, initial_state)
     c.output.reads(rnn)
+  c.set_constructor_name_args('td.RNN', args, kwargs)
   return c
 
 
@@ -1484,17 +1510,17 @@ class Reduce(Block):
 
 def Sum(name=None):  # pylint: disable=invalid-name
   """Sums its inputs."""
-  return Reduce(Function(tf.add), name=name).set_constructor_name('Sum')
+  return Reduce(Function(tf.add), name=name).set_constructor_name('td.Sum')
 
 
 def Min(name=None):  # pylint: disable=invalid-name
   """Takes the minimum of its inputs.  Zero on no inputs."""
-  return Reduce(Function(tf.minimum), name=name).set_constructor_name('Min')
+  return Reduce(Function(tf.minimum), name=name).set_constructor_name('td.Min')
 
 
 def Max(name=None):  # pylint: disable=invalid-name
   """Takes the maximum of its inputs.  Zero on no inputs."""
-  return Reduce(Function(tf.maximum), name=name).set_constructor_name('Max')
+  return Reduce(Function(tf.maximum), name=name).set_constructor_name('td.Max')
 
 
 def _tf_safe_reciprocal(x):
@@ -1517,7 +1543,7 @@ def Mean(name=None):  # pylint: disable=invalid-name
   with c.scope():
     c.output.reads(Function(_tf_batch_safe_scalar_division).reads(
         Sum().reads(c.input), Length().reads(c.input)))
-  return c.set_constructor_name('Mean')
+  return c.set_constructor_name('td.Mean')
 
 
 class OneOf(Block):
@@ -1929,7 +1955,7 @@ def OneHotFromList(elements, dtype='float32', strict=True, name=None):  # pylint
     key_fn = lambda x: indices.get(x, -1)
 
   return OneOf(key_fn, tensors, pre_block=Void(),
-               name=name).set_constructor_name('OneHotFromList')
+               name=name).set_constructor_name('td.OneHotFromList')
 
 
 class Nth(Block):
@@ -1999,13 +2025,13 @@ def Zeros(output_type, name=None):  # pylint: disable=invalid-name
     result = _EmptySequence(input_type=tdt.VoidType(), output_type=output_type,
                             name=name)
   result.set_constructor_args(pp_output_type)
-  return result.set_constructor_name('Zeros')
+  return result.set_constructor_name('td.Zeros')
 
 
 def Void(name=None):  # pylint: disable=invalid-name
   """A block with void output type that accepts any input type."""
   return Composition(name=name).set_output_type(
-      tdt.VoidType()).set_constructor_name('Void')
+      tdt.VoidType()).set_constructor_name('td.Void').set_constructor_args()
 
 
 def convert_to_block(block_like):
@@ -2111,3 +2137,7 @@ class _EmptySequence(Block):
 def _is_layer(x):
   return isinstance(
       x, tensorflow_fold.blocks.layers.Layer)
+
+
+_get_local_args = (
+    tensorflow_fold.blocks.layers.get_local_arguments)

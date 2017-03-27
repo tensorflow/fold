@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 import abc
+import inspect
 import itertools
 # import google3
 import numpy as np
@@ -58,6 +59,39 @@ class Layer(tdt.IOBase):
     if self._vscope.caching_device is None:
       self._vscope.set_caching_device(lambda op: op.device)
     super(Layer, self).__init__(input_type, output_type, name)
+
+    if not hasattr(self, '_constructor_name'):
+      self._constructor_name = '__.%s' % self.__class__.__name__
+    if not hasattr(self, '_constructor_args'):
+      self._constructor_args = None
+    if not hasattr(self, '_constructor_kwargs'):
+      self._constructor_kwargs = None
+
+  def set_constructor_args(self, name, args, kwargs):
+    """Sets the constructor args used to pretty-print this layer.
+
+    Should be called by derived classes in __init__.
+
+    Args:
+      name: the fully qualified name of the constructor
+      args: a list of constructor arguments
+      kwargs: a list of (key,value,default) triples for keyword arguments
+    """
+    self._constructor_name = name
+    self._constructor_args = args
+    self._constructor_kwargs = kwargs if kwargs is not None else []
+
+  @property
+  def constructor_name(self):
+    return self._constructor_name
+
+  @property
+  def constructor_args(self):
+    return self._constructor_args
+
+  @property
+  def constructor_kwargs(self):
+    return self._constructor_kwargs
 
   def __rshift__(self, rhs):
     return tensorflow_fold.blocks.blocks.Pipe(
@@ -197,7 +231,8 @@ class FC(TensorToTensorLayer):
   """
 
   def __init__(self, num_units_out, activation=tf.nn.relu, initializer=None,
-               input_keep_prob=None, output_keep_prob=None, name=None):
+               input_keep_prob=None, output_keep_prob=None,
+               normalization_fn=None, name=None):
     """Initializes the layer.
 
     Args:
@@ -212,9 +247,13 @@ class FC(TensorToTensorLayer):
         Feed 1.0 at serving to disable dropout.
       output_keep_prob: Optional scalar float32 tensor for dropout on output.
         Feed 1.0 at serving to disable dropout.
+      normalization_fn: Optional normalization function that will be inserted
+        before nonlinearity.
       name: An optional string name. Defaults to `FC_%d % num_units_out`. Used
         to name the variable scope where the variables for the layer live.
     """
+    self.set_constructor_args('td.FC', *get_local_arguments(FC.__init__, True))
+
     if not initializer:
       # TODO(SamEisenstat): This constant is calibrated for ReLU, something else
       # might be better for ReLU6.
@@ -230,6 +269,7 @@ class FC(TensorToTensorLayer):
     self._initializer = initializer
     self._input_keep_prob = input_keep_prob
     self._output_keep_prob = output_keep_prob
+    self._normalization_fn = normalization_fn
     if name is None: name = 'FC_%d' % num_units_out
     super(FC, self).__init__(
         output_type=tdt.TensorType([num_units_out]), name_or_scope=name)
@@ -255,6 +295,8 @@ class FC(TensorToTensorLayer):
     if self._input_keep_prob is not None:
       batch = tf.nn.dropout(batch, self._input_keep_prob)
     y = tf.nn.xw_plus_b(batch, self._weights, self._bias)
+    if self._normalization_fn is not None and self._activation is not None:
+      y = self._normalization_fn(y)
     if self._activation is not None: y = self._activation(y)
     if self._output_keep_prob is not None:
       y = tf.nn.dropout(y, self._output_keep_prob)
@@ -298,6 +340,10 @@ class Embedding(TensorToTensorLayer):
       ValueError: If the shape of `weights` is not
         `(num_buckets, num_units_out)`.
     """
+
+    self.set_constructor_args('td.Embedding',
+                              *get_local_arguments(Embedding.__init__, True))
+
     self._weights_shape = (num_buckets, num_units_out)
     if name is None: name = 'Embedding_%d_%d' % self._weights_shape
     if initializer is None:
@@ -401,6 +447,9 @@ class FractalNet(TensorToTensorLayer):
         p_drop_recursive_case < 1`)
       name: An optional string name.
     """
+    self.set_constructor_args('td.FractalNet',
+                              *get_local_arguments(FractalNet.__init__, True))
+
     if mixer is None:
       mixer = lambda a, b: tf.add(a, b)/2.0
     self._num_fractal_blocks = num_fractal_blocks
@@ -527,6 +576,9 @@ class ScopedLayer(Layer):
         instance of `tf.contrib.rnn.RNNCell`.
       name_or_scope: A variable scope or a string to use as the scope name.
     """
+    self.set_constructor_args('td.ScopedLayer',
+                              *get_local_arguments(ScopedLayer.__init__, True))
+
     if name_or_scope is None:
       if hasattr(layer_fn, '__name__'):
         name_or_scope = layer_fn.__name__
@@ -550,3 +602,31 @@ class ScopedLayer(Layer):
     result = self._layer_fn(*args, scope=self._vscope)
     self._vscope.reuse_variables()   # Reuse scope on subsequent calls
     return result
+
+
+def get_local_arguments(fun, is_method=False):
+  """Return the callers arguments and non-default keyword arguments.
+
+  Args:
+    fun: The function or method that is calling get_local_arguments.
+    is_method: True if this is a method with a self argument.
+
+  Returns:
+    A tuple of (list of arguments, list of non default keyword arguments)
+  """
+
+  frame = inspect.currentframe().f_back
+  argvals = inspect.getargvalues(frame)
+  argspec = inspect.getargspec(fun)
+
+  lvals = argvals.locals
+  num_args = len(argspec.args) - len(argspec.defaults)
+  arg_names = argspec.args[0:num_args]
+  kwarg_names = argspec.args[num_args:]
+
+  args = [lvals[k] for k in arg_names]
+  kwargs_a = [(k, lvals[k], d) for (k, d) in zip(kwarg_names, argspec.defaults)]
+  kwargs = [(k, v) for (k, v, d) in kwargs_a if v != d]
+
+  if is_method: args = args[1:]   # strip off the self argument
+  return (args, kwargs)

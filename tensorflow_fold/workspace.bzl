@@ -7,7 +7,7 @@ load('@org_tensorflow//tensorflow:workspace.bzl', 'tf_workspace')
 # workspace_dir is the absolute path to the TensorFlow Fold repo. If linked
 # as a submodule, it'll likely be '__workspace_dir__ + "/fold"'
 def tf_fold_workspace():
-  tf_workspace()
+  tf_workspace(tf_repo_name = "org_tensorflow")
 
   # ===== gRPC dependencies =====
   native.bind(

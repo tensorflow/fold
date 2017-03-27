@@ -140,6 +140,7 @@ fold_py_library(
         ":util",
         # numpy",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "@org_tensorflow//tensorflow/python/debug:debug_py",
     ],
 )
 

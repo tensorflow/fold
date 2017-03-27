@@ -746,7 +746,7 @@ Pipe(a, b, c).eval(x) => c(b(a(x)))
 
 
 *  <b>`*blocks`</b>: A tuple of blocks.
-*  <b>`**kwargs`</b>: `{'name': name_string}` or `{}`.
+*  <b>`**kwargs`</b>: Optional keyword arguments.  Accepts name='block_name'.
 
 ##### Returns:
 
@@ -1507,7 +1507,7 @@ out = hidden >> Call(FC(10, activation=None))
 - - -
 
 <a name="td.FC.__init__"></a>
-#### `td.FC.__init__(num_units_out, activation=relu, initializer=None, input_keep_prob=None, output_keep_prob=None, name=None)`
+#### `td.FC.__init__(num_units_out, activation=relu, initializer=None, input_keep_prob=None, output_keep_prob=None, normalization_fn=None, name=None)`
 
 Initializes the layer.
 
@@ -1525,6 +1525,8 @@ Initializes the layer.
     Feed 1.0 at serving to disable dropout.
 *  <b>`output_keep_prob`</b>: Optional scalar float32 tensor for dropout on output.
     Feed 1.0 at serving to disable dropout.
+*  <b>`normalization_fn`</b>: Optional normalization function that will be inserted
+    before nonlinearity.
 *  <b>`name`</b>: An optional string name. Defaults to `FC_%d % num_units_out`. Used
     to name the variable scope where the variables for the layer live.
 
@@ -2939,6 +2941,27 @@ Sets `self` to read its inputs from `other`.
 *  <b>`AssertionError`</b>: if no composition scope has been entered.
 
 
+- - -
+
+<a name="td.Block.set_constructor_name_args"></a>
+#### `td.Block.set_constructor_name_args(name, args, kwargs)`
+
+Sets the constructor args used to pretty-print this layer.
+
+Should be called by derived classes in __init__.
+
+##### Args:
+
+
+*  <b>`name`</b>: the fully qualified name of the constructor
+*  <b>`args`</b>: a list of constructor arguments
+*  <b>`kwargs`</b>: a list of (key,value,default) triples for keyword arguments
+
+##### Returns:
+
+  self
+
+
 
 - - -
 
@@ -2978,6 +3001,30 @@ Creates the layer.
 
 <a name="td.Layer.__rshift__"></a>
 #### `td.Layer.__rshift__(rhs)`
+
+
+
+
+- - -
+
+<a name="td.Layer.constructor_args"></a>
+#### `td.Layer.constructor_args`
+
+
+
+
+- - -
+
+<a name="td.Layer.constructor_kwargs"></a>
+#### `td.Layer.constructor_kwargs`
+
+
+
+
+- - -
+
+<a name="td.Layer.constructor_name"></a>
+#### `td.Layer.constructor_name`
 
 
 

@@ -312,6 +312,21 @@ class TrainPlanTest(PlanTestBase):
     p = self.create_plan(loom_input_tensor=None)
     p.examples = [1] * 4
     self.check_plan(p, [])
+    # Test that we don't clobber a better checkpoint with a worse one.
+    tf.reset_default_graph()
+    self._ClearCachedSession()
+    p = self.create_plan(loom_input_tensor=None)
+    p.examples = [1] * 4
+    p.epochs = 1
+    p._loss_total = tf.constant(42.0)
+    # We aren't using a managed session, so we need to run this ourselves.
+    init_op = tf.global_variables_initializer()
+    sv = p.create_supervisor()
+    with self.test_session() as sess:
+      sess.run(init_op)
+      p.run(sv, sess)
+      log_str = p.print_file.getvalue()
+      self.assertNotIn('new best model saved', log_str)
 
   def test_empty_examples_raises(self):
     p = self.create_plan(loom_input_tensor=None)
@@ -583,7 +598,7 @@ class EvalPlanTest(PlanTestBase):
 
   def test_run_loop(self):
     # This call to get_variable is used to mutate global state.
-    tf.get_variable('global_step', [], tf.int32, tf.constant_initializer(42))
+    tf.get_variable('global_step', [], tf.int64, tf.constant_initializer(42))
     p = self._make_plan()
     p.eval_interval_secs = 0.01
     p.should_stop = mock.Mock(side_effect=[False, False, True])
@@ -620,6 +635,23 @@ class EvalPlanTest(PlanTestBase):
       expected_lines = ['restoring from %s-42' % save_path,
                         'step:      42 loss: 4.000e+00 foo: 4.200e+01']
       expected = '\n'.join(expected_lines) + '\n'
+      self.assertTrue(log_str.endswith(expected), msg=log_str)
+
+    # Test that we restore the first checkpoint from the eval dir, so
+    # we don't clobber a better checkpoint with a worse one.
+    tf.reset_default_graph()
+    self._ClearCachedSession()
+    p = self._make_plan()
+    p.eval_interval_secs = 0.01
+    p.should_stop = mock.Mock(side_effect=[False, True])
+    # We aren't using a managed session, so we need to run this ourselves.
+    init_op = tf.global_variables_initializer()
+    sv = p.create_supervisor()
+    with self.test_session() as sess:
+      sess.run(init_op)
+      p.run(sv, sess)
+      log_str = p.print_file.getvalue()
+      expected = 'restoring from %s/model.ckpt-42\n' % p.logdir
       self.assertTrue(log_str.endswith(expected), msg=log_str)
 
   def test_print_metrics(self):
