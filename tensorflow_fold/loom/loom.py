@@ -962,7 +962,7 @@ class Weaver(object):
     else:
       # Send raw bytes rather than TensorProto because make_tensor_proto
       # is very slow, taking e.g. 35 usec for a vector of 10 float32s.
-      constant = self._weaver.MakeConstantSerialized(ts_idx, value.tobytes())
+      constant = self._weaver.MakeConstantSerialized(ts_idx, value.tostring())
     if constant == -1:
       raise AssertionError('Weaver Constant creation failed: %s' %
                            self._weaver.error_string())
