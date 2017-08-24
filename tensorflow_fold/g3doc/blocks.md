@@ -60,7 +60,7 @@ char_lstm = (td.InputTransform(lambda s: [ord(c) for c in s]) >>
                     td.Function(td.Embedding(128, 8))) >>
              td.RNN(char_cell))
 # word LSTM converts a sequence of word vectors to a sentence vector.
-word_lstm = td.Map(char_lstm >> td.GetItem(1)) >> td.RNN(word_cell)
+word_lstm = td.Map(char_lstm >> td.GetItem(1) >> td.GetItem(1)) >> td.RNN(word_cell)
 ```
 
 A hierarchical LSTM takes a list of strings as input, where each string is a

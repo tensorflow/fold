@@ -1042,7 +1042,7 @@ class BlocksTest(test_lib.TestCase):
                  tdb.Map(tdb.Scalar('int32') >>
                          tdb.Function(tdl.Embedding(128, 8))) >>
                  tdb.RNN(char_cell))
-    word_lstm = (tdb.Map(char_lstm >> tdb.GetItem(1) >> tdb.Concat()) >>
+    word_lstm = (tdb.Map(char_lstm >> tdb.GetItem(1) >> tdb.GetItem(1)) >>
                  tdb.RNN(word_cell))
 
     with self.test_session():

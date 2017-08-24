@@ -604,6 +604,15 @@ class ScopedLayer(Layer):
     return result
 
 
+def __array_eq(arr0, arr1):
+  """Comparing the equality of two arrays. Handling np.ndarray differently.
+  """
+  boolean = arr0 == arr1
+  if isinstance(boolean, np.ndarray):
+    boolean = boolean.all()
+  return boolean
+
+
 def get_local_arguments(fun, is_method=False):
   """Return the callers arguments and non-default keyword arguments.
 
@@ -626,7 +635,7 @@ def get_local_arguments(fun, is_method=False):
 
   args = [lvals[k] for k in arg_names]
   kwargs_a = [(k, lvals[k], d) for (k, d) in zip(kwarg_names, argspec.defaults)]
-  kwargs = [(k, v) for (k, v, d) in kwargs_a if v != d]
+  kwargs = [(k, v) for (k, v, d) in kwargs_a if not __array_eq(v, d)]
 
   if is_method: args = args[1:]   # strip off the self argument
   return (args, kwargs)
