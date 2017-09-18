@@ -15,6 +15,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import math
 # import google3
 import numpy as np
 import six
@@ -53,6 +54,20 @@ class LayersTest(test_lib.TestCase):
       out = [fc(tf.constant([x], 'float32')) for x in [[0, 0], [1, 0], [1, 1]]]
       sess.run(tf.global_variables_initializer())
       self.assertAllEqual([[[0]], [[2]], [[4]]], sess.run(out))
+
+  def test_fc_linear_weight_norm(self):
+    fc = tdl.FC(1, None, tf.constant_initializer(2.0), weight_norm=True)
+    normalized_weight = 2.0 / math.sqrt(8.0)
+    with self.test_session() as sess:
+      out = [fc(tf.constant([x], 'float32')) for x in [[0, 0], [1, 0], [1, 1]]]
+      sess.run(tf.global_variables_initializer())
+      np.testing.assert_almost_equal(
+          [[[0]], [[normalized_weight]], [[2 * normalized_weight]]],
+          sess.run(out))
+      sess.run(fc.scales.assign([2.0]))
+      np.testing.assert_almost_equal(
+          [[[0]], [[2 * normalized_weight]], [[4 * normalized_weight]]],
+          sess.run(out))
 
   def test_fc_relu(self):
     fc = tdl.FC(2, initializer=tf.constant_initializer(3.0))

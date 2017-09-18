@@ -31,14 +31,6 @@ TMP2=$(mktemp -d)
 ./bazel-bin/tensorflow_fold/blocks/examples/fizzbuzz/fizzbuzz \
   --validation_size=5 --steps=3 --batches_per_step=2
 
-# blocks language_id
-TMP=$(mktemp -d)
-if [[ ! -f /tmp/roman_sentences.csv ]]; then
-  ./tensorflow_fold/blocks/examples/language_id/fetch_datasets.sh
-fi
-./bazel-bin/tensorflow_fold/blocks/examples/language_id/language_id \
-  --logdir_base="${TMP}" --truncate_examples=7 --epochs=2
-
 # blocks mnist
 TMP=$(mktemp -d)
 ./bazel-bin/tensorflow_fold/blocks/examples/mnist/mnist \
@@ -63,3 +55,11 @@ echo '(3 (1 bar) (2 mu))' > "${TMP}"/test.txt
 ./bazel-bin/tensorflow_fold/blocks/examples/sentiment/eval \
   --checkpoint_file="${TMP}"/model-1 --tree_dir="${TMP}" \
   --embedding_file="${TMP}"/glove_filtered
+
+# blocks language_id
+TMP=$(mktemp -d)
+if [[ ! -f /tmp/roman_sentences.csv ]]; then
+  ./tensorflow_fold/blocks/examples/language_id/fetch_datasets.sh
+fi
+./bazel-bin/tensorflow_fold/blocks/examples/language_id/language_id \
+  --logdir_base="${TMP}" --truncate_examples=7 --epochs=2

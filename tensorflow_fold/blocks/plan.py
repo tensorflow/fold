@@ -15,6 +15,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import ast
 import collections
 import inspect
 import itertools
@@ -48,6 +49,15 @@ _OPTIMIZER_CLASSES = {
 }
 
 
+_DECAY_CLASSES = {
+    'exponential_decay': tf.train.exponential_decay,
+    'inverse_time_decay': tf.train.inverse_time_decay,
+    'natural_exp_decay': tf.train.natural_exp_decay,
+    'piecewise_constant': tf.train.piecewise_constant,
+    'polynomial_decay': tf.train.polynomial_decay,
+}
+
+
 def parse_spec(spec):
   """Parses a list of key values pairs.
 
@@ -61,27 +71,74 @@ def parse_spec(spec):
     A dict.
   """
   params = {}
-  for clause in spec.split(','):
-    clause = clause.strip()
-    if not clause:
-      continue
-    if '=' not in clause:
-      raise ValueError('Clause "%s" doesn\'t contain an "=".' % clause)
-    key, value = clause.split('=', 1)
-    key = key.strip()
-    value = value.strip()
-    if key in params: raise ValueError('duplicate key %s' % key)
-    try:
-      params[key] = int(value)
-    except ValueError:
+  if spec:
+    # The regex represents a key-value pair.
+    regex = r"""([^=,]+) # The key. Comma and = are excluded.
+                =
+                (\[[^\[\]=]*\] # The value as a list. Nested lists unsupported.
+                 |[^=,\[\]]*) # Or a simple value.
+                (,|$) # The end of a key-value pair.
+            """
+    tuples = re.findall(regex, spec, flags=re.X)
+    if not tuples:
+      raise ValueError('Spec "%s" doesn\'t contain any key value pair.' % spec)
+    for item in tuples:
+      key = item[0]
+      value = item[1]
+      if not value: raise ValueError('Empty value for key %s' % key)
+      if key in params: raise ValueError('Duplicate key %s' % key)
       try:
-        params[key] = float(value)
+        params[key] = ast.literal_eval(value)
       except ValueError:
         params[key] = value
+
   return params
 
 
-def build_optimizer_from_params(optimizer='adam', **kwargs):
+def build_learning_rate_decay_from_params(
+    learning_rate_decay_params,
+    global_step,
+    learning_rate):
+  """Returns a tensor for the decayed learning rate.
+
+  Args:
+    learning_rate_decay_params: A dictionary for the parameters used to
+      construct the decayed learning rate tensor.
+    global_step: The 1D tensor as the training global step.
+    learning_rate: A float32 constant as the starting learning rate.
+
+  Raises:
+    ValueError: If 'algorithm' is missing from learning_rate_decay_params.
+    ValueError: If 'algorithm' is unknown.
+    ValueError: If 'learning_rate' is missing except for piecewise_constant
+      algorithm which does not require it.
+
+  Returns:
+    A tensor as the decayed learning rate.
+  """
+  if 'algorithm' not in learning_rate_decay_params:
+    raise ValueError('Missing algorithm field')
+  algorithm = learning_rate_decay_params.pop('algorithm')
+  if algorithm not in _DECAY_CLASSES:
+    raise ValueError('Unknown algorithm: %s' % algorithm)
+  algorithm_class = _DECAY_CLASSES[algorithm]
+  if algorithm == 'piecewise_constant':
+    decayed_rate = algorithm_class(x=global_step, **learning_rate_decay_params)
+  else:
+    if learning_rate is None:
+      raise ValueError('Missing learning_rate field')
+    decayed_rate = algorithm_class(
+        learning_rate=learning_rate,
+        global_step=global_step,
+        **learning_rate_decay_params)
+  return decayed_rate
+
+
+def build_optimizer_from_params(
+    optimizer='adam',
+    global_step=None,
+    learning_rate_decay_params=None,
+    **kwargs):
   """Constructs an optimizer from key-value pairs.
 
   For example
@@ -93,6 +150,9 @@ def build_optimizer_from_params(optimizer='adam', **kwargs):
 
   Args:
     optimizer: The name of the optimizer to construct.
+    global_step: The tensor of the global training step.
+    learning_rate_decay_params: The params to construct the learning rate decay
+      algorithm. A dictionary.
     **kwargs: Arguments for the optimizer's constructor.
 
   Raises:
@@ -128,8 +188,16 @@ def build_optimizer_from_params(optimizer='adam', **kwargs):
       raise ValueError('The %s optimizer requires %s to be set.' % (
           optimizer_name, arg))
 
-  # Finally, call the constructor:
-  return optimizer_class(**kwargs)
+  # Add learning rate decay if necessary.
+  if learning_rate_decay_params:
+    learning_rate = kwargs.pop('learning_rate', None)
+    learning_rate_decay = build_learning_rate_decay_from_params(
+        learning_rate_decay_params,
+        global_step,
+        learning_rate)
+    return optimizer_class(learning_rate=learning_rate_decay, **kwargs)
+  else:
+    return optimizer_class(**kwargs)
 
 
 def define_plan_flags(default_plan_name='plan', blacklist=None):
@@ -210,6 +278,17 @@ def _register_options(register, default_plan_name='plan'):
       flags.DEFINE_string,
       'optimizer_spec', '',
       'An optimizer spec used to construct the optimizer. Default is ADAM.')
+  register(
+      flags.DEFINE_string,
+      'learning_rate_decay_spec', '',
+      'A spec to construct the learning rate decay algorithm. Default is none.'
+      'For example: '
+      '"algorithm=exponential_decay, decay_rate=0.9, decay_steps=10000"')
+  register(
+      flags.DEFINE_integer,
+      'learning_rate_decay_steps', 10000,
+      'The decay steps to use in exponential learning rate decay:'
+      'decayed_rate=learning_rate * decay_rate ^ (global_step / decay_steps).')
   register(
       flags.DEFINE_integer,
       'batch_size', 128,
@@ -665,8 +744,7 @@ class Plan(object):
         training set).
 
     Returns:
-      A (size, loss_total, metrics) tuple, or (None, None, None) if should_stop
-      return True before the eval was completed.
+      A (size, loss_total, metrics) tuple.
 
     Raises:
       ValueError: if batches is empty.
@@ -684,7 +762,6 @@ class Plan(object):
       size += batch_size
       if compute_summaries:
         feed_dict[self.batch_size_placeholder] = batch_size
-      if self._should_stop(supervisor): return None, None, None
       results = session.run(fetches, feed_dict)
       for name, value in six.iteritems(results['metrics']):
         metrics[name] += value * batch_size
@@ -792,6 +869,8 @@ class TrainPlan(Plan):
     self.batches_per_epoch = options.batches_per_epoch
     self.save_model_secs = options.save_model_secs
     self.optimizer_params = parse_spec(options.optimizer_spec)
+    self._learning_rate_decay_params = parse_spec(
+        options.learning_rate_decay_spec)
 
     run_id = options.run_id
     if run_id == -1:
@@ -829,6 +908,8 @@ class TrainPlan(Plan):
   def build_optimizer(self):
     if self.train_op is not None: raise ValueError('train_op already exists')
     self.train_op = build_optimizer_from_params(
+        global_step=self.global_step,
+        learning_rate_decay_params=self._learning_rate_decay_params,
         **self.optimizer_params).minimize(self.loss_total,
                                           global_step=self.global_step)
 
@@ -1050,6 +1131,7 @@ class EvalPlan(_StreamingPlan):
     if self.eval_interval_secs:
       gen_batches = util.epochs(batches, shuffle=False)  # memoize batches
       max_reported_step = 0
+      # Should eval for the final measurement even if _should_stop is true.
       while not (self._should_stop(supervisor) and max_reported_step > 0):
         start_time = time.time()
         if self._restore(supervisor, session):
@@ -1058,8 +1140,8 @@ class EvalPlan(_StreamingPlan):
             max_reported_step = step
             results = self._eval_batches(
                 supervisor, session, next(gen_batches), step)
-            if results[0] is None: break  # should_stop returned true
             self._report_loss_and_save_best(supervisor, session, step, *results)
+            if self._should_stop(supervisor): break
           else:
             self.log_and_print('not running eval because step=%s' % step)
         sleep_time = self.eval_interval_secs - (time.time() - start_time)

@@ -84,7 +84,7 @@ arguments can can also take anything accepted by
   - [`td.group_by_batches(iterable, batch_size, truncate=False)`](#tdgroup_by_batchesiterable-batch_size-truncatefalse)
   - [`td.epochs(items, n=None, shuffle=True, prng=None)`](#tdepochsitems-nnone-shuffletrue-prngnone)
   - [`td.parse_spec(spec)`](#tdparse_specspec)
-  - [`td.build_optimizer_from_params(optimizer='adam', **kwargs)`](#tdbuild_optimizer_from_paramsoptimizeradam-kwargs)
+  - [`td.build_optimizer_from_params(optimizer='adam', global_step=None, learning_rate_decay_params=None, **kwargs)`](#tdbuild_optimizer_from_paramsoptimizeradam-global_stepnone-learning_rate_decay_paramsnone-kwargs)
   - [`td.create_variable_scope(name)`](#tdcreate_variable_scopename)
 - [Abstract classes](#abstract-classes)
   - [`class td.IOBase`](#class-tdiobase)
@@ -1504,10 +1504,20 @@ in = {'a': Vector(10), 'b': Vector(10)}
 hidden = [in['a'] >> Call(layer), in['b'] >> Call(layer)] >> Concat()
 out = hidden >> Call(FC(10, activation=None))
 ```
+
+##### Attributes:
+
+
+*  <b>`weights`</b>: The tensor for the weights of the FC layer.
+*  <b>`bias`</b>: The tensor for the bias of the FC layer.
+*  <b>`scales`</b>: The tensor for the scales of the FC layer if weight norm is enabled.
+*  <b>`output_size`</b>: The size of the output as an integer.
+
+
 - - -
 
 <a name="td.FC.__init__"></a>
-#### `td.FC.__init__(num_units_out, activation=relu, initializer=None, input_keep_prob=None, output_keep_prob=None, normalization_fn=None, name=None)`
+#### `td.FC.__init__(num_units_out, activation=relu, initializer=None, input_keep_prob=None, output_keep_prob=None, normalization_fn=None, weight_norm=False, name=None)`
 
 Initializes the layer.
 
@@ -1527,14 +1537,48 @@ Initializes the layer.
     Feed 1.0 at serving to disable dropout.
 *  <b>`normalization_fn`</b>: Optional normalization function that will be inserted
     before nonlinearity.
+*  <b>`weight_norm`</b>: A bool to control whether weight normalization is used. See
+*  <b>`https`</b>: //arxiv.org/abs/1602.07868 for how it works.
 *  <b>`name`</b>: An optional string name. Defaults to `FC_%d % num_units_out`. Used
     to name the variable scope where the variables for the layer live.
 
 
 - - -
 
+<a name="td.FC.bias"></a>
+#### `td.FC.bias`
+
+
+
+
+- - -
+
 <a name="td.FC.output_size"></a>
 #### `td.FC.output_size`
+
+
+
+
+- - -
+
+<a name="td.FC.scales"></a>
+#### `td.FC.scales`
+
+
+
+
+- - -
+
+<a name="td.FC.weight_norm"></a>
+#### `td.FC.weight_norm`
+
+
+
+
+- - -
+
+<a name="td.FC.weights"></a>
+#### `td.FC.weights`
 
 
 
@@ -2586,7 +2630,7 @@ Parses a list of key values pairs.
 - - -
 
 <a name="td.build_optimizer_from_params"></a>
-### `td.build_optimizer_from_params(optimizer='adam', **kwargs)`
+### `td.build_optimizer_from_params(optimizer='adam', global_step=None, learning_rate_decay_params=None, **kwargs)`
 
 Constructs an optimizer from key-value pairs.
 
@@ -2601,6 +2645,9 @@ creates a MomentumOptimizer with momentum 0.9 and learning rate 1e-3.
 
 
 *  <b>`optimizer`</b>: The name of the optimizer to construct.
+*  <b>`global_step`</b>: The tensor of the global training step.
+*  <b>`learning_rate_decay_params`</b>: The params to construct the learning rate decay
+    algorithm. A dictionary.
 *  <b>`**kwargs`</b>: Arguments for the optimizer's constructor.
 
 ##### Raises:

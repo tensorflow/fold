@@ -7,6 +7,7 @@ load("//tensorflow_fold:fold.bzl", "fold_py_library", "fold_py_test")
 
 package(
     default_visibility = [
+        "//tensorflow_fold/blocks/examples:__subpackages__",
         "//tensorflow_fold/public:__subpackages__",
     ],
 )

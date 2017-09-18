@@ -36,7 +36,7 @@ Usage:
 bazel run --config=opt \
     //tensorflow_fold/blocks/examples/language_id
 
-See below and <tensorflow_fold/blocks/plan.py>
+See below and <tensorflow_fold/blocks/examples/plan.py>
 for flag options.
 """
 from __future__ import absolute_import
@@ -46,6 +46,7 @@ import csv
 import random
 # import google3
 import tensorflow as tf
+import tensorflow_fold.blocks.examples.plan as pl
 import tensorflow_fold.public.blocks as td
 
 
@@ -72,7 +73,6 @@ tf.app.flags.DEFINE_integer(
     'seed', 42,
     'Random seed.')
 
-td.define_plan_flags(default_plan_name='language_id')
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -164,7 +164,7 @@ def setup_plan(plan):
 def main(_):
   random.seed(FLAGS.seed)
   tf.set_random_seed(random.randint(0, 2**32))
-  td.Plan.create_from_flags(setup_plan).run()
+  pl.Plan.create_from_flags(setup_plan).run()
 
 if __name__ == '__main__':
   tf.app.run()

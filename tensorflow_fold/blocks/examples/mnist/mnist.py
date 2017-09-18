@@ -30,7 +30,7 @@ Inference:
   ./bazel-bin/tensorflow_fold/blocks/examples/mnist/mnist \
     --mode=infer
 
-See below and <tensorflow_fold/blocks/plan.py>
+See below and <tensorflow_fold/blocks/examples/plan.py>
 for additional flag options.
 """
 from __future__ import absolute_import
@@ -40,6 +40,7 @@ from __future__ import print_function
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from six.moves import zip  # pylint: disable=redefined-builtin
 import tensorflow as tf
+import tensorflow_fold.blocks.examples.plan as pl
 import tensorflow_fold.public.blocks as td
 
 
@@ -51,7 +52,6 @@ FLAGS = flags.FLAGS
 flags.DEFINE_integer('num_layers', 2, 'Number of hidden layers.')
 flags.DEFINE_integer('num_units', 500, 'Number of units per hidden layer.')
 flags.DEFINE_float('keep_prob', 0.75, 'Keep probability for dropout.')
-td.define_plan_flags(default_plan_name='mnist')
 
 
 def setup_plan(plan):
@@ -118,7 +118,7 @@ def setup_plan(plan):
 
 def main(_):
   assert 0 < FLAGS.keep_prob <= 1, '--keep_prob must be in (0, 1]'
-  td.Plan.create_from_flags(setup_plan).run()
+  pl.Plan.create_from_flags(setup_plan).run()
 
 
 if __name__ == '__main__':

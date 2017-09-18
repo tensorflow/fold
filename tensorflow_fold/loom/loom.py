@@ -84,7 +84,7 @@ class TypeShape(_TypeShape):
     return tf.as_dtype(self.dtype).as_datatype_enum
 
   def tensor_flow_name(self):
-    """Makes a name for the TypeShape usuable as a TF op name."""
+    """Makes a name for the TypeShape usable as a TF op name."""
     # Just to make sure we don't include characters that aren't allowed in TF
     # opnames, we strip all the non-word characters from the tag.
     tag = re.sub(r'\W+', '', self.tag)
@@ -1047,9 +1047,9 @@ class Weaver(object):
     the Weaver's output wirings.
 
     Returns:
-     A dictionary which can be passed as a `feed_dict` argument to
-     `tf.Session.run()` t which will cause this Weaver's Loom to behave like
-    the diagram.
+      A dictionary which can be passed as a `feed_dict` argument to
+      `tf.Session.run()` which will cause this Weaver's Loom to behave like
+      the diagram.
 
     Args:
       outputs: Additional nodes which should be sent to the output tensors

@@ -8,6 +8,7 @@ fold_py_binary(
     name = "language_id",
     srcs = ["language_id.py"],
     deps = [
+        "//tensorflow_fold/blocks/examples:plan",
         "//tensorflow_fold/public:blocks",
         "@org_tensorflow//tensorflow:tensorflow_py",
     ],

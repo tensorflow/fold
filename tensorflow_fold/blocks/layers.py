@@ -228,11 +228,17 @@ class FC(TensorToTensorLayer):
   hidden = [in['a'] >> Call(layer), in['b'] >> Call(layer)] >> Concat()
   out = hidden >> Call(FC(10, activation=None))
   ```
+
+  Attributes:
+    weights: The tensor for the weights of the FC layer.
+    bias: The tensor for the bias of the FC layer.
+    scales: The tensor for the scales of the FC layer if weight norm is enabled.
+    output_size: The size of the output as an integer.
   """
 
   def __init__(self, num_units_out, activation=tf.nn.relu, initializer=None,
                input_keep_prob=None, output_keep_prob=None,
-               normalization_fn=None, name=None):
+               normalization_fn=None, weight_norm=False, name=None):
     """Initializes the layer.
 
     Args:
@@ -249,6 +255,8 @@ class FC(TensorToTensorLayer):
         Feed 1.0 at serving to disable dropout.
       normalization_fn: Optional normalization function that will be inserted
         before nonlinearity.
+      weight_norm: A bool to control whether weight normalization is used. See
+        https://arxiv.org/abs/1602.07868 for how it works.
       name: An optional string name. Defaults to `FC_%d % num_units_out`. Used
         to name the variable scope where the variables for the layer live.
     """
@@ -270,13 +278,36 @@ class FC(TensorToTensorLayer):
     self._input_keep_prob = input_keep_prob
     self._output_keep_prob = output_keep_prob
     self._normalization_fn = normalization_fn
+    self._weight_norm = weight_norm
     if name is None: name = 'FC_%d' % num_units_out
     super(FC, self).__init__(
         output_type=tdt.TensorType([num_units_out]), name_or_scope=name)
 
   @property
+  def bias(self):
+    if not self._created_variables:
+      raise RuntimeError('bias have not been created; call the layer first')
+    return self._bias
+
+  @property
+  def weights(self):
+    if not self._created_variables:
+      raise RuntimeError('weights have not been created; call the layer first')
+    return self._weights
+
+  @property
+  def scales(self):
+    if not self._created_variables:
+      raise RuntimeError('scales have not been created; call the layer first')
+    return self._scales
+
+  @property
   def output_size(self):
     return self.output_type.shape[0]
+
+  @property
+  def weight_norm(self):
+    return self._weight_norm
 
   def _create_variables(self):
     if self.input_type.dtype != 'float32':
@@ -290,11 +321,21 @@ class FC(TensorToTensorLayer):
     self._weights = tf.get_variable(
         'weights', [self.input_type.shape[0], self.output_type.shape[0]],
         initializer=self._initializer)
+    if self._weight_norm:
+      self._scales = tf.get_variable(
+          'scales',
+          [self.output_type.shape[0]],
+          initializer=tf.constant_initializer(1.0))
 
   def _process_batch(self, batch):
     if self._input_keep_prob is not None:
       batch = tf.nn.dropout(batch, self._input_keep_prob)
-    y = tf.nn.xw_plus_b(batch, self._weights, self._bias)
+    if self._weight_norm:
+      y = tf.nn.xw_plus_b(batch,
+                          tf.nn.l2_normalize(self._weights, 0) * self._scales,
+                          self._bias)
+    else:
+      y = tf.nn.xw_plus_b(batch, self._weights, self._bias)
     if self._normalization_fn is not None and self._activation is not None:
       y = self._normalization_fn(y)
     if self._activation is not None: y = self._activation(y)

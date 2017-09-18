@@ -38,14 +38,27 @@ class ParseSpecTest(test_lib.TestCase):
 
   def test_malformed(self):
     six.assertRaisesRegex(
-        self, ValueError, 'Clause "foo" doesn\'t contain an "="',
+        self, ValueError, 'Spec "foo" doesn\'t contain any key value pair',
         plan.parse_spec, 'foo')
     six.assertRaisesRegex(
-        self, ValueError, 'Clause "bar" doesn\'t contain an "="',
-        plan.parse_spec, 'foo=3.0,bar')
+        self, ValueError, 'Duplicate key foo',
+        plan.parse_spec, 'foo=3.0,foo=bar')
     six.assertRaisesRegex(
-        self, ValueError, 'Clause "bar" doesn\'t contain an "="',
-        plan.parse_spec, 'foo=3.0,bar,baz=7')
+        self, ValueError, 'Empty value for key bar',
+        plan.parse_spec, 'foo=3.0,bar=')
+
+  def test_boolean(self):
+    self.assertTrue(plan.parse_spec('foo=True')['foo'])
+    self.assertFalse(plan.parse_spec('foo=False')['foo'])
+
+  def test_list(self):
+    self.assertEqual([1, 2, 3], plan.parse_spec('foo=[1,2,3]')['foo'])
+    self.assertEqual([1.1, 1.2, 1.3],
+                     plan.parse_spec('foo=[1.1, 1.2, 1.3]')['foo'])
+    self.assertEqual(dict(foo=[1, 2], bar=[True, False], par=[3, 4]),
+                     plan.parse_spec('foo=[1,2],bar=[True,False],par=[3,4]'))
+    self.assertEqual(dict(meh='mehmeh', foo=[1, 2], bar='barbar'),
+                     plan.parse_spec('meh=mehmeh,foo=[1,2],bar=barbar'))
 
 
 class BuildOptimizerFromParams(test_lib.TestCase):
@@ -76,6 +89,64 @@ class BuildOptimizerFromParams(test_lib.TestCase):
     self.assertTrue(isinstance(
         plan.build_optimizer_from_params('ADAGRAD', learning_rate=1e-3),
         tf.train.AdagradOptimizer))
+
+
+class BuildLearningRateDecayFromParams(test_lib.TestCase):
+
+  def test_bad_algorithm(self):
+    six.assertRaisesRegex(
+        self, ValueError, 'Unknown algorithm: foo',
+        plan.build_learning_rate_decay_from_params,
+        {'algorithm': 'foo'}, None, 0.01)
+
+  def test_missing_learning_rate(self):
+    six.assertRaisesRegex(
+        self, ValueError, 'Missing learning_rate field',
+        plan.build_learning_rate_decay_from_params,
+        {'algorithm': 'exponential_decay'}, None, None)
+
+  def test_missing_algorithm(self):
+    six.assertRaisesRegex(
+        self, ValueError, 'Missing algorithm field',
+        plan.build_learning_rate_decay_from_params,
+        {'foo': 'bar'}, None, 0.01)
+
+  def test_algorithms(self):
+    global_step = tf.Variable(0)
+    decay = plan.build_learning_rate_decay_from_params({
+        'algorithm': 'exponential_decay',
+        'decay_rate': 0.9,
+        'decay_steps': 1000,
+    }, global_step, 0.01)
+    self.assertTrue(decay.op.name.startswith('ExponentialDecay'))
+
+    decay = plan.build_learning_rate_decay_from_params({
+        'algorithm': 'inverse_time_decay',
+        'decay_rate': 0.9,
+        'decay_steps': 1000,
+    }, global_step, 0.01)
+    self.assertTrue(decay.op.name.startswith('InverseTimeDecay'))
+
+    decay = plan.build_learning_rate_decay_from_params({
+        'algorithm': 'natural_exp_decay',
+        'decay_rate': 0.9,
+        'decay_steps': 1000,
+    }, global_step, 0.01)
+    self.assertTrue(decay.op.name.startswith('NaturalExpDecay'))
+
+    decay = plan.build_learning_rate_decay_from_params({
+        'algorithm': 'polynomial_decay',
+        'end_learning_rate': 0.00001,
+        'decay_steps': 1000,
+    }, global_step, 0.01)
+    self.assertTrue(decay.op.name.startswith('PolynomialDecay'))
+
+    decay = plan.build_learning_rate_decay_from_params({
+        'algorithm': 'piecewise_constant',
+        'boundaries': [100, 1000],
+        'values': [0.01, 0.001, 0.0001],
+    }, global_step, 0.01)
+    self.assertTrue(decay.op.name.startswith('PiecewiseConstant'))
 
 
 class PlanTestBase(test_lib.TestCase):
@@ -647,11 +718,15 @@ class EvalPlanTest(PlanTestBase):
     # We aren't using a managed session, so we need to run this ourselves.
     init_op = tf.global_variables_initializer()
     sv = p.create_supervisor()
+    model_path = os.path.join(p.logdir, 'model.ckpt-42')
     with self.test_session() as sess:
       sess.run(init_op)
       p.run(sv, sess)
       log_str = p.print_file.getvalue()
-      expected = 'restoring from %s/model.ckpt-42\n' % p.logdir
+      expected_lines = ['restoring from %s' % model_path,
+                        'step:      42 loss: 3.000e+00 foo: 4.200e+01',
+                        ('new best model saved in file: %s' % model_path)]
+      expected = '\n'.join(expected_lines) + '\n'
       self.assertTrue(log_str.endswith(expected), msg=log_str)
 
   def test_print_metrics(self):

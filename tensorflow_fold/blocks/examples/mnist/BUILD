@@ -8,6 +8,7 @@ fold_py_binary(
     name = "mnist",
     srcs = ["mnist.py"],
     deps = [
+        "//tensorflow_fold/blocks/examples:plan",
         "//tensorflow_fold/public:blocks",
         "@six_archive//:six",
         "@org_tensorflow//tensorflow:tensorflow_py",

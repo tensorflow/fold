@@ -104,7 +104,7 @@ The dtype of this TypeShape as an enum.
 <a name="loom.TypeShape.tensor_flow_name"></a>
 #### `loom.TypeShape.tensor_flow_name()`
 
-Makes a name for the TypeShape usuable as a TF op name.
+Makes a name for the TypeShape usable as a TF op name.
 
 
 
@@ -506,9 +506,9 @@ the Weaver's output wirings.
 
 ##### Returns:
 
- A dictionary which can be passed as a `feed_dict` argument to
- `tf.Session.run()` t which will cause this Weaver's Loom to behave like
-the diagram.
+  A dictionary which can be passed as a `feed_dict` argument to
+  `tf.Session.run()` which will cause this Weaver's Loom to behave like
+  the diagram.
 
 ##### Args:
 
