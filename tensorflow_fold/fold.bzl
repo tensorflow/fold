@@ -6,11 +6,22 @@ load("@protobuf//:protobuf.bzl", "py_proto_library")
 fold_cc_binary = native.cc_binary
 fold_cc_library = native.cc_library
 
-
 def fold_cc_test(deps=[], **kwargs):
   native.cc_test(deps=deps + ["//tensorflow_fold/util:test_main"],
                  **kwargs)
 
+fold_cuda_cc_binary = fold_cc_binary
+fold_cuda_cc_library = fold_cc_library
+fold_cuda_cc_test = fold_cc_test
+
+def fold_fake_cc_binary(*args, **kwargs):
+  pass
+
+def fold_py_nocompile_test(*args, **kwargs):
+  pass
+
+def if_cuda(x):
+  return []
 
 def fold_proto_library(cc_name, py_name, srcs, cc_deps=[], py_deps=[],
                        visibility=None, testonly=0):

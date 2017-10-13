@@ -2,3 +2,6 @@
 	path = tensorflow
 	url = https://github.com/tensorflow/tensorflow
 	branch = r1.0
+[submodule "abseil-cpp"]
+	path = abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git

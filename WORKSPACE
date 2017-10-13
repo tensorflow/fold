@@ -1,10 +1,13 @@
 workspace(name = "org_tensorflow_fold")
 
-# There should be a symlink from /tensorflow to the local directory where
-# tensorflow has been cloned from github.
 local_repository(
   name = "org_tensorflow",
   path = "tensorflow",
+)
+
+local_repository(
+  name = "com_google_abseil",
+  path = "abseil-cpp",
 )
 
 # TensorFlow depends on "io_bazel_rules_closure" so we need this here.

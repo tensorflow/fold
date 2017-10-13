@@ -19,3 +19,8 @@ def tf_fold_workspace():
       name = "zlib",
       actual = "@zlib_archive//:zlib",
   )
+
+  native.bind(
+      name = "gmock",
+      actual = "@gmock_archive//:gmock",
+  )
