@@ -80,6 +80,15 @@ fold_py_test(
     ],
 )
 
+fold_py_library(
+    name = "cpp_test_proto_lib",
+    srcs = [],
+    deps = [
+        ":test3_py_pb2",
+        ":test_py_pb2",
+    ],
+)
+
 sh_binary(
     name = "build_pip_package",
     srcs = ["build_pip_package.sh"],

@@ -8,8 +8,8 @@ fold_py_library(
     name = "model",
     srcs = ["model.py"],
     deps = [
-        "//tensorflow_fold/public:blocks",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "//tensorflow_fold/public:blocks",
     ],
 )
 
@@ -21,10 +21,11 @@ fold_py_binary(
     ],
     deps = [
         ":model",
-        "//tensorflow_fold/loom/calculator_example:calculator_py_pb2",
-        "//tensorflow_fold/public:blocks",
-        "//tensorflow_fold/util:proto",
         "@six_archive//:six",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "//tensorflow_fold/loom/calculator_example:calculator_py_pb2",
+        # "//tensorflow_fold/loom/calculator_example:cpp_calculator_proto",
+        "//tensorflow_fold/public:blocks",
+        "//tensorflow_fold/util:proto",
     ],
 )

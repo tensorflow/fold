@@ -1,7 +1,7 @@
 // This file contains protocol buffers that are generically useful for tests.
 syntax = "proto2";
 
-package tensorflow.fold;
+package tensorflow.fold.util;
 
 message SomeEnumScope {
   enum SomeEnum {

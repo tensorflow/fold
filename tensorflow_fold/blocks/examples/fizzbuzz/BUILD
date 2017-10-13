@@ -8,8 +8,8 @@ fold_py_binary(
     name = "fizzbuzz",
     srcs = ["fizzbuzz.py"],
     deps = [
-        "//tensorflow_fold/public:blocks",
         "@six_archive//:six",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "//tensorflow_fold/public:blocks",
     ],
 )

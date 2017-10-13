@@ -27,10 +27,10 @@ fold_py_library(
     deps = [
         ":result_types",
         ":util",
-        "//tensorflow_fold/public:loom",
         # numpy",
         "@six_archive//:six",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "//tensorflow_fold/public:loom",
     ],
 )
 
@@ -60,8 +60,9 @@ fold_py_test(
     deps = [
         ":blocks",
         ":test_lib",
-        "//tensorflow_fold/util:test_py_pb2",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "//tensorflow_fold/util:cpp_test_proto_lib",
+        "//tensorflow_fold/util:test_py_pb2",
     ],
 )
 
@@ -99,10 +100,10 @@ fold_py_library(
     name = "result_types",
     srcs = ["result_types.py"],
     deps = [
-        "//tensorflow_fold/public:loom",
         # numpy",
         "@six_archive//:six",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "//tensorflow_fold/public:loom",
     ],
 )
 

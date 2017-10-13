@@ -12,11 +12,122 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Public blocks API for [TensorFlow Fold](https://github.com/tensorflow/fold).
+"""High-level Blocks API for [TensorFlow Fold](../index.md).
 
-We suggest importing it as:
-`import tensorflow_fold.public.blocks as td`
+## Compiler
+
+@@Compiler
+
+## Blocks for input
+
+@@Tensor
+@@Scalar
+@@Vector
+@@InputTransform
+@@SerializedMessageToTree
+@@OneHot
+@@OneHotFromList
+@@Optional
+
+## Blocks for composition
+
+@@Composition
+@@Pipe
+@@Record
+@@AllOf
+
+## Blocks for tensors
+
+@@FromTensor
+@@Function
+@@Concat
+@@Zeros
+
+## Blocks for sequences
+
+@@Map
+@@Fold
+@@RNN
+@@Reduce
+@@Sum
+@@Min
+@@Max
+@@Mean
+@@Broadcast
+@@Zip
+@@ZipWith
+@@NGrams
+@@Nth
+@@GetItem
+@@Length
+@@Slice
+
+## Other blocks
+
+@@ForwardDeclaration
+@@OneOf
+@@Metric
+@@Identity
+@@Void
+
+## Layers
+
+@@FC
+@@Embedding
+@@FractalNet
+@@ScopedLayer
+
+## Types
+
+@@TensorType
+@@VoidType
+@@PyObjectType
+@@TupleType
+@@SequenceType
+@@BroadcastSequenceType
+
+## Plans
+
+@@Plan
+@@TrainPlan
+@@EvalPlan
+@@InferPlan
+@@define_plan_flags
+@@plan_default_params
+
+## Conversion functions
+
+@@convert_to_block
+@@convert_to_type
+@@canonicalize_type
+
+## Utilities
+
+@@EdibleIterator
+@@group_by_batches
+@@epochs
+@@parse_spec
+@@build_optimizer_from_params
+@@create_variable_scope
+
+## Abstract classes
+
+@@IOBase
+@@Block
+@@Layer
+@@ResultType
 """
+
+# This is the entrypoint for importing the TensorFlow Fold Blocks library.
+# We suggest importing it as:
+#   import tensorflow_fold.public.blocks as td
+
+## Regenerating the Docs
+#
+# Fold's API docs are extracted from the toplevel docstring of
+# third_party.tensorflow_fold.public.blocks and docstrings from the other
+# files that it refers to.
+#
 
 # pylint: disable=wildcard-import, unused-import
 from tensorflow_fold.blocks.block_compiler import *

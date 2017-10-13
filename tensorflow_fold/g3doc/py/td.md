@@ -11,7 +11,7 @@ arguments can can also take anything accepted by
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [`module tensorflow_fold` (`td`)](#module-tensorflow_fold-td)
+- [`module tensorflow_fold.public.blocks` (`td`)](#module-tensorflow_foldpublicblocks-td)
 - [Compiler](#compiler)
   - [`class td.Compiler`](#class-tdcompiler)
 - [Blocks for input](#blocks-for-input)
@@ -95,8 +95,8 @@ arguments can can also take anything accepted by
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 - - -
-## `module tensorflow_fold` (`td`)
-This is the high-level API for [TensorFlow Fold](../index.md).
+## `module tensorflow_fold.public.blocks` (`td`)
+High-level Blocks API for [TensorFlow Fold](../index.md).
 
 ## Compiler
 

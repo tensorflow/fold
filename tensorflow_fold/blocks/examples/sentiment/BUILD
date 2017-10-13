@@ -9,9 +9,9 @@ fold_py_library(
     name = "sentiment",
     srcs = ["sentiment.py"],
     deps = [
-        "//tensorflow_fold/public:blocks",
         # nltk
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "//tensorflow_fold/public:blocks",
     ],
 )
 
@@ -20,8 +20,8 @@ fold_py_binary(
     srcs = ["train.py"],
     deps = [
         ":sentiment",
-        "//tensorflow_fold/public:blocks",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "//tensorflow_fold/public:blocks",
     ],
 )
 

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package tensorflow.fold;
+package tensorflow.fold.util;
 
 message SomeEnum3Scope {
   enum SomeEnum3 {

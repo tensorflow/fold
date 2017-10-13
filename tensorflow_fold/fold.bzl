@@ -45,10 +45,11 @@ def fold_py_extension(name, srcs=[], outs=[], deps=[]):
                     srcs = srcs,
                     deps = deps,
                     alwayslink = 1)
-  native.cc_binary(name=outs[0],
-                   srcs=[],
-                   linkshared=1,
-                   deps=[":" + name + "_cc"])
+  for out in outs:
+    native.cc_binary(name=outs[0],
+                     srcs=[],
+                     linkshared=1,
+                     deps=[":" + name + "_cc"])
 
 
 def fold_py_library(name, srcs=[], deps=[], cc_deps=[], data=[], testonly=0):
@@ -80,8 +81,8 @@ def _fold_py_wrap_cc_impl(ctx):
   args = ["-c++", "-python"]
   args += ["-module", module_name]
   args += ["-l" + f.path for f in ctx.files.swig_includes]
-  cc_include_dirs = set()
-  cc_includes = set()
+  cc_include_dirs = depset()
+  cc_includes = depset()
   for dep in ctx.attr.deps:
     cc_include_dirs += [h.dirname for h in dep.cc.transitive_headers]
     cc_includes += dep.cc.transitive_headers
@@ -94,10 +95,11 @@ def _fold_py_wrap_cc_impl(ctx):
   ctx.action(executable=ctx.executable.swig_binary,
              arguments=args,
              mnemonic="PythonSwig",
-             inputs=sorted(set([src]) + cc_includes + ctx.files.swig_includes),
+             inputs=sorted(depset([src]) + cc_includes +
+                           ctx.files.swig_includes),
              outputs=outputs,
              progress_message="SWIGing {input}".format(input=src.path))
-  return struct(files=set(outputs))
+  return struct(files=depset(outputs))
 
 _fold_py_wrap_cc = rule(
     attrs = {

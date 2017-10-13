@@ -5,7 +5,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [`module tensorflow_fold.loom` (`loom`)](#module-tensorflow_foldloom-loom)
+- [`module tensorflow_fold.public.loom` (`loom`)](#module-tensorflow_foldpublicloom-loom)
   - [`class loom.TypeShape`](#class-loomtypeshape)
   - [`class loom.LoomOp`](#class-loomloomop)
   - [`class loom.PassThroughLoomOp`](#class-loompassthroughloomop)
@@ -15,8 +15,8 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 - - -
-## `module tensorflow_fold.loom` (`loom`)
-This is the low-level API for [TensorFlow Fold](../index.md).
+## `module tensorflow_fold.public.loom` (`loom`)
+This is the low-level Loom API for [TensorFlow Fold](../index.md).
 
 As a simple example here's a loom that lets you evaluate arbitrary trees of
 element-wise adds and multiplies on floating point vectors of length 3.

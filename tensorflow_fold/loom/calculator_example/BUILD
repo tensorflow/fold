@@ -6,6 +6,7 @@ load(
     "//tensorflow_fold:fold.bzl",
     "fold_proto_library",
     "fold_py_binary",
+    "fold_py_extension",
     "fold_py_library",
     "fold_py_test",
 )
@@ -25,6 +26,13 @@ fold_proto_library(
 filegroup(
     name = "calculator_proto_file",
     srcs = ["calculator.proto"],
+)
+
+fold_py_extension(
+    name = "cpp_calculator_proto",
+    srcs = [],
+    outs = [],
+    deps = [":calculator_proto"],
 )
 
 fold_py_library(
@@ -63,10 +71,10 @@ fold_py_library(
     deps = [
         ":calculator",
         ":calculator_py_pb2",
-        "//tensorflow_fold/public:loom",
         # numpy",
         "@six_archive//:six",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "//tensorflow_fold/public:loom",
     ],
 )
 

@@ -605,7 +605,7 @@ class BlocksTest(test_lib.TestCase):
     self.assertBuildsConst([1, 2, 3, 4], block, 'abcd')
 
   def test_serialized_message_to_tree(self):
-    block = tdb.SerializedMessageToTree('tensorflow.fold.Nested3')
+    block = tdb.SerializedMessageToTree('tensorflow.fold.util.Nested3')
     self.assertEqual(
         {'foo': 'x', 'nested2': {'bar': 'y', 'nested1': {'baz': None}}},
         block.eval(test_pb2.Nested3(
@@ -1079,8 +1079,8 @@ class BlocksTest(test_lib.TestCase):
         tdb.InputTransform(ord): '<td.InputTransform py_fn=\'ord\'>',
 
         tdb.SerializedMessageToTree('foo'):
-        '<td.SerializedMessageToTree \'foo\' '
-        'py_fn=\'serialized_message_to_tree\'>',
+            '<td.SerializedMessageToTree \'foo\' '
+            'py_fn=\'serialized_message_to_tree\'>',
 
         tdb.GetItem(3, 'mu'): '<td.GetItem \'mu\' key=3>',
 
