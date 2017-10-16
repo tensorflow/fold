@@ -42,7 +42,7 @@ fold_cc_library(
     srcs = ["test_main.cc"],
     linkopts = ["-lm"],
     deps = [
-        "//external:gtest",
+        "@com_google_googletest//:gtest",
         "@org_tensorflow//tensorflow/core:framework_lite",
         "@org_tensorflow//tensorflow/core:testlib",
     ],
@@ -55,7 +55,7 @@ fold_py_extension(
     deps = [
         "@org_tensorflow//tensorflow/core:framework_headers_lib",
         "@org_tensorflow//util/python:python_headers",
-        "@protobuf//:protobuf",
+        "@protobuf_archive//:protobuf",
     ],
 )
 

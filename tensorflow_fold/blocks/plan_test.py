@@ -156,7 +156,7 @@ class PlanTestBase(test_lib.TestCase):
     # Reset flags.
     tf.flags.FLAGS.master = ''
     tf.flags.FLAGS.mode = 'train'
-    tf.flags.FLAGS.num_multiprocess_processes = None
+    tf.flags.FLAGS.num_multiprocess_processes = 0
     tf.flags.FLAGS.task = 0
     tf.flags.FLAGS.truncate_examples = 0
     # Recreate tmpdir.
@@ -290,7 +290,7 @@ class TrainPlanTest(PlanTestBase):
       sess.run(p.train_op)  # should make loss smaller
       self.assertLess(p.loss_total.eval(), 4)
 
-    tf.flags.FLAGS.num_multiprocess_processes = None
+    tf.flags.FLAGS.num_multiprocess_processes = 0
     tf.flags.FLAGS.task = 42
     train_op = tf.no_op()
     p = plan.Plan.create_from_flags(_setup_plan(
@@ -298,7 +298,7 @@ class TrainPlanTest(PlanTestBase):
         losses={'foo': tf.constant(3.14)},
         train_op=train_op,
         examples=xrange(5)))
-    self.assertEqual(p.num_multiprocess_processes, None)
+    self.assertEqual(p.num_multiprocess_processes, 0)
     self.assertEqual(p.compute_summaries, False)
     self.assertEqual(p.is_chief_trainer, False)
     self.assertEqual(p.train_op, train_op)
@@ -331,7 +331,7 @@ class TrainPlanTest(PlanTestBase):
       sess.run(p.train_op)  # should make loss smaller
       self.assertLess(p.loss_total.eval(), 4)
 
-    tf.flags.FLAGS.num_multiprocess_processes = None
+    tf.flags.FLAGS.num_multiprocess_processes = 0
     tf.flags.FLAGS.task = 42
     train_op = tf.no_op()
     p = plan.Plan.create_from_flags(_setup_plan(
@@ -339,7 +339,7 @@ class TrainPlanTest(PlanTestBase):
         losses={'foo': tf.constant(3.14)},
         train_op=train_op,
         examples=xrange(5)))
-    self.assertEqual(p.num_multiprocess_processes, None)
+    self.assertEqual(p.num_multiprocess_processes, 0)
     self.assertEqual(p.compute_summaries, False)
     self.assertEqual(p.is_chief_trainer, False)
     self.assertEqual(p.train_op, train_op)

@@ -49,7 +49,7 @@ fold_py_test(
     deps = [
         ":calculator",
         ":calculator_py_pb2",
-        "@protobuf//:protobuf_python",
+        "@protobuf_archive//:protobuf_python",
         "@six_archive//:six",
         "@org_tensorflow//tensorflow:tensorflow_py",
     ],

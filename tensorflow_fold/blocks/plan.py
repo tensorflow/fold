@@ -261,7 +261,7 @@ def _register_options(register, default_plan_name='plan'):
   # Flags for data processing
   register(
       flags.DEFINE_integer,
-      'num_multiprocess_processes', None, 'Number of worked processes to use '
+      'num_multiprocess_processes', 0, 'Number of worked processes to use '
       'for multiprocessing when building loom inputs. Defaults to the cpu '
       'count. Zero to disable multiprocessing')
   register(

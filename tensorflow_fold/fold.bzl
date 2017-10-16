@@ -1,44 +1,87 @@
 # -*- Python -*-
 
-load("@protobuf//:protobuf.bzl", "cc_proto_library")
-load("@protobuf//:protobuf.bzl", "py_proto_library")
+load("@protobuf_archive//:protobuf.bzl", "cc_proto_library")
+load("@protobuf_archive//:protobuf.bzl", "py_proto_library")
+load("@local_config_cuda//cuda:build_defs.bzl", "if_cuda", "cuda_default_copts")
+
+# From tensorflow.bzl:
+def _cuda_copts():
+  """Gets the appropriate set of copts for (maybe) CUDA compilation.
+
+    If we're doing CUDA compilation, returns copts for our particular CUDA
+    compiler.  If we're not doing CUDA compilation, returns an empty list.
+
+    """
+  return cuda_default_copts() + select({
+      "//conditions:default": [],
+      "@local_config_cuda//cuda:using_nvcc": ([
+          "-nvcc_options=relaxed-constexpr",
+          "-nvcc_options=ftz=true",
+      ]),
+      "@local_config_cuda//cuda:using_clang": ([
+          "-fcuda-flush-denormals-to-zero",
+      ]),
+  })
+
 
 fold_cc_binary = native.cc_binary
 fold_cc_library = native.cc_library
+
 
 def fold_cc_test(deps=[], **kwargs):
   native.cc_test(deps=deps + ["//tensorflow_fold/util:test_main"],
                  **kwargs)
 
-fold_cuda_cc_binary = fold_cc_binary
-fold_cuda_cc_library = fold_cc_library
-fold_cuda_cc_test = fold_cc_test
+
+def fold_cuda_library(deps=[], cuda_deps=[], copts=[], **kwargs):
+  native.cc_library(
+      deps=deps + if_cuda(cuda_deps + [
+          "@local_config_cuda//cuda:cuda_headers",
+          "@org_tensorflow//tensorflow/core:cuda",
+          "@org_tensorflow//tensorflow/core:framework_lite",
+      ]),
+      copts=copts + _cuda_copts() + if_cuda(["-DGOOGLE_CUDA=1"]),
+      **kwargs)
+
+
+def fold_cuda_cc_test(deps=[], cuda_deps=[], copts=[], **kwargs):
+  native.cc_test(
+      deps=deps + ["//tensorflow_fold/util:test_main"],
+      copts=copts + if_cuda(["-DGOOGLE_CUDA=1"]),
+      **kwargs)
+
 
 def fold_fake_cc_binary(*args, **kwargs):
+  # Not currently supported in open source version.
+  # Dummy rule that will make the BUILD file work.
   pass
 
-def fold_py_nocompile_test(*args, **kwargs):
-  pass
 
-def if_cuda(x):
-  return []
+def fold_py_nocompile_test(name, srcs=[], **kwargs):
+  # Not currently supported in open source version.
+  # Dummy rule that will make the BUILD file work.
+  native.py_test(name=name,
+                 srcs=srcs,
+                 deps=[],
+                 srcs_version="PY2AND3")
+
 
 def fold_proto_library(cc_name, py_name, srcs, cc_deps=[], py_deps=[],
                        visibility=None, testonly=0):
   cc_proto_library(name=cc_name,
                    srcs=srcs,
                    deps=cc_deps,
-                   cc_libs=["@protobuf//:protobuf"],
-                   protoc="@protobuf//:protoc",
-                   default_runtime="@protobuf//:protobuf",
+                   cc_libs=["@protobuf_archive//:protobuf"],
+                   protoc="@protobuf_archive//:protoc",
+                   default_runtime="@protobuf_archive//:protobuf",
                    visibility=visibility,
                    testonly=testonly)
   py_proto_library(name=py_name,
                    srcs=srcs,
                    srcs_version = "PY2AND3",
-                   deps=["@protobuf//:protobuf_python"] + py_deps,
-                   default_runtime="@protobuf//:protobuf_python",
-                   protoc="@protobuf//:protoc",
+                   deps=["@protobuf_archive//:protobuf_python"] + py_deps,
+                   default_runtime="@protobuf_archive//:protobuf_python",
+                   protoc="@protobuf_archive//:protoc",
                    visibility=visibility,
                    testonly=testonly)
 

@@ -6,7 +6,7 @@ local_repository(
 )
 
 local_repository(
-  name = "com_google_abseil",
+  name = "com_google_absl",
   path = "abseil-cpp",
 )
 
