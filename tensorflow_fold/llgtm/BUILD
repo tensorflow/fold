@@ -13,7 +13,6 @@ load(
     "if_cuda",
 )
 
-
 package(
     default_visibility = [
         "//tensorflow_fold/llgtm:__subpackages__",
@@ -291,9 +290,9 @@ test_suite(
     name = "cpu_tests",
     tests = [
         "evaluator_test_eigen",
-        # "evaluator_test_tf", # disabled due to tf visibility
+        # "evaluator_test_tf",  # disabled due to tf visibility
         "gradients_test_eigen",
-        # "gradients_test_tf", # disabled due to tf visibility
+        # "gradients_test_tf",  # disabled due to tf visibility
         "graph_nocompile_test",
         "graph_test",
     ],

@@ -45,6 +45,7 @@ struct FlagType<double> { using type = float; };
 
 // The following macros provide a convenient mechanism for declaring,
 // parsing, and using command line flags.  See examples for usage.
+// The macros are the public interface; the classes are private.
 #define BEGIN_COMMAND_LINE_FLAGS \
   llgtm::platform::CommandLineFlagRegistry global_commandline_flag_registry
 
@@ -62,6 +63,7 @@ struct FlagType<double> { using type = float; };
   global_commandline_flag_registry.Parse(&ARGC, ARGV)
 
 
+namespace { //
 class CommandLineFlagRegistry;
 
 // Base class for command line flags.
@@ -95,9 +97,9 @@ class CommandLineFlagBase {
 template<class T>
 class CommandLineFlag : CommandLineFlagBase {
  public:
-  inline CommandLineFlag(const char* name, const char* type,
-                         const char* valstr, const char* docstr,
-                         T default_value, CommandLineFlagRegistry* registry);
+  CommandLineFlag(const char* name, const char* type,
+                  const char* valstr, const char* docstr,
+                  T default_value, CommandLineFlagRegistry* registry);
 
   const T& value() const { return value_; }
 
@@ -144,13 +146,16 @@ class CommandLineFlagRegistry {
 
 
 template<class T>
-CommandLineFlag<T>::CommandLineFlag(const char* name, const char* type,
-                                    const char* valstr, const char* docstr,
-                                    T default_value,
-                                    CommandLineFlagRegistry* registry)
+inline CommandLineFlag<T>::CommandLineFlag(const char* name,
+                                           const char* type,
+                                           const char* valstr,
+                                           const char* docstr,
+                                           T default_value,
+                                           CommandLineFlagRegistry* registry)
     : CommandLineFlagBase(name, type, valstr, docstr), value_(default_value) {
   registry->Register(this);
 }
+}  // namespace
 
 }  // namespace platform
 }  // namespace llgtm
