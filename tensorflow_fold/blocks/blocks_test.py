@@ -237,20 +237,20 @@ class BlocksTest(test_lib.TestCase):
     b = tdb.AllOf(tdb.Void(), tdb.Scalar()) >> tdb.GetItem(1)
     self.assertBuildsConst(42., b, 42)
 
-  def test_composition_rasies_read_output(self):
+  def test_composition_raises_read_output(self):
     a = tdb.Scalar()
     c = tdb.Composition([a])
     self.assertRaisesWithLiteralMatch(
         ValueError, 'cannot read from composition output',
         c.connect, c.output, a)
 
-  def test_composition_rasies_write_input(self):
+  def test_composition_raises_write_input(self):
     a = tdb.Scalar()
     c = tdb.Composition([a])
     self.assertRaisesWithLiteralMatch(
         ValueError, 'cannot write to composition input', c.connect, a, c.input)
 
-  def test_composition_rasies_foreign_io(self):
+  def test_composition_raises_foreign_io(self):
     a = tdb.Scalar()
     c = tdb.Composition([a])
     c2 = tdb.Composition()
