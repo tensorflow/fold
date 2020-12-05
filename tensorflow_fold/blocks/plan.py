@@ -225,7 +225,7 @@ def plan_default_params():
 def _register_options(register, default_plan_name='plan'):
   """Calls a function once for each option a plan needs.
 
-  Arguments:
+  Args:
     register: Register is a function which takes four arguments, namely,
        1. The function you'd use to define the option as a flag.
        2. The name of the option.
